@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Version papier — Assurance Auto | DAP</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    color: #1a1a2e;
+    background: #f4f6fa;
+    padding: 20px;
+  }
+
+  /* HEADER */
+  .print-header {
+    background: #1a1a2e;
+    color: white;
+    padding: 20px 28px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+  }
+  .print-header img { height: 48px; background: white; padding: 6px 14px; border-radius: 8px; }
+  .print-header-title { font-size: 18px; font-weight: 700; color: #e8b84b; }
+  .print-header-sub { font-size: 12px; color: #ccc; margin-top: 4px; }
+  .print-date { font-size: 11px; color: #aaa; text-align: right; }
+
+  /* CONTAINER */
+  .print-body {
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 28px;
+  }
+
+  /* STEP TITLE */
+  .step-title {
+    background: #1a1a2e;
+    color: #e8b84b;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin: 24px 0 16px;
+    letter-spacing: 0.3px;
+  }
+  .step-title:first-of-type { margin-top: 0; }
+
+  /* SECTION */
+  .section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .section-head {
+    background: #f8f9ff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .section-body { padding: 16px; }
+
+  /* QUESTIONS */
+  .q-block { margin-bottom: 14px; }
+  .q-block:last-child { margin-bottom: 0; }
+  .q-label {
+    font-weight: 700;
+    font-size: 12.5px;
+    color: #1a1a2e;
+    margin-bottom: 5px;
+    display: block;
+  }
+  .q-label .req { color: #e8b84b; margin-left: 2px; }
+
+  /* Ligne de réponse */
+  .answer-line {
+    border-bottom: 1px solid #999;
+    min-height: 28px;
+    margin: 4px 0 2px;
+  }
+  .answer-line-sm {
+    border-bottom: 1px solid #999;
+    min-height: 22px;
+    margin: 4px 0 2px;
+  }
+  .answer-area {
+    border-bottom: 1px solid #999;
+    min-height: 52px;
+    margin: 4px 0 2px;
+  }
+
+  /* Cases à cocher */
+  .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+    font-size: 13px;
+  }
+  .checkbox-square {
+    width: 16px; height: 16px;
+    border: 1.5px solid #333;
+    display: inline-block;
+    flex-shrink: 0;
+    border-radius: 2px;
+  }
+
+  /* Grille 2 colonnes */
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Questions conditionnelles */
+  .conditional {
+    background: #f9f9f9;
+    border-left: 3px solid #e8b84b;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 14px;
+    margin: 10px 0;
+  }
+  .conditional .cond-label {
+    font-size: 11px;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .conditional .q-label { color: #666; }
+  .conditional .answer-line { border-bottom-color: #bbb; }
+  .conditional .answer-area { border-bottom-color: #bbb; }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px dashed #ddd; margin: 16px 0; }
+
+  /* FOOTER */
+  .print-footer {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+    margin-top: 24px;
+    padding-top: 14px;
+    border-top: 1px solid #ddd;
+  }
+  .print-footer strong { color: #1a1a2e; }
+
+  /* SOLIDARITY BOX */
+  .solidarity-box {
+    background: #fff8e8;
+    border: 1px solid #e8b84b;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: #7a5a00;
+  }
+
+  /* PRINT MEDIA */
+  @media print {
+    body { background: white; padding: 0; font-size: 11px; }
+    .print-header { background: #1a1a2e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 14px 20px; border-radius: 0; }
+    .print-header-title { color: #e8b84b !important; }
+    .step-title { background: #1a1a2e !important; color: #e8b84b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section { break-inside: avoid; }
+    .q-block { break-inside: avoid; }
+    .conditional { break-inside: avoid; }
+    .print-body { border: none; border-radius: 0; padding: 16px; }
+    .solidarity-box { background: #fff8e8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-header">
+  <div>
+    <img src="assets/logo-dap.png" alt="DAP">
+  </div>
+  <div style="flex:1; padding: 0 20px;">
+    <div class="print-header-title">Demande d'offre — Assurance Auto</div>
+    <div class="print-header-sub">Formulaire à compléter et retourner à votre conseiller DAP</div>
+  </div>
+  <div class="print-date">
+    Date : ______ / ______ / __________
+  </div>
+</div>
+
+<div class="print-body">
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 1 : PRENEUR + CONDUCTEURS -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 1 — Preneur d'assurance &amp; Conducteurs</div>
+
+  <div class="section">
+    <div class="section-head">Section 1 — Preneur d'assurance</div>
+    <div class="section-body">
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Nom <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Prénom <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Date de naissance <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Téléphone <span class="req">*</span> <em style="font-weight:400;font-size:11px;">(04XX XX XX XX)</em></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Email <span class="req">*</span></span>
+        <div class="answer-line"></div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Adresse complète <span class="req">*</span> <em style="font-weight:400;font-size:11px;">(rue, numéro, code postal, commune)</em></span>
+        <div class="answer-area"></div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Profession / Statut <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Salarié</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Indépendant</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Fonctionnaire</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Étudiant</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Sans emploi</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Pensionné</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Numéro BCE <em style="font-weight:400;font-size:11px;">(si indépendant ou société — BE 0XXX.XXX.XXX)</em></span>
+        <div class="answer-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 2 — Conducteur habituel</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Le conducteur habituel est-il le preneur ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+      </div>
+
+      <div class="conditional">
+        <div class="cond-label">Si NON — Informations sur le conducteur habituel (si applicable)</div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Nom du conducteur habituel</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Prénom</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Date de naissance</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Date d'obtention du permis</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Lien avec le preneur</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Conjoint/Cohabitant</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Enfant</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Parent</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Sinistres responsables (5 dernières années)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Déchéance du droit à conduire (3 dernières années) ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+        <div class="conditional">
+          <div class="cond-label">Si OUI — Précisez (si applicable)</div>
+          <div class="q-block">
+            <span class="q-label">Motif et date de la déchéance</span>
+            <div class="answer-area"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 3 — Conducteur occasionnel</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Y a-t-il un conducteur occasionnel ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+
+      <div class="conditional">
+        <div class="cond-label">Si OUI — Informations sur le conducteur occasionnel (si applicable)</div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Nom</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Prénom</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Date de naissance</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Date d'obtention du permis</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Lien avec le preneur</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Conjoint/Cohabitant</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Enfant</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Parent</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Sinistres responsables (5 dernières années)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Déchéance du droit à conduire (3 dernières années) ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 2 : VÉHICULE -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 2 — Véhicule</div>
+
+  <div class="section">
+    <div class="section-head">Section 4 — Données du véhicule</div>
+    <div class="section-body">
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Marque <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Modèle <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="row-3">
+        <div class="q-block">
+          <span class="q-label">Puissance fiscale (kW) <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Date de 1ère mise en circulation <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Valeur catalogue HTVA (€) <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Carburant <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Essence</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Diesel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Hybride</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Hybride rechargeable</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Électrique</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> GPL</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Usage du véhicule <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Privé uniquement</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Privé + trajets domicile-travail</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Professionnel occasionnel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Professionnel intensif</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Kilométrage annuel estimé <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Moins de 10 000 km</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> 10 000 – 20 000 km</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> 20 000 – 30 000 km</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Plus de 30 000 km</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Kilométrage limité contractuellement souhaité ?</span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Options / équipements spéciaux à déclarer <em style="font-weight:400;font-size:11px;">(GPS, jantes, toit ouvrant...)</em></span>
+        <div class="answer-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 3 : SINISTRES + ASSURANCE -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 3 — Sinistres &amp; Assurance actuelle</div>
+
+  <div class="section">
+    <div class="section-head">Section 5 — Antécédents sinistres</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Nombre de sinistres déclarés au cours des 5 dernières années <span class="req">*</span></span>
+        <div class="answer-line-sm"></div>
+      </div>
+
+      <div class="conditional">
+        <div class="cond-label">Si au moins 1 sinistre — Détails des sinistres (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Date(s) du ou des sinistres <em style="font-weight:400;font-size:11px;">(une par ligne si plusieurs)</em></span>
+          <div class="answer-area"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Montant(s) total(aux) réglé(s) par l'assureur (€)</span>
+          <div class="answer-area"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Votre responsabilité était-elle engagée ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Entièrement responsable</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Partiellement responsable</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non responsable</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Description succincte des sinistres</span>
+          <div class="answer-area"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 6 — Assurance actuelle</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Êtes-vous actuellement assuré(e) pour ce véhicule ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+
+      <div class="conditional">
+        <div class="cond-label">Si OUI — Informations sur l'assurance actuelle (si applicable)</div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Compagnie actuelle</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Numéro de contrat</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Prime annuelle actuelle (€)</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Date d'échéance du contrat</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Motif du changement</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Prix</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Couverture insuffisante</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Service</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Résiliation par l'assureur</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 4 : COUVERTURES + PAIEMENT + SOLIDARITY -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 4 — Couvertures &amp; Finalisation</div>
+
+  <div class="section">
+    <div class="section-head">Section 7 — Couvertures souhaitées</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Formule souhaitée <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> RC (obligatoire) uniquement</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> RC + Mini omnium</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> RC + Omnium complète</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Options supplémentaires souhaitées</span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Assistance</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Protection juridique</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Conducteur</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Objets dans le véhicule</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 8 — Paiement</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Fréquence de paiement souhaitée <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Annuel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Semestriel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Mensuel</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">IBAN pour domiciliation <em style="font-weight:400;font-size:11px;">(BE XX XXXX XXXX XXXX)</em></span>
+        <div class="answer-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 9 — DAP Solidarity</div>
+    <div class="section-body">
+      <div class="solidarity-box">
+        DAP reverse 10 % de sa commission à une association caritative de votre choix. Veuillez cocher l'association que vous souhaitez soutenir :
+      </div>
+      <div class="q-block">
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Un Pas de Côté</strong> — Aide aux personnes en transition de vie</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Le Pont des Arts</strong> — Accès à la culture pour tous</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Stop Harcèlement</strong> — Lutte contre le harcèlement scolaire et en ligne</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Union des Artistes</strong> — Soutien aux artistes indépendants</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>L'Ilot</strong> — Accompagnement des personnes sans-abri</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Co-Construire</strong> — Projets d'économie sociale et solidaire</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Dynamo International</strong> — Travail de rue et aide à la jeunesse</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Remarques</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Remarques ou informations complémentaires</span>
+        <div class="answer-area" style="min-height:70px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div style="margin-top:20px;">
+    <div class="q-block">
+      <span class="q-label">Signature du souscripteur :</span>
+      <div style="border-bottom:1px solid #999; min-height:50px; margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <div class="print-footer">
+    <strong>DAP Courtage d'assurances</strong> — Confidentiel — Document réservé à l'usage interne
+  </div>
+
+</div>
+</body>
+</html>

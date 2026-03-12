@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formation PCP — Certification Certassur Assurances Belgique</title>
+<style>
+:root {
+  --blue-dark:#1a2f5e; --blue:#2563eb; --blue-light:#dbeafe; --blue-mid:#eff6ff;
+  --green:#16a34a; --green-light:#dcfce7;
+  --orange:#ea580c; --orange-light:#fff7ed;
+  --purple:#7c3aed; --purple-light:#ede9fe;
+  --red:#dc2626; --red-light:#fee2e2;
+  --yellow:#ca8a04; --yellow-light:#fefce8;
+  --gray:#6b7280; --gray-light:#f8fafc;
+  --sidebar:260px;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 24px rgba(0,0,0,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.65;display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--blue-dark);color:white;position:fixed;top:0;left:0;overflow-y:auto;z-index:200;display:flex;flex-direction:column;}
+.sidebar-logo{padding:20px 20px 14px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sidebar-logo .logo-title{font-size:1rem;font-weight:800;color:white;margin-bottom:2px;}
+.sidebar-logo .logo-sub{font-size:0.72rem;color:rgba(255,255,255,0.5);}
+.sidebar-section{padding:14px 12px 4px;font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.35);}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:0.83rem;color:rgba(255,255,255,0.75);border-radius:8px;margin:2px 8px;transition:all 0.15s;border:none;background:none;width:calc(100% - 16px);text-align:left;}
+.nav-item:hover{background:rgba(255,255,255,0.1);color:white;}
+.nav-item.active{background:rgba(255,255,255,0.15);color:white;font-weight:700;}
+.nav-item .nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
+.nav-item .nav-check{margin-left:auto;font-size:0.75rem;opacity:0.6;}
+.nav-item.done .nav-check{color:#4ade80;opacity:1;}
+.sidebar-bottom{margin-top:auto;padding:16px;border-top:1px solid rgba(255,255,255,0.1);}
+.btn-exam-link{display:block;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:white;text-align:center;padding:10px;border-radius:10px;font-size:0.82rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-exam-link:hover{background:rgba(255,255,255,0.2);}
+
+/* ── MAIN ── */
+main{margin-left:var(--sidebar);flex:1;padding:40px 48px 80px;max-width:calc(100% - var(--sidebar));}
+
+/* ── PAGE HEADER ── */
+.page-header{margin-bottom:32px;}
+.page-badge{display:inline-block;font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:4px 12px;border-radius:20px;margin-bottom:10px;}
+.badge-m1{background:var(--blue-light);color:var(--blue);}
+.badge-m2{background:var(--orange-light);color:var(--orange);}
+.badge-memo{background:var(--green-light);color:var(--green);}
+.badge-dash{background:var(--purple-light);color:var(--purple);}
+.page-title{font-size:1.9rem;font-weight:900;color:var(--blue-dark);margin-bottom:6px;}
+.page-sub{color:var(--gray);font-size:0.95rem;}
+
+/* ── CONTENT BLOCKS ── */
+.section-title{font-size:1.2rem;font-weight:800;color:var(--blue-dark);margin:36px 0 16px;padding-bottom:8px;border-bottom:3px solid var(--blue-light);display:flex;align-items:center;gap:10px;}
+.section-title .stag{font-size:0.7rem;background:var(--blue-light);color:var(--blue);padding:3px 10px;border-radius:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+h4{font-size:1rem;font-weight:700;color:#334155;margin:20px 0 10px;}
+
+p{margin-bottom:12px;font-size:0.95rem;}
+ul,ol{margin:0 0 14px 20px;font-size:0.95rem;}
+li{margin-bottom:5px;}
+strong{font-weight:700;}
+
+/* BOXES */
+.box{border-radius:12px;padding:18px 20px;margin-bottom:18px;}
+.box-def{background:var(--blue-mid);border-left:4px solid var(--blue);}
+.box-def .box-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--blue);margin-bottom:6px;}
+.box-key{background:var(--yellow-light);border-left:4px solid var(--yellow);color:#713f12;}
+.box-key .box-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--yellow);margin-bottom:6px;}
+.box-warn{background:var(--red-light);border-left:4px solid var(--red);color:#7f1d1d;}
+.box-warn .box-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--red);margin-bottom:6px;}
+.box-ok{background:var(--green-light);border-left:4px solid var(--green);color:#14532d;}
+.box-ok .box-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--green);margin-bottom:6px;}
+.box-memo{background:#fdf4ff;border-left:4px solid var(--purple);color:#4c1d95;}
+.box-memo .box-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--purple);margin-bottom:6px;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:0.88rem;background:white;border-radius:12px;overflow:hidden;box-shadow:var(--shadow);}
+th{background:#f1f5f9;font-weight:700;padding:10px 14px;text-align:left;color:#475569;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #e2e8f0;}
+td{padding:10px 14px;border-bottom:1px solid #f1f5f9;vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+.tag-green{background:var(--green-light);color:var(--green);font-size:0.78rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;}
+.tag-blue{background:var(--blue-light);color:var(--blue);font-size:0.78rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;}
+.tag-orange{background:var(--orange-light);color:var(--orange);font-size:0.78rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;}
+.tag-red{background:var(--red-light);color:var(--red);font-size:0.78rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;}
+.tag-purple{background:var(--purple-light);color:var(--purple);font-size:0.78rem;font-weight:700;padding:2px 8px;border-radius:8px;white-space:nowrap;}
+
+/* GRID */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;}
+
+/* CARD */
+.card{background:white;border-radius:14px;padding:20px;box-shadow:var(--shadow);}
+.card-icon{font-size:1.8rem;margin-bottom:10px;}
+.card-title{font-size:0.9rem;font-weight:700;color:var(--blue-dark);margin-bottom:6px;}
+.card-desc{font-size:0.83rem;color:var(--gray);}
+
+/* DONE BUTTON */
+.done-btn{display:block;width:100%;margin-top:36px;padding:14px;border-radius:12px;border:2px dashed #cbd5e1;background:none;cursor:pointer;color:var(--gray);font-size:0.88rem;font-weight:600;transition:all 0.2s;text-align:center;}
+.done-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-light);}
+.done-btn.marked{border-color:var(--green);background:var(--green-light);color:var(--green);}
+
+/* DASHBOARD */
+.dash-progress{background:white;border-radius:16px;padding:24px;box-shadow:var(--shadow);margin-bottom:28px;}
+.progress-row{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.progress-label-txt{font-size:0.85rem;font-weight:600;color:#334155;width:180px;flex-shrink:0;}
+.progress-track{flex:1;height:10px;background:#e2e8f0;border-radius:5px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:5px;transition:width 0.4s;}
+.fill-blue{background:var(--blue);}
+.fill-green{background:var(--green);}
+.progress-pct{font-size:0.8rem;font-weight:700;color:var(--gray);width:40px;text-align:right;}
+
+.dash-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.dash-stat{background:white;border-radius:14px;padding:20px;text-align:center;box-shadow:var(--shadow);}
+.dash-stat .ds-val{font-size:2rem;font-weight:900;color:var(--blue-dark);}
+.dash-stat .ds-lbl{font-size:0.75rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;margin-top:4px;}
+
+/* MEMO CARDS */
+.memo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+.memo-card{background:white;border-radius:12px;padding:16px;box-shadow:var(--shadow);border-top:4px solid var(--blue);}
+.memo-card.green{border-top-color:var(--green);}
+.memo-card.orange{border-top-color:var(--orange);}
+.memo-card.purple{border-top-color:var(--purple);}
+.memo-card.red{border-top-color:var(--red);}
+.memo-notion{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--gray);margin-bottom:6px;}
+.memo-val{font-size:1rem;font-weight:800;color:var(--blue-dark);}
+.memo-sub{font-size:0.78rem;color:var(--gray);margin-top:4px;}
+
+/* PAGES hidden */
+.page{display:none;}
+.page.active{display:block;}
+
+hr{border:none;border-top:2px solid #f1f5f9;margin:32px 0;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-title">📚 Formation PCP</div>
+    <div class="logo-sub">Certassur · Assurances Belgique 2026</div>
+  </div>
+
+  <div class="sidebar-section">Tableau de bord</div>
+  <button class="nav-item active" onclick="nav('dashboard')"><span class="nav-icon">🏠</span> Tableau de bord</button>
+
+  <div class="sidebar-section">Module 1.1 — Marché & Contrat</div>
+  <button class="nav-item" onclick="nav('m11-marche')"><span class="nav-icon">🏛️</span> A. Le marché belge<span class="nav-check" id="chk-m11-marche">○</span></button>
+  <button class="nav-item" onclick="nav('m11-contrat')"><span class="nav-icon">📄</span> B. Le contrat — Bases<span class="nav-check" id="chk-m11-contrat">○</span></button>
+  <button class="nav-item" onclick="nav('m11-vie')"><span class="nav-icon">🔄</span> C. Vie du contrat<span class="nav-check" id="chk-m11-vie">○</span></button>
+  <button class="nav-item" onclick="nav('m11-sinistre')"><span class="nav-icon">🔥</span> D. Sinistre & Fin<span class="nav-check" id="chk-m11-sinistre">○</span></button>
+  <button class="nav-item" onclick="nav('m11-produits')"><span class="nav-icon">🛡️</span> E. Produits clés<span class="nav-check" id="chk-m11-produits">○</span></button>
+
+  <div class="sidebar-section">Module 1.2 — Règles & Conduite</div>
+  <button class="nav-item" onclick="nav('m12-distrib')"><span class="nav-icon">🤝</span> A. Distribution<span class="nav-check" id="chk-m12-distrib">○</span></button>
+  <button class="nav-item" onclick="nav('m12-cde')"><span class="nav-icon">👤</span> B. Protection conso.<span class="nav-check" id="chk-m12-cde">○</span></button>
+  <button class="nav-item" onclick="nav('m12-rgpd')"><span class="nav-icon">🔐</span> C. RGPD<span class="nav-check" id="chk-m12-rgpd">○</span></button>
+  <button class="nav-item" onclick="nav('m12-lba')"><span class="nav-icon">🚨</span> D. Blanchiment (LBA)<span class="nav-check" id="chk-m12-lba">○</span></button>
+  <button class="nav-item" onclick="nav('m12-conduite')"><span class="nav-icon">⚖️</span> E. Règles de conduite<span class="nav-check" id="chk-m12-conduite">○</span></button>
+
+  <div class="sidebar-section">Révision</div>
+  <button class="nav-item" onclick="nav('memo')"><span class="nav-icon">⚡</span> Fiches mémo</button>
+
+  <div class="sidebar-bottom">
+    <a class="btn-exam-link" href="SIMULATION-EXAMEN-PCP.html" target="_blank">📋 Lancer la simulation d'examen →</a>
+  </div>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<main>
+
+<!-- ═══════════════════ DASHBOARD ═══════════════════ -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <span class="page-badge badge-dash">Tableau de bord</span>
+    <div class="page-title">Bienvenue dans ta formation PCP</div>
+    <div class="page-sub">Suis ta progression et prépare-toi efficacement à l'examen Certassur.</div>
+  </div>
+
+  <div class="dash-stat-grid">
+    <div class="dash-stat"><div class="ds-val">2</div><div class="ds-lbl">Examens à passer</div></div>
+    <div class="dash-stat"><div class="ds-val">20</div><div class="ds-lbl">Questions / examen</div></div>
+    <div class="dash-stat"><div class="ds-val">60%</div><div class="ds-lbl">Seuil de réussite</div></div>
+    <div class="dash-stat"><div class="ds-val">60min</div><div class="ds-lbl">Durée / examen</div></div>
+  </div>
+
+  <div class="dash-progress">
+    <h4 style="margin-top:0;margin-bottom:20px;">Ta progression</h4>
+    <div class="progress-row"><span class="progress-label-txt">Module 1.1 — Marché & Contrat</span><div class="progress-track"><div class="progress-fill fill-blue" id="prog-m11" style="width:0%"></div></div><span class="progress-pct" id="pct-m11">0%</span></div>
+    <div class="progress-row"><span class="progress-label-txt">Module 1.2 — Règles & Conduite</span><div class="progress-track"><div class="progress-fill fill-green" id="prog-m12" style="width:0%"></div></div><span class="progress-pct" id="pct-m12">0%</span></div>
+  </div>
+
+  <div class="box box-def">
+    <div class="box-label">Stratégie pour passer rapidement</div>
+    <strong>1.</strong> Lis chaque section (sidebar gauche) dans l'ordre.<br>
+    <strong>2.</strong> Clique "Section terminée ✓" à la fin de chaque leçon.<br>
+    <strong>3.</strong> Consulte les <strong>Fiches mémo</strong> pour réviser les chiffres clés.<br>
+    <strong>4.</strong> Lance la <strong>simulation d'examen</strong> pour tester tes connaissances.<br>
+    <strong>5.</strong> Répète la simulation jusqu'à obtenir 16+/20 de manière constante, puis passe l'examen réel.
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="border-top:4px solid var(--blue);">
+      <div class="card-icon">⚖️</div>
+      <div class="card-title">Examen 1.1 — Marché & Contrat</div>
+      <div class="card-desc">Loi du 4 avril 2014, BNB/FSMA, parties au contrat, sinistre, résiliation, prescription.</div>
+      <br><button class="nav-item" style="margin:0;padding:8px 12px;font-size:0.82rem;" onclick="nav('m11-marche')">→ Commencer le module 1.1</button>
+    </div>
+    <div class="card" style="border-top:4px solid var(--green);">
+      <div class="card-icon">🔒</div>
+      <div class="card-title">Examen 1.2 — Règles & Conduite</div>
+      <div class="card-desc">DDA, IPID, AssurMiFID, LBA, RGPD, FSMA inscription, protection du consommateur.</div>
+      <br><button class="nav-item" style="margin:0;padding:8px 12px;font-size:0.82rem;" onclick="nav('m12-distrib')">→ Commencer le module 1.2</button>
+    </div>
+  </div>
+
+  <div class="box box-key">
+    <div class="box-label">À retenir absolument</div>
+    <strong>PCP = Personne en Contact avec le Public</strong> → seulement les modules 1.1 + 1.2 sont obligatoires.<br>
+    Le <strong>Responsable de Distribution (RD)</strong> doit en plus réussir les modules 2, 3 ou 4 selon les produits distribués.
+  </div>
+</div>
+
+<!-- ═══════════════════ M1.1 — A. MARCHÉ ═══════════════════ -->
+<div class="page" id="page-m11-marche">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.1 · Section A</span>
+    <div class="page-title">Le marché belge de l'assurance</div>
+    <div class="page-sub">Structure du marché · BNB vs FSMA · Licence unique européenne</div>
+  </div>
+
+  <div class="section-title">🏛️ Structure du marché <span class="stag">Objectifs 1–4</span></div>
+
+  <h4>Les 3 formes de distribution</h4>
+  <div class="grid3">
+    <div class="card" style="border-top:4px solid var(--blue);">
+      <div class="card-icon">🤝</div>
+      <div class="card-title">Réseau non exclusif</div>
+      <div class="card-desc"><strong>Courtiers</strong> — indépendants, travaillent pour le compte du preneur. Peuvent placer chez plusieurs compagnies.</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--orange);">
+      <div class="card-icon">🏢</div>
+      <div class="card-title">Réseau exclusif</div>
+      <div class="card-desc"><strong>Agents</strong> — mandataires d'une ou plusieurs compagnies. Liés par contrat d'agence.</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--green);">
+      <div class="card-icon">💻</div>
+      <div class="card-title">Assureurs en direct</div>
+      <div class="card-desc"><strong>Vente directe</strong> — sans intermédiaire. Online, agences propres, banques (bancassurance).</div>
+    </div>
+  </div>
+
+  <div class="section-title">⚖️ BNB vs FSMA — à ne pas confondre !</div>
+
+  <table>
+    <thead><tr><th>Autorité</th><th>Rôle principal</th><th>Ce qu'elle contrôle</th></tr></thead>
+    <tbody>
+      <tr><td><strong>BNB</strong><br><small>Banque Nationale de Belgique</small></td><td>Contrôle <strong>prudentiel</strong></td><td>Solvabilité et solidité financière des <strong>entreprises d'assurances</strong>. S'assure que la compagnie peut tenir ses engagements.</td></tr>
+      <tr><td><strong>FSMA</strong><br><small>Financial Services and Markets Authority</small></td><td>Contrôle de la <strong>conduite des marchés</strong></td><td>Les <strong>intermédiaires</strong> (registre, agrément), les règles de conduite, les produits et leur commercialisation, la protection des consommateurs.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box box-warn">
+    <div class="box-label">Piège d'examen fréquent</div>
+    La BNB surveille <strong>les compagnies</strong> (solvabilité). La FSMA surveille <strong>les intermédiaires</strong> et la conduite des marchés. Ne pas inverser les deux !
+  </div>
+
+  <div class="section-title">🌍 Licence unique & Home Country Control</div>
+
+  <div class="box box-def">
+    <div class="box-label">Licence unique (Single Licence)</div>
+    Une entreprise d'assurances qui obtient l'agrément dans <strong>un État membre de l'EEE</strong> peut exercer dans <strong>toute l'Union européenne</strong> sans devoir obtenir un nouvel agrément dans chaque pays.
+  </div>
+
+  <div class="box box-def">
+    <div class="box-label">Home Country Control (contrôle du pays d'origine)</div>
+    C'est le pays où la compagnie a son siège social qui est responsable du contrôle prudentiel, même quand elle opère dans d'autres États membres. Ex : un assureur irlandais qui vend en Belgique reste contrôlé par l'autorité irlandaise.
+  </div>
+
+  <div class="box box-ok">
+    <div class="box-label">En pratique</div>
+    Deux modes d'exercice en dehors du pays d'origine :<br>
+    <strong>1. Libre Prestation de Services (LPS)</strong> — depuis son pays, sans s'établir physiquement à l'étranger.<br>
+    <strong>2. Liberté d'établissement</strong> — via une succursale ou agence dans l'autre État.
+  </div>
+
+  <button class="done-btn" id="btn-m11-marche" onclick="markDone('m11-marche')">✓ Section terminée — passer à la suivante</button>
+</div>
+
+<!-- ═══════════════════ M1.1 — B. CONTRAT BASES ═══════════════════ -->
+<div class="page" id="page-m11-contrat">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.1 · Section B</span>
+    <div class="page-title">Le contrat d'assurance — Bases</div>
+    <div class="page-sub">Loi du 4 avril 2014 · Caractéristiques · Parties · Types</div>
+  </div>
+
+  <div class="section-title">📜 La loi du 4 avril 2014 <span class="stag">À maîtriser</span></div>
+
+  <div class="box box-def">
+    <div class="box-label">Champ d'application</div>
+    La loi du 4 avril 2014 s'applique à <strong>toutes les assurances terrestres belges</strong>.<br><br>
+    <strong>Exclusions importantes :</strong> assurances maritimes (corps, marchandises), fluviales, aériennes et de transport international.
+  </div>
+
+  <div class="box box-key">
+    <div class="box-label">Caractère impératif — crucial pour l'examen</div>
+    Les dispositions de la loi sont <strong>impératives</strong> : elles protègent le preneur et l'assuré. Toute clause contractuelle qui y déroge à leur détriment est <strong>nulle</strong> et remplacée automatiquement par la disposition légale. Les parties ne peuvent pas y renoncer à l'avance.
+  </div>
+
+  <div class="section-title">📋 Caractéristiques du contrat</div>
+
+  <div class="grid3">
+    <div class="box box-def" style="margin-bottom:0;">
+      <div class="box-label">Synallagmatique</div>
+      Obligations <strong>réciproques</strong> : le preneur paie la prime ↔ l'assureur couvre le risque.
+    </div>
+    <div class="box box-def" style="margin-bottom:0;">
+      <div class="box-label">Onéreux</div>
+      Le preneur verse une <strong>contrepartie</strong> (la prime) en échange de la couverture.
+    </div>
+    <div class="box box-def" style="margin-bottom:0;">
+      <div class="box-label">Aléatoire</div>
+      La prestation de l'assureur dépend d'un <strong>événement incertain</strong> (le sinistre peut ou non survenir).
+    </div>
+  </div>
+  <br>
+  <div class="box box-def">
+    <div class="box-label">Intérêt d'assurance — condition de validité</div>
+    Le preneur doit avoir un <strong>intérêt patrimonial</strong> à la non-réalisation du sinistre. Sans intérêt d'assurance, le contrat est <strong>nul</strong>. Exemple : on ne peut pas assurer la maison d'un voisin contre l'incendie si on n'y a aucun intérêt.
+  </div>
+
+  <div class="section-title">👥 Les parties au contrat</div>
+
+  <table>
+    <thead><tr><th>Partie</th><th>Définition</th><th>Exemple</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Preneur d'assurance</strong></td><td>Souscrit le contrat et <strong>paie la prime</strong></td><td>Le propriétaire qui signe la police incendie</td></tr>
+      <tr><td><strong>Assuré</strong></td><td>Personne dont le <strong>risque est couvert</strong></td><td>Peut être la même personne que le preneur</td></tr>
+      <tr><td><strong>Bénéficiaire</strong></td><td>Reçoit la <strong>prestation</strong> en cas de sinistre</td><td>Désigné dans la police (ex: conjoint en assurance vie)</td></tr>
+      <tr><td><strong>Personne lésée</strong></td><td>Victime en <strong>RC</strong> — tiers lésé</td><td>Le piéton renversé en RC auto</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box box-memo">
+    <div class="box-label">Triangle d'identité (assurance vie)</div>
+    Quand <strong>Preneur = Assuré = Bénéficiaire vie</strong> : condition pour l'exonération fiscale de la branche 23 ET pour éviter les droits de succession (le preneur reçoit son propre argent).
+  </div>
+
+  <div class="section-title">🔀 Types d'assurances</div>
+
+  <table>
+    <thead><tr><th>Critère</th><th>Assurance indemnitaire</th><th>Assurance forfaitaire</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Principe</strong></td><td>La prestation est limitée au <strong>préjudice réel</strong></td><td>La prestation est fixée <strong>à l'avance</strong> dans le contrat</td></tr>
+      <tr><td><strong>Application</strong></td><td>Assurances de <strong>dommages</strong> (incendie, RC, auto…)</td><td>Assurances de <strong>personnes</strong> (vie, accidents corporels…)</td></tr>
+      <tr><td><strong>Exemple</strong></td><td>Incendie : indemnité = valeur des dégâts</td><td>Accidents : capital décès fixé à 100.000 € dans la police</td></tr>
+      <tr><td><strong>Enrichissement possible ?</strong></td><td><span class="tag-red">NON — principe indemnitaire</span></td><td><span class="tag-green">OUI — la prestation ne dépend pas du dommage réel</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">📑 Les documents du contrat</div>
+
+  <table>
+    <thead><tr><th>Document</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Proposition d'assurance</strong></td><td>Offre du preneur → l'assureur peut accepter ou refuser</td></tr>
+      <tr><td><strong>Police d'assurance</strong></td><td>Le <strong>contrat définitif</strong> — constate les droits et obligations des parties</td></tr>
+      <tr><td><strong>Conditions générales (CG)</strong></td><td>Clauses <strong>standardisées</strong> pour tous les contrats du même type</td></tr>
+      <tr><td><strong>Conditions particulières (CP)</strong></td><td>Clauses <strong>personnalisées</strong> pour l'assuré (montant, franchise, options…)</td></tr>
+      <tr><td><strong>Avenant</strong></td><td><strong>Modification</strong> d'un contrat en cours</td></tr>
+      <tr><td><strong>Note de couverture</strong></td><td>Preuve provisoire de couverture avant l'émission de la police</td></tr>
+    </tbody>
+  </table>
+
+  <button class="done-btn" id="btn-m11-contrat" onclick="markDone('m11-contrat')">✓ Section terminée — passer à la suivante</button>
+</div>
+
+<!-- ═══════════════════ M1.1 — C. VIE DU CONTRAT ═══════════════════ -->
+<div class="page" id="page-m11-vie">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.1 · Section C</span>
+    <div class="page-title">Vie du contrat</div>
+    <div class="page-sub">Déclaration du risque · Inexactitudes · Aggravation · Prime · Sous/Surassurance · Subrogation</div>
+  </div>
+
+  <div class="section-title">📋 Déclaration du risque à la souscription</div>
+
+  <p>Le preneur a une <strong>obligation de déclaration sincère et complète</strong> lors de la souscription. Il doit déclarer toutes les circonstances qu'il connaît et qui sont pertinentes pour l'assureur.</p>
+
+  <table>
+    <thead><tr><th>Situation</th><th>Bonne foi</th><th>Mauvaise foi (intention de tromper)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Omission ou inexactitude</strong></td><td>Adaptation de prime OU réduction proportionnelle de la prestation</td><td><span class="tag-red">Nullité du contrat</span> + conservation des primes + refus de prestation</td></tr>
+      <tr><td><strong>Découverte avant sinistre</strong></td><td>Résiliation possible ou adaptation</td><td>Résiliation immédiate + poursuite possible</td></tr>
+      <tr><td><strong>Après sinistre</strong></td><td>Règle de proportionnalité</td><td>Refus total de prestation</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">⬆️ Aggravation du risque en cours de contrat</div>
+
+  <div class="box box-def">
+    <div class="box-label">Obligation du preneur</div>
+    Si le risque s'aggrave <strong>de manière nouvelle et significative</strong> en cours de contrat, le preneur doit en informer l'assureur <strong>sans délai</strong> (ou dans le délai contractuel prévu, généralement 1 mois).
+  </div>
+
+  <div class="grid2">
+    <div class="box box-ok" style="margin-bottom:0;">
+      <div class="box-label">Conséquences possibles pour l'assureur</div>
+      <ul>
+        <li>Adaptation de la prime ou des garanties</li>
+        <li>En cas de désaccord : résiliation du contrat</li>
+      </ul>
+    </div>
+    <div class="box box-warn" style="margin-bottom:0;">
+      <div class="box-label">Diminution du risque</div>
+      Le preneur peut demander une <strong>réduction de prime</strong>. Si l'assureur refuse, le preneur peut résilier.
+    </div>
+  </div>
+  <br>
+
+  <div class="section-title">💰 Le paiement de la prime</div>
+
+  <table>
+    <thead><tr><th>Étape</th><th>Délai / règle</th></tr></thead>
+    <tbody>
+      <tr><td>Prime exigible à la date convenue</td><td>Obligation contractuelle du preneur</td></tr>
+      <tr><td>Mise en demeure par l'assureur</td><td>Si non-paiement → mise en demeure formelle</td></tr>
+      <tr><td><strong>Suspension de la garantie</strong></td><td><strong>30 jours</strong> après la mise en demeure</td></tr>
+      <tr><td>Résiliation possible</td><td>Après suspension, si prime toujours impayée</td></tr>
+      <tr><td>Intérêts de retard</td><td>Au <strong>double du taux légal</strong> en cas de retard de paiement de l'assureur</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">📉 Sous-assurance — règle de proportionnalité</div>
+
+  <div class="box box-warn">
+    <div class="box-label">Définition</div>
+    Il y a sous-assurance quand la <strong>valeur assurée est inférieure à la valeur réelle</strong> du bien. L'assuré est alors son propre assureur pour la partie non couverte.
+  </div>
+
+  <div class="box box-key">
+    <div class="box-label">Formule clé</div>
+    <strong>Indemnité = Dommage × (Valeur assurée / Valeur réelle)</strong><br><br>
+    Exemple : bien assuré 500K€, valeur réelle 800K€, dommage 200K€<br>
+    → Indemnité = 200.000 × (500/800) = <strong>125.000 €</strong> seulement
+  </div>
+
+  <div class="section-title">📈 Surassurance</div>
+
+  <table>
+    <thead><tr><th>Type</th><th>Règle</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bonne foi</strong></td><td>L'assureur réduit la prime pour l'avenir. L'indemnité ne peut jamais dépasser la valeur réelle (principe indemnitaire).</td></tr>
+      <tr><td><strong>Mauvaise foi</strong> (fraude)</td><td>Le contrat peut être annulé. L'assureur conserve les primes.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">🔄 Subrogation</div>
+
+  <div class="box box-def">
+    <div class="box-label">Principe</div>
+    Après avoir indemnisé l'assuré, l'assureur est <strong>subrogé dans les droits</strong> de l'assuré : il peut exercer un recours contre le <strong>tiers responsable</strong> du sinistre pour récupérer les sommes versées.<br><br>
+    <strong>Limite :</strong> L'assureur ne peut pas se retourner contre les membres de la famille de l'assuré vivant sous le même toit (sauf en cas d'acte intentionnel).
+  </div>
+
+  <div class="section-title">🔗 Coassurance</div>
+
+  <div class="box box-def">
+    <div class="box-label">Définition</div>
+    Plusieurs assureurs couvrent <strong>conjointement</strong> un même risque, chacun pour sa quote-part. L'un d'eux est désigné <strong>apériteur</strong> (chef de file) pour gérer le contrat et les sinistres au nom des autres. Courante pour les grands risques industriels.<br><br>
+    <strong>Important :</strong> pas de solidarité entre coassureurs — chacun ne répond que de sa quote-part.
+  </div>
+
+  <button class="done-btn" id="btn-m11-vie" onclick="markDone('m11-vie')">✓ Section terminée — passer à la suivante</button>
+</div>
+
+<!-- ═══════════════════ M1.1 — D. SINISTRE & FIN ═══════════════════ -->
+<div class="page" id="page-m11-sinistre">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.1 · Section D</span>
+    <div class="page-title">Sinistre, Résiliation & Plaintes</div>
+    <div class="page-sub">Obligations après sinistre · Exclusions · Résiliation · Prescription · Ombudsman</div>
+  </div>
+
+  <div class="section-title">🔥 Obligations du preneur après un sinistre</div>
+
+  <div class="grid2">
+    <div class="box box-key" style="margin-bottom:0;">
+      <div class="box-label">1. Déclarer le sinistre dans les délais</div>
+      Délais variables selon le type de sinistre (contractuels). Exemples courants :<br>
+      <strong>Vol</strong> → 48h / <strong>Incendie</strong> → 8 jours<br>
+      En tout cas : <strong>sans délai dès qu'il en a connaissance</strong>.
+    </div>
+    <div class="box box-key" style="margin-bottom:0;">
+      <div class="box-label">2. Mesures conservatoires</div>
+      Prendre toutes les mesures pour <strong>limiter l'étendue des dommages</strong>. Ne pas aggraver la situation. Conserver les preuves.
+    </div>
+  </div>
+  <br>
+
+  <div class="section-title">🚫 Exclusions légales générales</div>
+
+  <table>
+    <thead><tr><th>Exclusion</th><th>Règle</th><th>Exception</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Acte intentionnel</strong> de l'assuré</td><td>Jamais couverts</td><td>—</td></tr>
+      <tr><td><strong>Faute lourde</strong> de l'assuré</td><td>Peut être exclue par la police</td><td>RC auto : la faute lourde du preneur est couverte vis-à-vis des victimes</td></tr>
+      <tr><td><strong>Guerre</strong>, émeutes</td><td>Exclus en principe</td><td>Certaines polices peuvent couvrir les émeutes</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">🔚 La résiliation du contrat</div>
+
+  <table>
+    <thead><tr><th>Forme</th><th>Qui peut résilier ?</th><th>Quand ?</th></tr></thead>
+    <tbody>
+      <tr><td><strong>À l'échéance</strong></td><td>Preneur ET assureur</td><td>Avec préavis de 3 mois (courants)</td></tr>
+      <tr><td><strong>Après sinistre</strong></td><td>Preneur ET assureur</td><td>Dans le mois suivant le paiement / refus de la prestation</td></tr>
+      <tr><td><strong>En cours de contrat</strong></td><td>Les deux parties (accord mutuel, aggravation, non-paiement, etc.)</td><td>Selon les conditions légales ou contractuelles</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box box-key">
+    <div class="box-label">Durée du contrat</div>
+    Durée standard : <strong>1 an renouvelable tacitement</strong>.<br>
+    Renouvellement automatique sauf résiliation dans les délais.<br>
+    La loi plafonne certains contrats (ex : vie individuelle) et impose des droits de résiliation minimaux.
+  </div>
+
+  <div class="section-title">⏰ Prescription</div>
+
+  <div class="box box-def">
+    <div class="box-label">Délai légal</div>
+    <strong>3 ans</strong> — c'est le délai de prescription général pour les actions nées du contrat d'assurance (loi du 4 avril 2014). Après ce délai, toute action est irrecevable.
+  </div>
+
+  <div class="section-title">📣 Traitement des plaintes</div>
+
+  <table>
+    <thead><tr><th>Plainte concernant</th><th>Organisme compétent</th></tr></thead>
+    <tbody>
+      <tr><td>Assurance en général (contrat, sinistre, intermédiaire)</td><td><strong>Ombudsman des Assurances</strong> — gratuit, par écrit, avis non contraignant mais suivi en pratique</td></tr>
+      <tr><td>Pensions complémentaires</td><td><strong>FSMA</strong></td></tr>
+      <tr><td>Accidents du travail</td><td><strong>Fedris</strong> (Fonds des accidents du travail)</td></tr>
+      <tr><td>Conduite du distributeur</td><td><strong>FSMA</strong> (peut sanctionner)</td></tr>
+    </tbody>
+  </table>
+
+  <button class="done-btn" id="btn-m11-sinistre" onclick="markDone('m11-sinistre')">✓ Section terminée — passer à la suivante</button>
+</div>
+
+<!-- ═══════════════════ M1.1 — E. PRODUITS CLÉS ═══════════════════ -->
+<div class="page" id="page-m11-produits">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.1 · Section E</span>
+    <div class="page-title">Les produits d'assurance clés</div>
+    <div class="page-sub">RC · Incendie · Personnes · Vie — aperçu des produits du marché belge</div>
+  </div>
+
+  <div class="section-title">🚗 Responsabilités civiles</div>
+
+  <table>
+    <thead><tr><th>Produit</th><th>Ce que ça couvre</th><th>Obligatoire ?</th></tr></thead>
+    <tbody>
+      <tr><td><strong>RC Auto</strong></td><td>Dommages corporels et matériels causés à des tiers par le véhicule</td><td><span class="tag-red">OUI — loi 21/11/1989</span></td></tr>
+      <tr><td><strong>RC Vie privée (familiale)</strong></td><td>Dommages causés à des tiers dans la vie privée (preneur + ménage)</td><td><span class="tag-orange">NON (fortement recommandée)</span></td></tr>
+      <tr><td><strong>RC Locative</strong></td><td>Dommages au bien loué dont le locataire est responsable vis-à-vis du propriétaire</td><td><span class="tag-orange">Souvent imposée par le bail</span></td></tr>
+      <tr><td><strong>RC Entreprise</strong></td><td>Dommages causés par l'activité professionnelle de l'entreprise</td><td><span class="tag-orange">NON (sauf secteurs)</span></td></tr>
+      <tr><td><strong>RC Professionnelle</strong></td><td>Fautes professionnelles (courtiers, architectes, réviseurs…)</td><td><span class="tag-red">OUI pour certaines professions</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">🏠 Assurances de choses</div>
+
+  <table>
+    <thead><tr><th>Produit</th><th>Garanties de base</th><th>Particularité</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Incendie habitation</strong></td><td><strong>FLEXA</strong> : Feu, Foudre, Explosion, chute d'Aéronef</td><td>Base légale AR 24/12/1992 pour risques simples</td></tr>
+      <tr><td><strong>Vol</strong></td><td>Dommages par effraction, vol simple, vandalisme</td><td>Souvent en extension de l'incendie</td></tr>
+      <tr><td><strong>Omnium auto</strong></td><td>Dommages propres au véhicule (tous risques)</td><td>Mini-omnium = vol, incendie, bris de glace</td></tr>
+      <tr><td><strong>Protection juridique</strong></td><td>Frais de recours civil, défense pénale, défense civile</td><td>Défend les intérêts de l'assuré en cas de litige</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">🏥 Assurances de personnes (non-vie)</div>
+
+  <table>
+    <thead><tr><th>Produit</th><th>Ce que ça couvre</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Hospitalisation</strong></td><td>Frais restant à charge après INAMI (ticket modérateur, suppléments, honoraires)</td><td>Complément mutuelle</td></tr>
+      <tr><td><strong>Revenu garanti / Incapacité</strong></td><td>Remplacement du revenu en cas d'incapacité de travail</td><td>Crucial pour indépendants (INAMI = forfait limité)</td></tr>
+      <tr><td><strong>Accidents individuels</strong></td><td>Capital ou rentes en cas d'accident (décès, invalidité)</td><td><strong>Forfaitaire</strong></td></tr>
+      <tr><td><strong>Accidents du travail</strong></td><td>Couverture obligatoire des travailleurs salariés</td><td><span class="tag-red">OBLIGATOIRE pour employeurs</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">💼 Assurance vie — aperçu des branches</div>
+
+  <table>
+    <thead><tr><th>Branche</th><th>Caractéristique</th><th>Risque</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Branche 21</strong></td><td>Taux garanti + participation bénéficiaire possible</td><td><span class="tag-green">Porté par l'assureur</span></td></tr>
+      <tr><td><strong>Branche 23</strong></td><td>Lié à des fonds d'investissement, aucun taux garanti</td><td><span class="tag-red">Porté par le preneur</span></td></tr>
+      <tr><td><strong>Branche 26</strong></td><td>Capitalisation pure (pas de composante décès)</td><td><span class="tag-green">Garanti par l'assureur</span></td></tr>
+      <tr><td><strong>Branche 44</strong></td><td>Combinaison B21 + B23 dans un même contrat</td><td>Mixte</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box box-memo">
+    <div class="box-label">Mnémotechnique FLEXA</div>
+    <strong>F</strong>eu — <strong>L</strong>oudre (Foudre) — <strong>E</strong>xplosion — chute d'<strong>A</strong>éronef<br>
+    Ce sont les 4 garanties de base <em>obligatoires</em> de l'assurance incendie pour les risques simples.
+  </div>
+
+  <button class="done-btn" id="btn-m11-produits" onclick="markDone('m11-produits')">✓ Module 1.1 terminé ! Passer au Module 1.2</button>
+</div>
+
+<!-- ═══════════════════ M1.2 — A. DISTRIBUTION ═══════════════════ -->
+<div class="page" id="page-m12-distrib">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.2 · Section A</span>
+    <div class="page-title">Distribution d'assurances</div>
+    <div class="page-sub">Définition · 4 catégories d'intermédiaires · RD vs PCP · FSMA inscription</div>
+  </div>
+
+  <div class="section-title">📖 Définition légale (art. 5, 46°)</div>
+
+  <div class="box box-def">
+    <div class="box-label">Distribution d'assurances</div>
+    Toute activité consistant à <strong>présenter, proposer, préparer la conclusion</strong> de contrats d'assurance, <strong>conclure</strong> ces contrats ou <strong>assister</strong> à leur gestion et exécution, notamment en cas de sinistre.<br><br>
+    C'est une définition très <strong>large</strong> — inclut bien plus que la simple vente.
+  </div>
+
+  <div class="box box-ok">
+    <div class="box-label">Exclusions du champ d'application (art. 258)</div>
+    Ne sont <strong>pas</strong> de la distribution d'assurances :<br>
+    • Informations fournies à titre <em>occasionnel</em> dans le cadre d'une autre activité professionnelle<br>
+    • Gestion de sinistres à titre professionnel (gestionnaire de sinistres)<br>
+    • Simple transmission d'informations sans conseiller
+  </div>
+
+  <div class="section-title">👥 Les 4 catégories d'intermédiaires</div>
+
+  <table>
+    <thead><tr><th>Catégorie</th><th>Qui représente ?</th><th>Caractéristique</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Courtier</strong></td><td>Le <strong>preneur</strong> (client)</td><td>Indépendant de toute compagnie. Peut placer chez n'importe quel assureur. Obligations de conseil envers le client.</td></tr>
+      <tr><td><strong>Agent</strong></td><td>La <strong>compagnie</strong></td><td>Mandataire d'une ou plusieurs compagnies. Lié par contrat d'agence.</td></tr>
+      <tr><td><strong>Sous-agent</strong></td><td>Un courtier ou agent (mandant)</td><td>Agit sous la responsabilité d'un courtier ou agent inscrit. Pas d'inscription directe requise.</td></tr>
+      <tr><td><strong>Intermédiaire accessoire</strong></td><td>Activité principale ≠ assurance</td><td>Distribue en complément d'une autre activité (ex : garagiste, agence de voyage). Conditions allégées.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">⚖️ RD vs PCP</div>
+
+  <table>
+    <thead><tr><th></th><th>Responsable de Distribution (RD)</th><th>Personne en Contact avec le Public (PCP)</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Rôle</strong></td><td>Responsable légal du respect des règles dans l'entreprise. Au moins un RD par société.</td><td>Toute personne qui distribue des assurances en contact avec le public (vendeur, conseiller…)</td></tr>
+      <tr><td><strong>Examens requis</strong></td><td>Module 1.1 + 1.2 <strong>ET</strong> modules spécifiques selon activité (2, 3, 4)</td><td><strong>Seulement</strong> Module 1.1 + 1.2</td></tr>
+      <tr><td><strong>Inscription FSMA</strong></td><td>Oui, personnellement</td><td>Sous la responsabilité du RD (souvent pas d'inscription individuelle)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">📋 Inscription FSMA — conditions</div>
+
+  <div class="grid2">
+    <div class="box box-key" style="margin-bottom:0;">
+      <div class="box-label">Conditions d'inscription</div>
+      <ul>
+        <li><strong>Connaissances professionnelles</strong> (examens Certassur)</li>
+        <li><strong>Honorabilité</strong> (casier judiciaire vierge pour infractions graves)</li>
+        <li><strong>RC professionnelle</strong> (assurance obligatoire)</li>
+        <li><strong>Garantie financière</strong> (pour les courtiers qui détiennent des fonds)</li>
+      </ul>
+    </div>
+    <div class="box box-warn" style="margin-bottom:0;">
+      <div class="box-label">Exercice sans inscription</div>
+      <strong>Interdiction absolue</strong> sous peine de :<br>
+      • Sanctions administratives FSMA<br>
+      • Sanctions pénales (art. 324 à 330 de la loi)<br>
+      Le registre FSMA est <strong>public</strong> — vérifiable par tout client.
+    </div>
+  </div>
+
+  <button class="done-btn" id="btn-m12-distrib" onclick="markDone('m12-distrib')">✓ Section terminée — passer à la suivante</button>
+</div>
+
+<!-- ═══════════════════ M1.2 — B. CDE CONSOMMATEURS ═══════════════════ -->
+<div class="page" id="page-m12-cde">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.2 · Section B</span>
+    <div class="page-title">Protection du consommateur</div>
+    <div class="page-sub">Code de Droit Économique Livre VI · Publicité · Pratiques déloyales · Vente à distance</div>
+  </div>
+
+  <div class="section-title">📚 Code de Droit Économique (CDE) — Livre VI</div>
+
+  <div class="box box-def">
+    <div class="box-label">Champ d'application</div>
+    S'applique aux relations <strong>entreprise → consommateur</strong> (B2C). Régit les pratiques commerciales, la publicité, les droits du consommateur. L'autorité de contrôle est le <strong>SPF Économie</strong>.
+  </div>
+
+  <div class="section-title">📢 Règles sur la publicité</div>
+
+  <table>
+    <thead><tr><th>Type</th><th>Règle</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Publicité en général</strong></td><td>Doit être <strong>clairement identifiable</strong> comme publicité. Ne peut pas induire en erreur sur les caractéristiques du produit.</td></tr>
+      <tr><td><strong>Publicité comparative</strong></td><td><span class="tag-green">Autorisée</span> si elle est objective, porte sur des caractéristiques comparables, n'est pas trompeuse et ne dénigre pas le concurrent.</td></tr>
+      <tr><td><strong>Publicité trompeuse</strong></td><td><span class="tag-red">Interdite</span> — induit le consommateur en erreur sur les caractéristiques, le prix ou l'identité de l'entreprise.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">🚫 Pratiques commerciales interdites</div>
+
+  <table>
+    <thead><tr><th>Catégorie</th><th>Description</th><th>Exemples</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Déloyales</strong></td><td>Contraires aux pratiques honnêtes du marché</td><td>Pression excessive, harcèlement</td></tr>
+      <tr><td><strong>Trompeuses</strong></td><td>Contiennent de fausses informations ou omissions significatives</td><td>Cacher les exclusions importantes</td></tr>
+      <tr><td><strong>Agressives</strong></td><td>Limitent la liberté de choix du consommateur par contrainte</td><td>Refus de laisser partir sans signer</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">📱 Vente à distance & droit de rétractation</div>
+
+  <div class="box box-key">
+    <div class="box-label">Délais de rétractation</div>
+    <strong>Assurances non-vie</strong> : <strong>14 jours calendrier</strong> à compter de la conclusion du contrat<br>
+    <strong>Assurance vie individuelle</strong> : <strong>30 jours calendrier</strong><br><br>
+    Le consommateur peut se rétracter sans pénalité ni justification. La prime est remboursée si aucun sinistre n'est survenu.
+  </div>
+
+  <button class="done-btn" id="btn-m12-cde" onclick="markDone('m12-cde')">✓ Section terminée — passer à la suivante</button>
+</div>
+
+<!-- ═══════════════════ M1.2 — C. RGPD ═══════════════════ -->
+<div class="page" id="page-m12-rgpd">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.2 · Section C</span>
+    <div class="page-title">RGPD — Protection des données</div>
+    <div class="page-sub">Principes · Conditions de licéité · Droits des personnes · APD</div>
+  </div>
+
+  <div class="section-title">🔐 Le RGPD en bref</div>
+
+  <div class="box box-def">
+    <div class="box-label">Champ d'application</div>
+    S'applique à <strong>toute organisation</strong> (quelle que soit sa taille) qui traite des données à caractère personnel de <strong>résidents de l'UE</strong>. Inclut les courtiers, agents, compagnies d'assurances. Contrôle en Belgique : <strong>APD (Autorité de Protection des Données)</strong>.
+  </div>
+
+  <div class="section-title">6 Principes fondamentaux du RGPD</div>
+
+  <div class="grid2">
+    <div class="box box-def" style="margin-bottom:10px;"><div class="box-label">1. Licéité, loyauté, transparence</div>Traitement légal, honnête, transparent envers la personne.</div>
+    <div class="box box-def" style="margin-bottom:10px;"><div class="box-label">2. Limitation des finalités</div>Collecte uniquement pour des finalités déterminées, explicites, légitimes.</div>
+    <div class="box box-def" style="margin-bottom:10px;"><div class="box-label">3. Minimisation des données</div>Collecter uniquement les données <strong>nécessaires</strong> à la finalité.</div>
+    <div class="box box-def" style="margin-bottom:10px;"><div class="box-label">4. Exactitude</div>Données exactes et tenues à jour.</div>
+    <div class="box box-def" style="margin-bottom:10px;"><div class="box-label">5. Limitation de la conservation</div>Conserver uniquement le temps nécessaire (+ obligations légales).</div>
+    <div class="box box-def" style="margin-bottom:10px;"><div class="box-label">6. Intégrité et confidentialité</div>Sécuriser les données contre accès non autorisé, perte, destruction.</div>
+  </div>
+
+  <div class="section-title">✅ 6 Conditions de licéité du traitement</div>
+
+  <table>
+    <thead><tr><th>#</th><th>Base légale</th><th>Exemple en assurances</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Consentement</strong> — libre, spécifique, éclairé, rétractable</td><td>Marketing direct</td></tr>
+      <tr><td>2</td><td><strong>Exécution d'un contrat</strong></td><td>Traitement des données pour gérer la police</td></tr>
+      <tr><td>3</td><td><strong>Obligation légale</strong></td><td>Identification LBA, conservation fiscale</td></tr>
+      <tr><td>4</td><td><strong>Intérêts vitaux</strong></td><td>En cas d'urgence médicale</td></tr>
+      <tr><td>5</td><td><strong>Mission d'intérêt public</strong></td><td>Statistiques, autorités publiques</td></tr>
+      <tr><td>6</td><td><strong>Intérêt légitime</strong></td><td>Prévention de la fraude (si proportionné)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">🧑 Droits des personnes</div>
+
+  <table>
+    <thead><tr><th>Droit</th><th>Ce que ça permet</th><th>Limites</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Accès</strong></td><td>Obtenir une copie de ses données</td><td>—</td></tr>
+      <tr><td><strong>Rectification</strong></td><td>Corriger les données inexactes</td><td>—</td></tr>
+      <tr><td><strong>Effacement</strong> (droit à l'oubli)</td><td>Demander la suppression</td><td>Cède devant les <strong>obligations légales de conservation</strong></td></tr>
+      <tr><td><strong>Limitation</strong></td><td>Geler temporairement le traitement</td><td>—</td></tr>
+      <tr><td><strong>Portabilité</strong></td><td>Recevoir ses données dans un format structuré et les transférer ailleurs</td><td>Seulement pour traitement automatisé sur base du consentement ou contrat</td></tr>
+      <tr><td><strong>Opposition</strong></td><td>S'opposer à certains traitements (ex: marketing)</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <div class="box box-warn">
+    <div class="box-label">Le droit à l'effacement n'est pas absolu !</div>
+    En assurances, les données doivent souvent être conservées <strong>10 ans</strong> après la fin du contrat (obligations fiscales, prescription). Le droit à l'effacement est refusé pendant cette période.
+  </div>
+
+  <button class="done-btn" id="btn-m12-rgpd" onclick="markDone('m12-rgpd')">✓ Section terminée — passer à la suivante</button>
+</div>
+
+<!-- ═══════════════════ M1.2 — D. BLANCHIMENT ═══════════════════ -->
+<div class="page" id="page-m12-lba">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.2 · Section D</span>
+    <div class="page-title">Lutte contre le blanchiment (LBA)</div>
+    <div class="page-sub">Loi du 18 septembre 2017 · KYC · CTIF · PPE · Vigilance</div>
+  </div>
+
+  <div class="section-title">🎯 Qui est assujetti à la LBA ?</div>
+
+  <div class="box box-def">
+    <div class="box-label">En assurances</div>
+    • Les <strong>entreprises d'assurances vie</strong><br>
+    • Les <strong>intermédiaires non exclusifs</strong> (courtiers) en assurance vie<br>
+    <em>Note : les intermédiaires exclusifs (agents) ne sont pas directement assujettis — c'est la compagnie qui l'est.</em>
+  </div>
+
+  <div class="section-title">🏛️ Les acteurs</div>
+
+  <div class="grid3">
+    <div class="card" style="border-top:4px solid var(--red);">
+      <div class="card-icon">🚨</div>
+      <div class="card-title">CTIF</div>
+      <div class="card-desc">Cellule de Traitement des Informations Financières. Reçoit les <strong>déclarations de soupçon</strong>. Transmet au Parquet si nécessaire.</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--blue);">
+      <div class="card-icon">🏦</div>
+      <div class="card-title">BNB</div>
+      <div class="card-desc">Contrôle la conformité LBA des <strong>entreprises d'assurances</strong>.</div>
+    </div>
+    <div class="card" style="border-top:4px solid var(--orange);">
+      <div class="card-icon">⚖️</div>
+      <div class="card-title">FSMA</div>
+      <div class="card-desc">Contrôle la conformité LBA des <strong>intermédiaires</strong> assujettis.</div>
+    </div>
+  </div>
+
+  <div class="section-title">📋 Obligations pratiques</div>
+
+  <table>
+    <thead><tr><th>Obligation</th><th>Détails</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Identification</strong> (KYC)</td><td>Identifier et vérifier l'identité du client avant d'établir la relation d'affaires</td></tr>
+      <tr><td><strong>Bénéficiaires effectifs</strong></td><td>Identifier les personnes physiques qui contrôlent l'entité cliente (registre UBO)</td></tr>
+      <tr><td><strong>Vigilance constante</strong></td><td>Surveiller les transactions tout au long de la relation</td></tr>
+      <tr><td><strong>Déclaration CTIF</strong></td><td>Déclarer tout soupçon de blanchiment ou financement du terrorisme</td></tr>
+      <tr><td><strong>Conservation</strong></td><td>Conserver les documents d'identification <strong>5 ans</strong> après la fin de la relation</td></tr>
+      <tr><td><strong>Espèces</strong></td><td>Paiements en espèces limités à <strong>3.000 €</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">👤 Personnes Politiquement Exposées (PPE)</div>
+
+  <div class="box box-def">
+    <div class="box-label">Définition</div>
+    Personnes qui exercent ou ont exercé des <strong>fonctions publiques importantes</strong> : chefs d'État, ministres, dirigeants de partis politiques, membres de hautes juridictions, hauts dirigeants d'organisations internationales… ainsi que leurs <strong>proches</strong>.
+  </div>
+
+  <div class="box box-warn">
+    <div class="box-label">Vigilance renforcée obligatoire</div>
+    Pour une PPE, il faut :<br>
+    1. Identification approfondie et vérification de l'origine des fonds<br>
+    2. Approbation par un responsable senior avant d'établir la relation<br>
+    3. Surveillance renforcée et continue de la relation d'affaires
+  </div>
+
+  <div class="box box-memo">
+    <div class="box-label">AMLCO</div>
+    Chaque entité assujettie doit désigner un <strong>AMLCO</strong> (Anti-Money Laundering Compliance Officer) — responsable interne de la conformité LBA.
+  </div>
+
+  <button class="done-btn" id="btn-m12-lba" onclick="markDone('m12-lba')">✓ Section terminée — passer à la suivante</button>
+</div>
+
+<!-- ═══════════════════ M1.2 — E. RÈGLES DE CONDUITE ═══════════════════ -->
+<div class="page" id="page-m12-conduite">
+  <div class="page-header">
+    <span class="page-badge badge-m1">Module 1.2 · Section E</span>
+    <div class="page-title">Règles de conduite & AssurMiFID</div>
+    <div class="page-sub">DDA · Analyse des besoins · IPID · Conflits d'intérêts · Formation continue</div>
+  </div>
+
+  <div class="section-title">⚖️ Principe fondamental (art. 279)</div>
+
+  <div class="box box-key">
+    <div class="box-label">La règle d'or</div>
+    Le distributeur doit toujours agir <strong>honnêtement, équitablement et professionnellement</strong>, <strong>au mieux des intérêts des clients</strong>. C'est le cœur de la DDA et de l'AssurMiFID.
+  </div>
+
+  <div class="section-title">🔍 Analyse des besoins — obligation légale</div>
+
+  <div class="box box-def">
+    <div class="box-label">Avant toute recommandation</div>
+    Le distributeur doit effectuer une <strong>analyse des besoins et exigences</strong> du client (needs analysis). Cette analyse doit être :<br>
+    • <strong>Documentée</strong> dans le dossier client<br>
+    • Conservée <strong>5 ans</strong> après la fin de la relation<br>
+    • Fournie au client <strong>avant</strong> la conclusion du contrat
+  </div>
+
+  <div class="section-title">📄 L'IPID</div>
+
+  <table>
+    <thead><tr><th>Caractéristique</th><th>Détail</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Signification</strong></td><td>Insurance Product Information Document</td></tr>
+      <tr><td><strong>Pour quel produit ?</strong></td><td>Assurances <strong>non-vie</strong> (hors assurance vie et assurances de transport)</td></tr>
+      <tr><td><strong>Format</strong></td><td>Standardisé — maximum 2 pages A4</td></tr>
+      <tr><td><strong>Quand ?</strong></td><td>Remis <strong>avant</strong> la conclusion du contrat</td></tr>
+      <tr><td><strong>Contenu</strong></td><td>Ce qui est couvert ✓, ce qui n'est pas couvert ✗, options, territoire, durée, résiliation</td></tr>
+      <tr><td><strong>À ne pas confondre avec</strong></td><td>Le <strong>KID</strong> (Key Information Document) = pour les produits PRIIPS (B23, B44)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">🔀 Conseil vs Vente sans conseil</div>
+
+  <table>
+    <thead><tr><th></th><th>Avec conseil (recommandation)</th><th>Sans conseil</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Définition</strong></td><td>Le distributeur recommande un produit spécifique adapté au client</td><td>Le distributeur fournit des informations sans recommander</td></tr>
+      <tr><td><strong>Obligations renforcées ?</strong></td><td>Oui — analyse des besoins ET test d'adéquation (produits investissement)</td><td>Obligations d'information allégées</td></tr>
+      <tr><td><strong>Responsabilité</strong></td><td>Plus élevée si le produit ne convient pas</td><td>Moindre si le client choisit lui-même</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">🔒 AssurMiFID (produits d'investissement)</div>
+
+  <div class="box box-def">
+    <div class="box-label">Produits concernés</div>
+    Assurances vie avec composante d'investissement : <strong>Branche 23, Branche 44</strong>, produits PRIIPS. Pas les assurances non-vie classiques.
+  </div>
+
+  <div class="grid2">
+    <div class="box box-key" style="margin-bottom:10px;">
+      <div class="box-label">Test d'adéquation (avec conseil)</div>
+      Évalue : connaissances/expérience, situation financière, capacité à supporter des pertes, objectifs d'investissement. Le produit doit être <strong>adapté</strong> (suitable) au profil du client.
+    </div>
+    <div class="box box-key" style="margin-bottom:10px;">
+      <div class="box-label">Test de pertinence (sans conseil)</div>
+      Évalue seulement : connaissances et expérience du client pour comprendre le produit. Le produit doit être <strong>pertinent</strong> (appropriate) pour lui.
+    </div>
+  </div>
+
+  <div class="section-title">⚠️ Conflits d'intérêts</div>
+
+  <div class="box box-def">
+    <div class="box-label">Gestion obligatoire</div>
+    Le distributeur doit :<br>
+    1. <strong>Identifier</strong> les conflits d'intérêts potentiels (ex: commission plus élevée pour un produit donné)<br>
+    2. <strong>Informer</strong> le client du conflit<br>
+    3. <strong>Agir dans l'intérêt du client</strong> malgré le conflit
+  </div>
+
+  <div class="section-title">📚 Formation continue & conservation</div>
+
+  <div class="grid2">
+    <div class="box box-key" style="margin-bottom:0;">
+      <div class="box-label">Formation continue — DDA</div>
+      <strong>Minimum 15 heures par an</strong> pour tous les distributeurs (RD et PCP). Obligatoire pour maintenir l'inscription FSMA.
+    </div>
+    <div class="box box-key" style="margin-bottom:0;">
+      <div class="box-label">Conservation du dossier client</div>
+      Toute la documentation (analyse des besoins, recommandations, IPID remis…) doit être conservée <strong>5 ans</strong> après la fin de la relation commerciale.
+    </div>
+  </div>
+
+  <button class="done-btn" id="btn-m12-conduite" onclick="markDone('m12-conduite')">✓ Module 1.2 terminé ! Passe à la simulation d'examen.</button>
+</div>
+
+<!-- ═══════════════════ FICHES MÉMO ═══════════════════ -->
+<div class="page" id="page-memo">
+  <div class="page-header">
+    <span class="page-badge badge-memo">Révision</span>
+    <div class="page-title">⚡ Fiches mémo — chiffres & concepts clés</div>
+    <div class="page-sub">Tout ce qu'il faut retenir par cœur pour l'examen</div>
+  </div>
+
+  <div class="section-title">🔢 Chiffres à connaître par cœur</div>
+  <div class="memo-grid">
+    <div class="memo-card"><div class="memo-notion">Prescription contrat d'assurance</div><div class="memo-val">3 ans</div><div class="memo-sub">Loi du 4 avril 2014</div></div>
+    <div class="memo-card green"><div class="memo-notion">Formation continue obligatoire</div><div class="memo-val">15h / an</div><div class="memo-sub">DDA — tous les distributeurs</div></div>
+    <div class="memo-card orange"><div class="memo-notion">Conservation dossier client</div><div class="memo-val">5 ans</div><div class="memo-sub">Après fin de la relation</div></div>
+    <div class="memo-card red"><div class="memo-notion">Suspension garantie (non-paiement)</div><div class="memo-val">30 jours</div><div class="memo-sub">Après mise en demeure formelle</div></div>
+    <div class="memo-card purple"><div class="memo-notion">Droit de rétractation — vie</div><div class="memo-val">30 jours</div><div class="memo-sub">Contrats à distance (assurance vie)</div></div>
+    <div class="memo-card"><div class="memo-notion">Droit de rétractation — non-vie</div><div class="memo-val">14 jours</div><div class="memo-sub">Contrats à distance</div></div>
+    <div class="memo-card green"><div class="memo-notion">Paiements en espèces — max LBA</div><div class="memo-val">3.000 €</div><div class="memo-sub">Au-delà : interdit</div></div>
+    <div class="memo-card red"><div class="memo-notion">Conservation docs identification LBA</div><div class="memo-val">5 ans</div><div class="memo-sub">Après fin de la relation d'affaires</div></div>
+    <div class="memo-card orange"><div class="memo-notion">Questions par examen Certassur</div><div class="memo-val">20 QCM</div><div class="memo-sub">60 minutes · seuil 60% (12/20)</div></div>
+    <div class="memo-card purple"><div class="memo-notion">Intérêts de retard (assureur)</div><div class="memo-val">Double taux légal</div><div class="memo-sub">En cas de paiement tardif par l'assureur</div></div>
+  </div>
+
+  <div class="section-title" style="margin-top:36px;">⚖️ Comparatifs express</div>
+
+  <table>
+    <thead><tr><th>Concept A</th><th>vs</th><th>Concept B</th></tr></thead>
+    <tbody>
+      <tr><td><strong>BNB</strong> — contrôle prudentiel des <em>compagnies</em></td><td>≠</td><td><strong>FSMA</strong> — conduite des marchés + <em>intermédiaires</em></td></tr>
+      <tr><td><strong>Courtier</strong> — représente le <em>preneur</em></td><td>≠</td><td><strong>Agent</strong> — représente la <em>compagnie</em></td></tr>
+      <tr><td><strong>Indemnitaire</strong> — limité au préjudice réel (non-vie)</td><td>≠</td><td><strong>Forfaitaire</strong> — capital fixé à l'avance (personnes)</td></tr>
+      <tr><td><strong>RD</strong> — modules 1.1+1.2+2/3/4</td><td>≠</td><td><strong>PCP</strong> — seulement modules 1.1+1.2</td></tr>
+      <tr><td><strong>IPID</strong> — non-vie (max 2 pages)</td><td>≠</td><td><strong>KID</strong> — produits PRIIPS/investissement (B23, B44)</td></tr>
+      <tr><td><strong>Test d'adéquation</strong> — avec conseil (connaissance + finances + objectifs)</td><td>≠</td><td><strong>Test de pertinence</strong> — sans conseil (connaissance seulement)</td></tr>
+      <tr><td><strong>Bonne foi</strong> (décl. inexacte) → réduction proportionnelle</td><td>≠</td><td><strong>Mauvaise foi</strong> (décl. inexacte) → nullité du contrat</td></tr>
+      <tr><td><strong>Ombudsman</strong> — assurances et sinistres</td><td>≠</td><td><strong>FSMA</strong> — pensions complémentaires / <strong>Fedris</strong> — accidents du travail</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">🧠 Mnémotechniques</div>
+
+  <div class="grid2">
+    <div class="box box-memo">
+      <div class="box-label">FLEXA — garanties de base incendie</div>
+      <strong>F</strong>eu · <strong>L</strong>oudre (Foudre) · <strong>E</strong>xplosion · chute d'<strong>A</strong>éronef
+    </div>
+    <div class="box box-memo">
+      <div class="box-label">Triangle d'identité (assurance vie)</div>
+      <strong>Preneur = Assuré = Bénéficiaire vie</strong><br>→ Exonération fiscale B23 + Pas de droits de succession
+    </div>
+    <div class="box box-memo">
+      <div class="box-label">6 bases légales RGPD</div>
+      <strong>C</strong>onsentement · <strong>C</strong>ontrat · <strong>O</strong>bligation légale · <strong>I</strong>ntérêts vitaux · <strong>M</strong>ission publique · <strong>I</strong>ntérêt légitime
+    </div>
+    <div class="box box-memo">
+      <div class="box-label">Sous-assurance — formule</div>
+      Indemnité = Dommage × <strong>(Assuré ÷ Réel)</strong><br>L'assuré est son propre assureur pour l'excédent
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:36px;">🚫 Les 10 confusions classiques à l'examen</div>
+
+  <table>
+    <thead><tr><th>Confusion fréquente</th><th>La bonne distinction</th></tr></thead>
+    <tbody>
+      <tr><td>BNB vs FSMA</td><td><strong>BNB</strong> = contrôle prudentiel (solvabilité) / <strong>FSMA</strong> = conduite + intermédiaires</td></tr>
+      <tr><td>Preneur vs Assuré</td><td><strong>Preneur</strong> = souscrit et paie / <strong>Assuré</strong> = dont le risque est couvert</td></tr>
+      <tr><td>CG vs CP</td><td><strong>CG</strong> = clauses standard du produit / <strong>CP</strong> = personnalisées au contrat</td></tr>
+      <tr><td>Valeur réelle vs à neuf</td><td><strong>Réelle</strong> = à neuf − vétusté</td></tr>
+      <tr><td>Courtier vs Agent</td><td><strong>Courtier</strong> = mandataire du client / <strong>Agent</strong> = mandataire de la compagnie</td></tr>
+      <tr><td>IPID vs KID</td><td><strong>IPID</strong> = non-vie (2 pages max) / <strong>KID</strong> = produits PRIIPS (B23, B44)</td></tr>
+      <tr><td>PCP vs RD</td><td><strong>PCP</strong> = modules 1.1 + 1.2 / <strong>RD</strong> = modules 1.1 + 1.2 + spécifiques</td></tr>
+      <tr><td>Indemnitaire vs Forfaitaire</td><td><strong>Indemnitaire</strong> = préjudice réel / <strong>Forfaitaire</strong> = capital fixé d'avance</td></tr>
+      <tr><td>LBA vs CTIF</td><td><strong>LBA</strong> = crée les obligations / <strong>CTIF</strong> = reçoit les déclarations de soupçon</td></tr>
+      <tr><td>DDA vs AssurMiFID</td><td><strong>DDA</strong> = toutes les assurances / <strong>AssurMiFID</strong> = investissement uniquement (B23, B44)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title" style="margin-top:36px;">📜 Textes légaux à connaître</div>
+
+  <table>
+    <thead><tr><th>Texte</th><th>Matière</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Loi du 4 avril 2014</strong></td><td>Contrat d'assurance terrestre — loi centrale</td></tr>
+      <tr><td><strong>DDA (2016/97/UE)</strong></td><td>Distribution — analyse des besoins, 15h formation/an</td></tr>
+      <tr><td><strong>Loi du 18/09/2017</strong></td><td>LBA — anti-blanchiment</td></tr>
+      <tr><td><strong>RGPD (2016/679)</strong></td><td>Protection des données personnelles</td></tr>
+      <tr><td><strong>Code DE Livre VI</strong></td><td>Protection du consommateur</td></tr>
+      <tr><td><strong>Directive PRIIPS</strong></td><td>KID obligatoire pour B23 et B44</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title" style="margin-top:36px;">🎯 Réflexes « bonne réponse » le jour J</div>
+
+  <div class="grid2">
+    <div class="box box-ok">
+      <div class="box-label">Analyse des besoins</div>
+      TOUJOURS avant de recommander un produit — jamais l'inverse.
+    </div>
+    <div class="box box-ok">
+      <div class="box-label">Intérêt du client</div>
+      Toujours prioritaire sur la commission du distributeur.
+    </div>
+    <div class="box box-ok">
+      <div class="box-label">Inscription FSMA</div>
+      Obligatoire pour exercer — jamais optionnelle.
+    </div>
+    <div class="box box-ok">
+      <div class="box-label">Transparence</div>
+      Sur tout : rémunération, risques, conflits d'intérêts.
+    </div>
+  </div>
+
+  <div class="box box-key" style="margin-top:20px;">
+    <div class="box-label">💡 Astuce QCM</div>
+    Si une réponse dit « toujours » ou « jamais » sans nuance → souvent fausse.<br>
+    Si elle parle de <strong>protéger le client</strong> → souvent correcte.
+  </div>
+
+  <div class="box box-warn" style="margin-top:14px;">
+    <div class="box-label">⚠️ Pièges classiques</div>
+    <ul style="margin-top:6px;">
+      <li>BNB ≠ FSMA (rôles distincts — ne pas confondre)</li>
+      <li>Loi 4/04/2014 ne couvre PAS le maritime</li>
+      <li>Droit à l'effacement RGPD n'est PAS absolu</li>
+      <li>AssurMiFID ≠ toutes les assurances (seulement B23/B44)</li>
+      <li>CTIF ≠ FSMA (la CTIF reçoit les déclarations LBA)</li>
+    </ul>
+  </div>
+
+  <div class="box box-key" style="margin-top:28px;">
+    <div class="box-label">Prêt(e) pour l'examen ?</div>
+    Si tu as lu toutes les sections et que les fiches mémo te semblent claires, il est temps de <strong>lancer la simulation d'examen</strong> !<br>
+    Objectif : obtenir <strong>16+/20 de manière constante</strong> avant de te présenter au vrai examen.
+  </div>
+
+  <div style="text-align:center;margin-top:28px;">
+    <a href="SIMULATION-EXAMEN-PCP.html" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#1a2f5e,#2563eb);color:white;padding:16px 48px;border-radius:14px;font-weight:800;font-size:1rem;text-decoration:none;box-shadow:0 8px 20px rgba(37,99,235,0.35);">📋 Lancer la Simulation d'Examen →</a>
+  </div>
+</div>
+
+<!-- ══════════════ JAVASCRIPT ══════════════ -->
+<script>
+const PAGES = ['dashboard','m11-marche','m11-contrat','m11-vie','m11-sinistre','m11-produits','m12-distrib','m12-cde','m12-rgpd','m12-lba','m12-conduite','memo'];
+const M11_SECTIONS = ['m11-marche','m11-contrat','m11-vie','m11-sinistre','m11-produits'];
+const M12_SECTIONS = ['m12-distrib','m12-cde','m12-rgpd','m12-lba','m12-conduite'];
+
+function nav(id) {
+  PAGES.forEach(p => {
+    document.getElementById('page-'+p)?.classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id)?.classList.add('active');
+  // Highlight nav button
+  document.querySelectorAll('.nav-item').forEach(b => {
+    if(b.getAttribute('onclick') === `nav('${id}')`) b.classList.add('active');
+  });
+  window.scrollTo(0,0);
+  updateDashboard();
+}
+
+function markDone(id) {
+  const done = getDone();
+  done[id] = true;
+  localStorage.setItem('pcp_progress', JSON.stringify(done));
+  const btn = document.getElementById('btn-'+id);
+  if(btn){ btn.classList.add('marked'); btn.textContent = '✓ Section terminée !'; }
+  const chk = document.getElementById('chk-'+id);
+  if(chk){ chk.textContent = '✓'; }
+  const navBtn = document.querySelector(`button[onclick="nav('${id}')"]`);
+  if(navBtn) navBtn.classList.add('done');
+  updateDashboard();
+
+  // Auto-navigate to next section
+  const idx = PAGES.indexOf(id);
+  if(idx >= 0 && idx < PAGES.length - 1) {
+    setTimeout(() => nav(PAGES[idx+1]), 600);
+  }
+}
+
+function getDone() {
+  try { return JSON.parse(localStorage.getItem('pcp_progress') || '{}'); } catch(e){ return {}; }
+}
+
+function updateDashboard() {
+  const done = getDone();
+  // Update nav checkmarks
+  [...M11_SECTIONS, ...M12_SECTIONS].forEach(id => {
+    const chk = document.getElementById('chk-'+id);
+    if(chk) chk.textContent = done[id] ? '✓' : '○';
+    const navBtn = document.querySelector(`button[onclick="nav('${id}')"]`);
+    if(navBtn) navBtn.classList.toggle('done', !!done[id]);
+    const btn = document.getElementById('btn-'+id);
+    if(btn && done[id]) { btn.classList.add('marked'); btn.textContent = '✓ Section terminée !'; }
+  });
+  // Progress bars
+  const m11done = M11_SECTIONS.filter(s => done[s]).length;
+  const m12done = M12_SECTIONS.filter(s => done[s]).length;
+  const m11pct = Math.round(m11done/M11_SECTIONS.length*100);
+  const m12pct = Math.round(m12done/M12_SECTIONS.length*100);
+  const p11 = document.getElementById('prog-m11');
+  const p12 = document.getElementById('prog-m12');
+  if(p11) p11.style.width = m11pct+'%';
+  if(p12) p12.style.width = m12pct+'%';
+  const pct11 = document.getElementById('pct-m11');
+  const pct12 = document.getElementById('pct-m12');
+  if(pct11) pct11.textContent = m11pct+'%';
+  if(pct12) pct12.textContent = m12pct+'%';
+}
+
+// Init
+updateDashboard();
+</script>
+</body>
+</html>

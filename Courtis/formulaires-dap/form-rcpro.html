@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demande d'offre — RC Professionnelle | DAP</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="form-header">
+  <div class="header-inner">
+    <div class="header-top">
+      <img src="assets/logo-dap.png" alt="DAP" class="header-logo">
+      <div class="header-divider"></div>
+      <div class="header-brand">Courtage d'assurances</div>
+    </div>
+    <h1 class="header-title">Demande d'offre — Responsabilité Civile Professionnelle</h1>
+    <p class="header-subtitle">Ce formulaire permet à DAP d'analyser les risques de votre activité et de vous proposer une couverture RC Pro adaptée. Toutes les informations sont traitées de façon confidentielle.</p>
+    <div class="header-badge">💼 RC Professionnelle · 10–15 minutes</div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-inner">
+      <div class="step-item"><div class="step-dot active" id="dot-1">1</div><div class="step-label active" id="label-1">Entreprise & Activité</div></div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-item"><div class="step-dot" id="dot-2">2</div><div class="step-label" id="label-2">CA & Prestations</div></div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-item"><div class="step-dot" id="dot-3">3</div><div class="step-label" id="label-3">Contrats & Sous-traitance</div></div>
+      <div class="step-line" id="line-3"></div>
+      <div class="step-item"><div class="step-dot" id="dot-4">4</div><div class="step-label" id="label-4">Garanties & Finalisation</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="form-container">
+<div class="form-steps-wrapper">
+
+<!-- ═══ ÉTAPE 1 ═══ -->
+<div class="step-content active" id="step-1">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏛️</span> Section 1 — Identification de l'entreprise</div>
+    <div class="section-body">
+      <div class="field-row two">
+        <div class="field-group"><label>Raison sociale <span class="required">*</span></label><input type="text" name="raison_sociale" required placeholder="Ma Société SRL"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Numéro BCE <span class="required">*</span><span class="hint">Format : BE 0XXX.XXX.XXX</span></label><input type="text" name="bce" required placeholder="BE 0123.456.789"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Forme juridique <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="forme_juridique">
+          <div class="radio-option" data-value="SRL"><input type="radio"><div class="radio-indicator"></div>SRL</div>
+          <div class="radio-option" data-value="SA"><input type="radio"><div class="radio-indicator"></div>SA</div>
+          <div class="radio-option" data-value="SNC"><input type="radio"><div class="radio-indicator"></div>SNC</div>
+          <div class="radio-option" data-value="ASBL"><input type="radio"><div class="radio-indicator"></div>ASBL</div>
+          <div class="radio-option" data-value="Indépendant personne physique"><input type="radio"><div class="radio-indicator"></div>Indépendant PP</div>
+          <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Adresse du siège social <span class="required">*</span></label><textarea name="adresse" required placeholder="Rue de l'Innovation 5, 1000 Bruxelles"></textarea><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row two">
+        <div class="field-group"><label>Téléphone <span class="required">*</span></label><input type="tel" name="telephone" required placeholder="02 000 00 00"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Email <span class="required">*</span></label><input type="email" name="email" required placeholder="contact@masociete.be"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row two">
+        <div class="field-group"><label>Nom et prénom du contact référent <span class="required">*</span></label><input type="text" name="contact_referent" required placeholder="Jean Dupont"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Année de création <span class="required">*</span></label><input type="number" name="annee_creation" required min="1900" max="2026" placeholder="2018"><span class="field-error">Obligatoire</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">⚙️</span> Section 2 — Activité professionnelle</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Description précise de l'activité principale <span class="required">*</span></label>
+        <textarea name="activite_description" required placeholder="Ex. : Conseil en stratégie digitale pour PME, développement de logiciels sur mesure..."></textarea>
+        <span class="field-error">Obligatoire</span>
+      </div>
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Secteur d'activité principal <span class="required">*</span></label>
+        <div class="radio-group" data-required="true" data-name="secteur">
+          <div class="radio-option" data-value="IT / Numérique"><input type="radio"><div class="radio-indicator"></div>IT / Numérique</div>
+          <div class="radio-option" data-value="Conseil / Management"><input type="radio"><div class="radio-indicator"></div>Conseil / Management</div>
+          <div class="radio-option" data-value="Ingénierie / Technique"><input type="radio"><div class="radio-indicator"></div>Ingénierie / Technique</div>
+          <div class="radio-option" data-value="Formation / Coaching"><input type="radio"><div class="radio-indicator"></div>Formation / Coaching</div>
+          <div class="radio-option" data-value="Architecture / Urbanisme"><input type="radio"><div class="radio-indicator"></div>Architecture / Urbanisme</div>
+          <div class="radio-option" data-value="Comptabilité / Audit"><input type="radio"><div class="radio-indicator"></div>Comptabilité / Audit</div>
+          <div class="radio-option" data-value="Juridique"><input type="radio"><div class="radio-indicator"></div>Juridique</div>
+          <div class="radio-option" data-value="Communication / Marketing"><input type="radio"><div class="radio-indicator"></div>Communication / Marketing</div>
+          <div class="radio-option" data-value="Santé / Para-médical"><input type="radio"><div class="radio-indicator"></div>Santé / Para-médical</div>
+          <div class="radio-option" data-value="Immobilier"><input type="radio"><div class="radio-indicator"></div>Immobilier</div>
+          <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-row two">
+        <div class="field-group"><label>Code NACE principal<span class="hint">Ex. : 6201 — consultable sur economie.fgov.be</span></label><input type="text" name="code_nace" placeholder="6201"></div>
+        <div class="field-group">
+          <label>Activités secondaires à déclarer ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-required="true" data-name="activites_secondaires" data-trigger="cond_activites_secondaires">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+          <span class="field-error">Veuillez sélectionner une option</span>
+        </div>
+      </div>
+      <div class="conditional-block" id="block_activites_secondaires">
+        <div class="conditional-label">↳ Description des activités secondaires</div>
+        <div class="field-group"><textarea name="activites_secondaires_detail" placeholder="Décrivez vos activités secondaires..."></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="index.html" class="btn btn-secondary">← Retour</a>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : CA & Prestations →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 2 ═══ -->
+<div class="step-content" id="step-2">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">📊</span> Section 3 — Chiffre d'affaires et effectif</div>
+    <div class="section-body">
+      <div class="field-row two">
+        <div class="field-group"><label>CA total HT (dernier exercice, €) <span class="required">*</span></label><input type="number" name="ca_total" required min="0" placeholder="500000"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>CA prévisionnel exercice en cours (€)</label><input type="number" name="ca_previsionnel" min="0" placeholder="600000"></div>
+      </div>
+      <div class="field-row three">
+        <div class="field-group"><label>CA en Belgique (€) <span class="required">*</span></label><input type="number" name="ca_belgique" required min="0" placeholder="400000"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>CA dans l'UE hors BE (€) <span class="required">*</span></label><input type="number" name="ca_ue" required min="0" placeholder="80000"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>CA hors UE (€) <span class="required">*</span></label><input type="number" name="ca_hors_ue" required min="0" placeholder="20000"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row two">
+        <div class="field-group"><label>Nombre d'ETP (indépendants compris) <span class="required">*</span></label><input type="number" name="nb_etp" required min="0" placeholder="5"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Dont : indépendants / sous-traitants permanents <span class="required">*</span></label><input type="number" name="nb_independants" required min="0" placeholder="2"><span class="field-error">Obligatoire</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🌍</span> Section 4 — Territoire d'activité</div>
+    <div class="section-body">
+      <div class="field-group">
+        <label>Zone géographique d'activité <span class="required">*</span></label>
+        <div class="radio-group" data-required="true" data-name="territoire">
+          <div class="radio-option" data-value="Belgique uniquement"><input type="radio"><div class="radio-indicator"></div>Belgique uniquement</div>
+          <div class="radio-option" data-value="Belgique + Union européenne"><input type="radio"><div class="radio-indicator"></div>Belgique + Union européenne</div>
+          <div class="radio-option" data-value="Monde entier (hors USA et Canada)"><input type="radio"><div class="radio-indicator"></div>Monde entier (hors USA et Canada)</div>
+          <div class="radio-option" data-value="Monde entier (USA et Canada inclus)"><input type="radio"><div class="radio-indicator"></div>Monde entier (USA et Canada inclus) ⚠️ surprime</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🔧</span> Section 5 — Nature des prestations</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Nature principale des prestations <span class="required">*</span></label>
+        <div class="checkbox-group" data-required="true" data-name="nature_prestations">
+          <div class="checkbox-option" data-value="Conseil / Recommandation"><input type="checkbox"><div class="checkbox-indicator"></div>Conseil / Recommandation</div>
+          <div class="checkbox-option" data-value="Développement informatique"><input type="checkbox"><div class="checkbox-indicator"></div>Développement informatique (code, logiciel)</div>
+          <div class="checkbox-option" data-value="Ingénierie / Études techniques"><input type="checkbox"><div class="checkbox-indicator"></div>Ingénierie / Études techniques</div>
+          <div class="checkbox-option" data-value="Formation / Transfert de compétences"><input type="checkbox"><div class="checkbox-indicator"></div>Formation / Transfert de compétences</div>
+          <div class="checkbox-option" data-value="Audit / Diagnostic"><input type="checkbox"><div class="checkbox-indicator"></div>Audit / Diagnostic</div>
+          <div class="checkbox-option" data-value="Design / Création"><input type="checkbox"><div class="checkbox-indicator"></div>Design / Création</div>
+          <div class="checkbox-option" data-value="Gestion de projet"><input type="checkbox"><div class="checkbox-indicator"></div>Gestion de projet</div>
+          <div class="checkbox-option" data-value="Autre"><input type="checkbox"><div class="checkbox-indicator"></div>Autre</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner au moins une option</span>
+      </div>
+      <div class="field-row three">
+        <div class="field-group"><label>Traitement de données personnelles (RGPD) ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="traitement_rgpd"><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div><div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div></div></div>
+        <div class="field-group"><label>Gestion de fonds ou d'actifs de tiers ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="gestion_fonds"><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div><div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div></div></div>
+        <div class="field-group"><label>Impact sur santé / sécurité physique ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="impact_sante"><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div><div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Contrats & Sous-traitance →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 3 ═══ -->
+<div class="step-content" id="step-3">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">📜</span> Section 6 — Cadre contractuel</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;"><label>Missions formalisées par contrats écrits signés ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="contrats_ecrits"><div class="radio-option" data-value="Toujours"><input type="radio"><div class="radio-indicator"></div>Toujours</div><div class="radio-option" data-value="En général"><input type="radio"><div class="radio-indicator"></div>En général</div><div class="radio-option" data-value="Rarement"><input type="radio"><div class="radio-indicator"></div>Rarement</div><div class="radio-option" data-value="Jamais"><input type="radio"><div class="radio-indicator"></div>Jamais</div></div><span class="field-error">Veuillez sélectionner une option</span></div>
+      <div class="field-group" style="margin-bottom:16px;"><label>Clauses de limitation de responsabilité dans vos contrats ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="clauses_limitation"><div class="radio-option" data-value="Oui, systématiquement"><input type="radio"><div class="radio-indicator"></div>Oui, systématiquement</div><div class="radio-option" data-value="Parfois"><input type="radio"><div class="radio-indicator"></div>Parfois</div><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div></div><span class="field-error">Veuillez sélectionner une option</span></div>
+      <div class="field-group" style="margin-bottom:16px;"><label>Livraison de livrables (rapports, codes, plans...) ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="livrables"><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div><div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div></div><span class="field-error">Veuillez sélectionner une option</span></div>
+      <div class="field-group"><label>Clients qui imposent des engagements de résultat ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="engagement_resultat"><div class="radio-option" data-value="Souvent"><input type="radio"><div class="radio-indicator"></div>Souvent</div><div class="radio-option" data-value="Parfois"><input type="radio"><div class="radio-indicator"></div>Parfois</div><div class="radio-option" data-value="Jamais"><input type="radio"><div class="radio-indicator"></div>Jamais</div></div><span class="field-error">Veuillez sélectionner une option</span></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🤝</span> Section 7 — Sous-traitance</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:0;"><label>Faites-vous appel à de la sous-traitance ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="sous_traitance" data-trigger="cond_sous_traitance"><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div><div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div></div><span class="field-error">Veuillez sélectionner une option</span></div>
+      <div class="conditional-block" id="block_sous_traitance">
+        <div class="conditional-label">↳ Informations sur la sous-traitance</div>
+        <div class="field-group" style="margin-bottom:12px;"><label>Part dans le CA total (%) <span class="required">*</span></label><input type="number" name="st_pourcentage" min="0" max="100" placeholder="25"></div>
+        <div class="field-group" style="margin-bottom:12px;"><label>Sous-traitants assurés en RC Pro ? <span class="required">*</span></label><div class="radio-group inline" data-name="st_assures"><div class="radio-option" data-value="Oui, systématiquement"><input type="radio"><div class="radio-indicator"></div>Oui, systématiquement</div><div class="radio-option" data-value="Parfois"><input type="radio"><div class="radio-indicator"></div>Parfois</div><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div></div></div>
+        <div class="field-group"><label>Vous portez-vous garant des erreurs de vos sous-traitants ? <span class="required">*</span></label><div class="radio-group inline" data-name="st_garant"><div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div><div class="radio-option" data-value="Cela dépend du contrat"><input type="radio"><div class="radio-indicator"></div>Cela dépend du contrat</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Garanties & Finalisation →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 4 ═══ -->
+<div class="step-content" id="step-4">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🛡️</span> Section 8 — Garanties souhaitées</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Couvertures souhaitées <span class="required">*</span></label>
+        <div class="checkbox-group" data-required="true" data-name="couvertures">
+          <div class="checkbox-option" data-value="RC Exploitation"><input type="checkbox"><div class="checkbox-indicator"></div>RC Exploitation (dommages matériels/corporels causés à des tiers)</div>
+          <div class="checkbox-option" data-value="RC Professionnelle"><input type="checkbox"><div class="checkbox-indicator"></div>RC Professionnelle (erreur, omission, conseil défectueux)</div>
+          <div class="checkbox-option" data-value="Cyber-responsabilité"><input type="checkbox"><div class="checkbox-indicator"></div>Cyber-responsabilité (violation de données, cyberattaque)</div>
+          <div class="checkbox-option" data-value="Protection juridique professionnelle"><input type="checkbox"><div class="checkbox-indicator"></div>Protection juridique professionnelle</div>
+          <div class="checkbox-option" data-value="RC Dirigeant (D&O)"><input type="checkbox"><div class="checkbox-indicator"></div>RC Dirigeant (D&O)</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner au moins une option</span>
+      </div>
+      <div class="field-group">
+        <label>Capital garanti souhaité par sinistre <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="capital_garanti">
+          <div class="radio-option" data-value="250 000 €"><input type="radio"><div class="radio-indicator"></div>250 000 €</div>
+          <div class="radio-option" data-value="500 000 €"><input type="radio"><div class="radio-indicator"></div>500 000 €</div>
+          <div class="radio-option" data-value="1 000 000 €"><input type="radio"><div class="radio-indicator"></div>1 000 000 €</div>
+          <div class="radio-option" data-value="1 500 000 €"><input type="radio"><div class="radio-indicator"></div>1 500 000 €</div>
+          <div class="radio-option" data-value="2 500 000 €"><input type="radio"><div class="radio-indicator"></div>2 500 000 €</div>
+          <div class="radio-option" data-value="À définir avec le courtier"><input type="radio"><div class="radio-indicator"></div>À définir avec le courtier</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">📋</span> Section 9 — Antécédents sinistres</div>
+    <div class="section-body">
+      <div class="field-group"><label>Sinistres RC Pro déclarés (5 dernières années) <span class="required">*</span></label><input type="number" name="sinistres_nb" required min="0" value="0" data-trigger="cond_sinistres_rc" placeholder="0"><span class="field-error">Obligatoire</span></div>
+      <div class="conditional-block" id="block_sinistres_rc">
+        <div class="conditional-label">↳ Détails des sinistres</div>
+        <div class="field-group" style="margin-bottom:12px;"><label>Nature des sinistres <span class="required">*</span></label><textarea name="sinistres_nature" placeholder="Ex. : Erreur de conseil ayant entraîné une perte financière client..."></textarea></div>
+        <div class="field-group" style="margin-bottom:12px;"><label>Montant total réglé par l'assureur (€)</label><textarea name="sinistres_montants" placeholder="Ex. : 25 000 €"></textarea></div>
+        <div class="field-group"><label>Réclamations en cours ou annoncées ? <span class="required">*</span></label><div class="radio-group inline" data-name="reclamations_cours"><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div><div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div></div></div>
+      </div>
+      <div class="field-group" style="margin-top:12px;"><label>Contrat RC Pro résilié par un assureur (3 dernières années) ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="resiliation_assureur" data-trigger="cond_resiliation_rc"><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div><div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div></div><span class="field-error">Veuillez sélectionner une option</span></div>
+      <div class="conditional-block" id="block_resiliation_rc"><div class="field-group"><label>Motif de la résiliation <span class="required">*</span></label><textarea name="resiliation_motif" placeholder="Expliquez le motif..."></textarea></div></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🎓</span> Section 10 — Affiliations et agréments</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;"><label>Obligations réglementaires ou affiliations <span class="required">*</span></label><div class="checkbox-group" data-required="true" data-name="affiliations"><div class="checkbox-option" data-value="FSMA"><input type="checkbox"><div class="checkbox-indicator"></div>FSMA (services financiers)</div><div class="checkbox-option" data-value="Ordre des Architectes"><input type="checkbox"><div class="checkbox-indicator"></div>Ordre des Architectes</div><div class="checkbox-option" data-value="Barreau (avocat)"><input type="checkbox"><div class="checkbox-indicator"></div>Barreau (avocat)</div><div class="checkbox-option" data-value="ITAA"><input type="checkbox"><div class="checkbox-indicator"></div>ITAA (comptable/conseiller fiscal)</div><div class="checkbox-option" data-value="Ordre des Médecins"><input type="checkbox"><div class="checkbox-indicator"></div>Ordre des Médecins</div><div class="checkbox-option" data-value="IRE"><input type="checkbox"><div class="checkbox-indicator"></div>IRE (réviseur d'entreprises)</div><div class="checkbox-option" data-value="Aucune"><input type="checkbox"><div class="checkbox-indicator"></div>Aucune</div></div><span class="field-error">Veuillez sélectionner au moins une option</span></div>
+      <div class="field-group"><label>Assurance RC Pro imposée par votre ordre ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="assurance_imposee"><div class="radio-option" data-value="Oui, déjà souscrite"><input type="radio"><div class="radio-indicator"></div>Oui, déjà souscrite</div><div class="radio-option" data-value="Oui, pas encore souscrite"><input type="radio"><div class="radio-indicator"></div>Oui, pas encore souscrite</div><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div></div><span class="field-error">Veuillez sélectionner une option</span></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏢</span> Section 11 — Assurance actuelle</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:0;"><label>Actuellement assuré(e) en RC Pro ? <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="assurance_actuelle" data-trigger="cond_assurance_rc"><div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div><div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div></div><span class="field-error">Veuillez sélectionner une option</span></div>
+      <div class="conditional-block" id="block_assurance_rc">
+        <div class="conditional-label">↳ Informations sur l'assurance actuelle</div>
+        <div class="field-row two"><div class="field-group"><label>Compagnie actuelle <span class="required">*</span></label><input type="text" name="assurance_compagnie" placeholder="Ex. : AXA"></div><div class="field-group"><label>Date d'échéance <span class="required">*</span></label><input type="date" name="assurance_echeance"></div></div>
+        <div class="field-row two"><div class="field-group"><label>Numéro de contrat</label><input type="text" name="assurance_contrat"></div><div class="field-group"><label>Capital garanti actuel (€)</label><input type="number" name="assurance_capital" min="0"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">💳</span> Paiement</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;"><label>Fréquence de paiement <span class="required">*</span></label><div class="radio-group inline" data-required="true" data-name="paiement_frequence"><div class="radio-option" data-value="Annuel"><input type="radio"><div class="radio-indicator"></div>Annuel</div><div class="radio-option" data-value="Semestriel"><input type="radio"><div class="radio-indicator"></div>Semestriel</div><div class="radio-option" data-value="Mensuel"><input type="radio"><div class="radio-indicator"></div>Mensuel</div></div><span class="field-error">Veuillez sélectionner une option</span></div>
+      <div class="field-group"><label>IBAN de l'entreprise <span class="hint">Format : BE XX XXXX XXXX XXXX</span></label><input type="text" name="paiement_iban" placeholder="BE32 0000 0000 0000"></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">❤️</span> DAP Solidarity</div>
+    <div class="section-body">
+      <div class="solidarity-header"><div class="solidarity-icon">🤝</div><div class="solidarity-text"><strong>DAP reverse 10 % de sa commission à une association de votre choix.</strong><br>Chaque assurance souscrite chez DAP devient un geste concret de solidarité.</div></div>
+      <div class="radio-group" data-required="true" data-name="solidarity">
+        <div class="radio-option" data-value="Un Pas de Côté"><input type="radio"><div class="radio-indicator"></div><div><strong>Un Pas de Côté</strong> — Renforce la résilience locale dans les quartiers ruraux</div></div>
+        <div class="radio-option" data-value="Le Pont des Arts"><input type="radio"><div class="radio-indicator"></div><div><strong>Le Pont des Arts</strong> — Apporte de la joie aux enfants hospitalisés grâce à l'art</div></div>
+        <div class="radio-option" data-value="Stop Harcèlement"><input type="radio"><div class="radio-indicator"></div><div><strong>Stop Harcèlement</strong> — Lutte contre le harcèlement scolaire dès la maternelle</div></div>
+        <div class="radio-option" data-value="Union des Artistes"><input type="radio"><div class="radio-indicator"></div><div><strong>Union des Artistes</strong> — Soutient les artistes belges et leurs droits</div></div>
+        <div class="radio-option" data-value="L'Ilot"><input type="radio"><div class="radio-indicator"></div><div><strong>L'Ilot</strong> — Hébergement et accompagnement des personnes sans abri en Wallonie et Bruxelles</div></div>
+        <div class="radio-option" data-value="Co-Construire"><input type="radio"><div class="radio-indicator"></div><div><strong>Co-Construire</strong> — Projets collaboratifs pour la cohésion sociale et l'innovation locale</div></div>
+        <div class="radio-option" data-value="Dynamo International"><input type="radio"><div class="radio-indicator"></div><div><strong>Dynamo International</strong> — Accompagne les jeunes en milieu ouvert via la prévention et l'écoute</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">💬</span> Remarques</div>
+    <div class="section-body"><div class="field-group"><label>Remarques ou informations complémentaires</label><textarea name="remarques" placeholder="Ex. : projet en cours, contrat spécifique, export prévu..."></textarea></div></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-submit" id="submit-btn" onclick="submitForm('rcpro')">✅ Envoyer ma demande</button>
+  </div>
+</div>
+
+</div>
+
+<div class="success-screen">
+  <div class="success-icon">✅</div>
+  <h2 class="success-title">Demande envoyée avec succès !</h2>
+  <p class="success-text">Votre conseiller DAP analysera votre dossier et vous contactera dans les <strong>24 heures ouvrables</strong>.</p>
+  <a href="index.html" class="btn btn-primary" style="display:inline-flex; margin:0 auto;">← Retour à l'accueil</a>
+</div>
+
+</div>
+
+<script src="assets/form.js"></script>
+<script>
+window.CONDITIONALS = {
+  cond_activites_secondaires: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_activites_secondaires' }],
+  cond_sous_traitance: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_sous_traitance' }],
+  cond_sinistres_rc: [{ condition: { type: 'gte', value: 1 }, target: 'block_sinistres_rc' }],
+  cond_resiliation_rc: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_resiliation_rc' }],
+  cond_assurance_rc: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_assurance_rc' }]
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Étude de Faisabilité — Mac Mini comme Serveur Local DAP</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2c5282;
+            --accent: #3182ce;
+            --accent-light: #ebf4ff;
+            --success: #276749;
+            --success-bg: #f0fff4;
+            --warning: #975a16;
+            --warning-bg: #fffff0;
+            --danger: #9b2c2c;
+            --danger-bg: #fff5f5;
+            --gray-50: #f7fafc;
+            --gray-100: #edf2f7;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e0;
+            --gray-600: #718096;
+            --gray-700: #4a5568;
+            --gray-800: #2d3748;
+            --gray-900: #1a202c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--gray-800);
+            background: var(--gray-50);
+        }
+
+        /* Cover page */
+        .cover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 80px 60px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            page-break-after: always;
+        }
+
+        .cover-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .cover h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .cover .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.85;
+            margin-bottom: 50px;
+            max-width: 600px;
+        }
+
+        .cover-meta {
+            display: flex;
+            gap: 40px;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .cover-meta div { display: flex; flex-direction: column; gap: 4px; }
+        .cover-meta label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+
+        /* Main content */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+
+        /* Executive summary */
+        .executive-summary {
+            background: white;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 50px;
+            page-break-after: always;
+        }
+
+        .executive-summary h2 {
+            color: var(--accent);
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .executive-summary .verdict {
+            background: var(--success-bg);
+            border-left: 4px solid var(--success);
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .key-figures {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .key-figure {
+            background: var(--gray-50);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .key-figure .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .key-figure .label {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Section styling */
+        .section {
+            margin-bottom: 50px;
+            page-break-inside: avoid;
+        }
+
+        .section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        h3 {
+            color: var(--primary-light);
+            font-size: 1.15rem;
+            margin: 25px 0 12px;
+        }
+
+        h4 {
+            color: var(--gray-700);
+            font-size: 1rem;
+            margin: 18px 0 8px;
+        }
+
+        p { margin-bottom: 12px; }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0 20px;
+            font-size: 0.9rem;
+        }
+
+        thead th {
+            background: var(--primary);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        thead th:first-child { border-radius: 8px 0 0 0; }
+        thead th:last-child { border-radius: 0 8px 0 0; }
+
+        td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        tr:nth-child(even) { background: var(--gray-50); }
+        tr:hover { background: var(--accent-light); }
+
+        .highlight-row { background: var(--accent-light) !important; font-weight: 600; }
+
+        /* Code blocks */
+        pre {
+            background: var(--gray-900);
+            color: #e2e8f0;
+            padding: 18px 22px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 12px 0 18px;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        }
+
+        code {
+            background: var(--gray-100);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            color: var(--danger);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+
+        .comment { color: #68d391; }
+
+        /* Info boxes */
+        .box {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.92rem;
+        }
+
+        .box-info {
+            background: var(--accent-light);
+            border-left: 4px solid var(--accent);
+        }
+
+        .box-warning {
+            background: var(--warning-bg);
+            border-left: 4px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .box-success {
+            background: var(--success-bg);
+            border-left: 4px solid var(--success);
+        }
+
+        .box-danger {
+            background: var(--danger-bg);
+            border-left: 4px solid var(--danger);
+        }
+
+        .box strong { display: block; margin-bottom: 4px; }
+
+        /* Architecture diagram */
+        .architecture {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .arch-diagram {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.82rem;
+            line-height: 1.5;
+            text-align: left;
+            display: inline-block;
+            background: var(--gray-50);
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 10px 0 10px 32px;
+            position: relative;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .checklist li::before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            font-size: 1.2rem;
+        }
+
+        .checklist .phase-header {
+            padding: 12px 0 8px;
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .checklist .phase-header::before { content: ''; }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--gray-200);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .timeline-item .week {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .timeline-item h4 { margin-top: 4px; }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-green { background: var(--success-bg); color: var(--success); }
+        .badge-yellow { background: var(--warning-bg); color: var(--warning); }
+        .badge-red { background: var(--danger-bg); color: var(--danger); }
+        .badge-blue { background: var(--accent-light); color: var(--accent); }
+
+        /* TOC */
+        .toc {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 25px 30px;
+            margin-bottom: 40px;
+        }
+
+        .toc h3 { color: var(--primary); margin: 0 0 15px; }
+
+        .toc ol {
+            padding-left: 20px;
+        }
+
+        .toc li {
+            padding: 6px 0;
+            color: var(--gray-700);
+        }
+
+        .toc a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .toc a:hover { text-decoration: underline; }
+
+        /* Print styles */
+        @media print {
+            body { background: white; }
+            .cover { min-height: auto; padding: 60px 40px; }
+            .container { padding: 20px; }
+            pre { font-size: 0.75rem; }
+            .section { page-break-inside: avoid; }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 50px;
+        }
+
+        /* Comparison grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .comparison-card h4 {
+            margin: 0 0 10px;
+            color: var(--primary);
+        }
+
+        .comparison-card.recommended {
+            border-color: var(--accent);
+            border-width: 2px;
+            position: relative;
+        }
+
+        .comparison-card.recommended::after {
+            content: '★ Recommandé';
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            background: var(--accent);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .step-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px 15px;
+            align-items: start;
+            margin: 15px 0;
+        }
+
+        .step-num {
+            background: var(--accent);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .step-content { padding-top: 3px; }
+    </style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="cover">
+    <div class="cover-badge">Document interne — DAP</div>
+    <h1>Étude de Faisabilité<br>Mac Mini comme Serveur Local</h1>
+    <p class="subtitle">
+        Analyse technique, financière et opérationnelle pour le déploiement
+        d'un serveur local Mac Mini hébergeant les outils d'automatisation
+        et d'intelligence artificielle de DAP.
+    </p>
+    <div class="cover-meta">
+        <div>
+            <label>Préparé par</label>
+            <span>Ihsane & Etienne</span>
+        </div>
+        <div>
+            <label>Date</label>
+            <span>10 mars 2026</span>
+        </div>
+        <div>
+            <label>Version</label>
+            <span>1.1</span>
+        </div>
+        <div>
+            <label>Statut</label>
+            <span>Soumis pour approbation</span>
+        </div>
+    </div>
+</div>
+
+<!-- ============ CONTENT ============ -->
+<div class="container">
+
+    <!-- Executive Summary -->
+    <div class="executive-summary">
+        <h2>Synthèse exécutive</h2>
+        <p>
+            Cette étude évalue la faisabilité d'installer un Mac Mini M4 Pro dans nos locaux comme serveur local.
+            L'objectif : héberger nos outils internes (automatisations, bases de données, applications métier),
+            faire tourner des modèles d'IA (LLM) en local, et garder la maîtrise totale de nos données.
+        </p>
+        <div class="verdict">
+            Verdict : Faisable et recommandé — Le projet est techniquement réalisable,
+            financièrement avantageux à moyen terme, et installable sans expertise serveur avancée.
+        </div>
+        <div class="key-figures">
+            <div class="key-figure">
+                <div class="number">2 199 €</div>
+                <div class="label">Investissement initial<br>(M4 Pro 48 Go / 1 To)</div>
+            </div>
+            <div class="key-figure">
+                <div class="number">~16 €/mois</div>
+                <div class="label">Coût récurrent<br>(électricité + backup)</div>
+            </div>
+            <div class="key-figure">
+                <div class="number">2-3 semaines</div>
+                <div class="label">Délai de mise<br>en production</div>
+            </div>
+            <div class="key-figure">
+                <div class="number">0</div>
+                <div class="label">Ports réseau<br>à ouvrir</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table of contents -->
+    <div class="toc">
+        <h3>Table des matières</h3>
+        <ol>
+            <li><a href="#section1">Installation et configuration du Mac Mini comme serveur</a></li>
+            <li><a href="#section2">Implémentation des outils et LLM</a></li>
+            <li><a href="#section3">Maintenance et administration au quotidien</a></li>
+            <li><a href="#section4">Coûts et logistique</a></li>
+            <li><a href="#section5">Risques et solutions de secours</a></li>
+            <li><a href="#section6">Recommandations et prochaines étapes</a></li>
+            <li><a href="#checklist">Checklist des actions à mener</a></li>
+        </ol>
+    </div>
+
+    <!-- ============ SECTION 1 ============ -->
+    <div class="section" id="section1">
+        <h2><span class="section-number">1</span> Installation et configuration du Mac Mini comme serveur</h2>
+
+        <h3>1.1 Choix du matériel</h3>
+        <p>Apple propose actuellement plusieurs configurations de Mac Mini M4. Pour notre usage (services multiples + LLM locaux), voici la comparaison :</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Configuration</th>
+                    <th>Puce</th>
+                    <th>RAM</th>
+                    <th>Stockage</th>
+                    <th>Prix</th>
+                    <th>Adapté pour</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>M4 Base</td>
+                    <td>M4 (10 cœurs)</td>
+                    <td>16 Go</td>
+                    <td>256 Go</td>
+                    <td>649 €</td>
+                    <td>Usage bureautique, pas de LLM</td>
+                </tr>
+                <tr>
+                    <td>M4 — 16/512</td>
+                    <td>M4 (10 cœurs)</td>
+                    <td>16 Go</td>
+                    <td>512 Go</td>
+                    <td>879 €</td>
+                    <td>Services légers, LLM 7B limités</td>
+                </tr>
+                <tr>
+                    <td>M4 Pro — 24/512</td>
+                    <td>M4 Pro (12 cœurs)</td>
+                    <td>24 Go</td>
+                    <td>512 Go</td>
+                    <td>1 649 €</td>
+                    <td>Multi-services + LLM 13B</td>
+                </tr>
+                <tr class="highlight-row">
+                    <td>M4 Pro — 48 Go / 1 To ★</td>
+                    <td>M4 Pro (14 cœurs)</td>
+                    <td>48 Go</td>
+                    <td>1 To</td>
+                    <td>2 199 €</td>
+                    <td>LLM 30-70B, multi-services, evolutif</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="box box-info">
+            <strong>Recommandation pour DAP : M4 Pro 48 Go / 1 To à 2 199 €</strong>
+            Cette configuration offre la puissance nécessaire pour faire tourner simultanément nos outils
+            (n8n, bases de données, applications Docker) <strong>et</strong> des LLM performants (jusqu'à 30-70B paramètres).
+            Avec 48 Go de RAM unifiée et la bande passante mémoire du M4 Pro (273 Go/s), c'est un investissement
+            pérenne qui nous évite de devoir upgrader dans 1-2 ans. Le 1 To de stockage laisse de la marge
+            pour les modèles IA (plusieurs Go chacun) et les données.
+        </div>
+
+        <h3>1.2 Étapes d'installation — Guide pas à pas</h3>
+
+        <h4>Étape A : Configuration initiale macOS</h4>
+        <div class="step-grid">
+            <div class="step-num">1</div>
+            <div class="step-content">
+                <strong>Premier démarrage</strong> — Brancher un écran/clavier, configurer macOS normalement.
+                Créer un compte administrateur (ex : <code>admin-dap</code>).
+            </div>
+            <div class="step-num">2</div>
+            <div class="step-content">
+                <strong>Désactiver la mise en veille</strong> — Le serveur doit rester allumé 24/7.
+                <pre><code><span class="comment"># Désactiver toute mise en veille</span>
+sudo pmset -a sleep 0
+sudo pmset -a disksleep 0
+sudo pmset -a displaysleep 0</code></pre>
+            </div>
+            <div class="step-num">3</div>
+            <div class="step-content">
+                <strong>Redémarrage auto après coupure de courant</strong>
+                <pre><code>sudo pmset -a autorestart 1</code></pre>
+                Ou via <em>Réglages Système → Général → Démarrage et arrêt</em>.
+            </div>
+            <div class="step-num">4</div>
+            <div class="step-content">
+                <strong>Activer l'ouverture de session automatique</strong> —
+                <em>Réglages Système → Utilisateurs et groupes → Ouverture de session automatique</em>.
+                Le Mac redémarrera sans intervention humaine.
+            </div>
+        </div>
+
+        <h4>Étape B : Accès distant (SSH + VNC)</h4>
+        <div class="step-grid">
+            <div class="step-num">5</div>
+            <div class="step-content">
+                <strong>Activer SSH</strong> — Pour l'accès en ligne de commande à distance.
+                <pre><code><span class="comment"># Activer le service SSH</span>
+sudo systemsetup -setremotelogin on</code></pre>
+                Ou via <em>Réglages Système → Général → Partage → Session à distance</em>.
+            </div>
+            <div class="step-num">6</div>
+            <div class="step-content">
+                <strong>Activer le Partage d'écran (VNC)</strong> — Pour un accès graphique à distance.
+                <pre><code><span class="comment"># Activer VNC</span>
+sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
+  -activate -configure -allowAccessFor -allUsers \
+  -configure -clientopts -setvnclegacy -vnclegacy yes \
+  -configure -clientopts -setvncpw -vncpw "MOT_DE_PASSE_VNC" \
+  -restart -agent -privs -all</code></pre>
+                Connexion depuis un autre Mac : <code>vnc://IP_DU_MAC_MINI:5900</code>
+            </div>
+            <div class="step-num">7</div>
+            <div class="step-content">
+                <strong>Adaptateur HDMI factice</strong> (~10 € sur Amazon) — Sans écran branché, macOS limite la résolution.
+                Ce petit dongle simule un écran 4K pour que le partage d'écran fonctionne correctement.
+            </div>
+        </div>
+
+        <h4>Étape C : Installation des logiciels de base</h4>
+        <div class="step-grid">
+            <div class="step-num">8</div>
+            <div class="step-content">
+                <strong>Installer Homebrew</strong> — Le gestionnaire de paquets pour macOS.
+                <pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre>
+            </div>
+            <div class="step-num">9</div>
+            <div class="step-content">
+                <strong>Installer OrbStack</strong> (remplacement de Docker Desktop, plus léger et performant).
+                <pre><code>brew install orbstack
+<span class="comment"># Lancer OrbStack</span>
+open -a OrbStack
+<span class="comment"># Vérifier que Docker fonctionne</span>
+docker version</code></pre>
+            </div>
+            <div class="step-num">10</div>
+            <div class="step-content">
+                <strong>Installer Cloudflare Tunnel</strong> — Pour exposer les services sur Internet en toute sécurité,
+                sans ouvrir de ports sur le routeur.
+                <pre><code>brew install cloudflare/cloudflare/cloudflared
+<span class="comment"># Se connecter à Cloudflare</span>
+cloudflared tunnel login
+<span class="comment"># Créer le tunnel</span>
+cloudflared tunnel create mac-mini-dap
+<span class="comment"># Configurer le DNS (répéter pour chaque sous-domaine)</span>
+cloudflared tunnel route dns mac-mini-dap service1.votre-domaine.com
+<span class="comment"># Installer comme service au démarrage</span>
+sudo cloudflared service install</code></pre>
+            </div>
+        </div>
+
+        <h3>1.3 Logiciels nécessaires — Résumé</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Logiciel</th>
+                    <th>Rôle</th>
+                    <th>Coût</th>
+                    <th>Installation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Homebrew</strong></td>
+                    <td>Gestionnaire de paquets macOS</td>
+                    <td>Gratuit</td>
+                    <td>Script en une ligne</td>
+                </tr>
+                <tr>
+                    <td><strong>OrbStack</strong></td>
+                    <td>Docker (conteneurs)</td>
+                    <td>Gratuit*</td>
+                    <td><code>brew install orbstack</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Cloudflare Tunnel</strong></td>
+                    <td>Accès Internet sécurisé</td>
+                    <td>Gratuit</td>
+                    <td><code>brew install cloudflared</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Ollama</strong></td>
+                    <td>Exécution de LLM locaux</td>
+                    <td>Gratuit</td>
+                    <td><code>brew install ollama</code></td>
+                </tr>
+                <tr>
+                    <td><strong>PostgreSQL</strong></td>
+                    <td>Base de données (via Docker)</td>
+                    <td>Gratuit</td>
+                    <td>Via Docker Compose</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="font-size: 0.85rem; color: var(--gray-600);">
+            * OrbStack est gratuit pour un usage personnel. En cas d'usage commercial, la licence Pro est de 8 $/mois.
+            Alternative 100% gratuite : Colima (open-source).
+        </p>
+
+        <div class="box box-info">
+            <strong>macOS Server n'est plus nécessaire</strong>
+            Apple a arrêté macOS Server en 2022. Toutes les fonctionnalités serveur dont nous avons besoin
+            sont couvertes par Docker/OrbStack + Homebrew. Aucun logiciel payant Apple n'est requis.
+        </div>
+
+        <h3>1.4 Documentation et retours d'expérience</h3>
+        <p>Le Mac Mini comme serveur est un cas d'usage bien documenté :</p>
+        <ul style="margin-left: 20px; margin-bottom: 15px;">
+            <li><strong>Apple</strong> : documentation officielle de <code>pmset</code> pour la gestion de l'alimentation</li>
+            <li><strong>Cloudflare</strong> : documentation complète des tunnels avec guide macOS</li>
+            <li><strong>OrbStack</strong> : comparatif détaillé avec Docker Desktop sur leur site</li>
+            <li><strong>Ollama</strong> : benchmarks détaillés par modèle et configuration matérielle</li>
+            <li><strong>Communauté</strong> : nombreux retours sur Reddit (r/selfhosted, r/macmini) d'entreprises
+                qui utilisent le Mac Mini comme serveur depuis la puce M1</li>
+        </ul>
+    </div>
+
+    <!-- ============ SECTION 2 ============ -->
+    <div class="section" id="section2">
+        <h2><span class="section-number">2</span> Implémentation des outils et LLM</h2>
+
+        <h3>2.1 Déploiement des outils internes via Docker</h3>
+        <p>
+            Grâce à Docker (OrbStack), chaque outil tourne dans son propre conteneur isolé.
+            L'ajout, la mise à jour ou la suppression d'un service se fait sans impacter les autres.
+            Voici les types de services que le Mac Mini peut héberger :
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Type de service</th>
+                    <th>Exemples</th>
+                    <th>Faisable sur M4 Pro 48 Go</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Automatisation / workflows</strong></td>
+                    <td>n8n, Node-RED, Activepieces</td>
+                    <td><span class="badge badge-green">Excellent</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Base de données</strong></td>
+                    <td>PostgreSQL, MySQL, Redis</td>
+                    <td><span class="badge badge-green">Excellent</span></td>
+                </tr>
+                <tr>
+                    <td><strong>IA / LLM local</strong></td>
+                    <td>Ollama, LM Studio</td>
+                    <td><span class="badge badge-green">Excellent (jusqu'à 70B)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>API internes</strong></td>
+                    <td>APIs Node.js, Python, Go</td>
+                    <td><span class="badge badge-green">Excellent</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Monitoring</strong></td>
+                    <td>Uptime Kuma, Glances</td>
+                    <td><span class="badge badge-green">Excellent</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Serveur web</strong></td>
+                    <td>Nginx, Caddy</td>
+                    <td><span class="badge badge-green">Excellent</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Serveur mail</strong></td>
+                    <td>—</td>
+                    <td><span class="badge badge-red">Non recommandé</span> (délivrabilité)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            Le principe est simple : chaque outil a son fichier <code>docker-compose.yml</code>,
+            se lance avec <code>docker compose up -d</code>, et est exposé sur Internet via Cloudflare Tunnel
+            (un sous-domaine par service). L'ajout d'un nouveau service prend quelques minutes.
+        </p>
+
+        <h3>2.2 LLM locaux avec Ollama</h3>
+        <p>
+            Ollama permet d'exécuter des modèles d'IA (LLM) directement sur le Mac Mini,
+            sans passer par des API cloud payantes. Avec 48 Go de RAM, la gamme de modèles utilisables est très large :
+        </p>
+
+        <h4>Performances sur Mac Mini M4 Pro — 48 Go</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Modèle</th>
+                    <th>Taille</th>
+                    <th>Vitesse</th>
+                    <th>Verdict</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Phi-3 Mini</td>
+                    <td>3.8B</td>
+                    <td>60-80 tokens/s</td>
+                    <td><span class="badge badge-green">Excellent</span></td>
+                </tr>
+                <tr>
+                    <td>Llama 3.1 / Mistral 7B</td>
+                    <td>7-8B</td>
+                    <td>40-55 tokens/s</td>
+                    <td><span class="badge badge-green">Excellent</span></td>
+                </tr>
+                <tr>
+                    <td>Qwen2 14B</td>
+                    <td>14B</td>
+                    <td>25-35 tokens/s</td>
+                    <td><span class="badge badge-green">Très bien</span></td>
+                </tr>
+                <tr>
+                    <td>DeepSeek R1</td>
+                    <td>32B</td>
+                    <td>11-14 tokens/s</td>
+                    <td><span class="badge badge-green">Bon (raisonnement avancé)</span></td>
+                </tr>
+                <tr>
+                    <td>Llama 3.1 70B</td>
+                    <td>70B</td>
+                    <td>5-8 tokens/s</td>
+                    <td><span class="badge badge-yellow">Utilisable (lent)</span></td>
+                </tr>
+                <tr>
+                    <td>Mixtral 8x7B</td>
+                    <td>47B</td>
+                    <td>8-12 tokens/s</td>
+                    <td><span class="badge badge-green">Correct</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="box box-info">
+            <strong>Que signifient ces chiffres ?</strong>
+            25-40 tokens/seconde ≈ lecture d'un texte à vitesse normale. Un modèle 7B comme Mistral
+            est capable de répondre à des questions, résumer des documents, analyser des appels.
+            Un modèle 32B comme DeepSeek R1 offre des capacités de raisonnement proches des meilleurs modèles cloud.
+            Le facteur clé est la <strong>bande passante mémoire</strong> du M4 Pro (273 Go/s), bien supérieure au M4 standard (120 Go/s).
+        </div>
+
+        <h4>Installation d'Ollama</h4>
+        <pre><code><span class="comment"># Installer</span>
+brew install ollama
+
+<span class="comment"># Démarrer le service</span>
+ollama serve
+
+<span class="comment"># Télécharger un modèle (première fois uniquement)</span>
+ollama pull mistral:7b        <span class="comment"># ~4 Go</span>
+ollama pull deepseek-r1:32b   <span class="comment"># ~19 Go</span>
+
+<span class="comment"># Tester</span>
+ollama run mistral:7b "Résume en une phrase : DAP est un courtier en assurances."
+
+<span class="comment"># L'API REST est disponible sur http://localhost:11434</span>
+<span class="comment"># → Utilisable depuis n'importe quel outil via un appel HTTP</span></code></pre>
+
+        <h3>2.3 Approche hybride recommandée</h3>
+        <p>
+            Plutôt que de tout centraliser en local, nous recommandons une <strong>approche hybride</strong> —
+            le Mac Mini pour ce qui a besoin de puissance, contrôle ou confidentialité ; le cloud pour le reste :
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Service</th>
+                    <th>Hébergement</th>
+                    <th>Raison</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Outils d'automatisation (n8n, etc.)</td>
+                    <td><strong>Mac Mini</strong> (local)</td>
+                    <td>Contrôle total, pas de limite d'exécution</td>
+                </tr>
+                <tr>
+                    <td>Bases de données</td>
+                    <td><strong>Mac Mini</strong> (local)</td>
+                    <td>Données en local = RGPD simplifié</td>
+                </tr>
+                <tr>
+                    <td>LLM locaux (Ollama)</td>
+                    <td><strong>Mac Mini</strong> (local)</td>
+                    <td>Pas de coût par requête, données restent locales</td>
+                </tr>
+                <tr>
+                    <td>APIs internes</td>
+                    <td><strong>Mac Mini</strong> (local)</td>
+                    <td>Performance, latence faible</td>
+                </tr>
+                <tr>
+                    <td>Claude API (tâches complexes)</td>
+                    <td><strong>Cloud</strong> (Anthropic)</td>
+                    <td>Quand un LLM local ne suffit pas</td>
+                </tr>
+                <tr>
+                    <td>Téléphonie (Twilio, Telavox)</td>
+                    <td><strong>Cloud</strong></td>
+                    <td>Services cloud par nature</td>
+                </tr>
+                <tr>
+                    <td>Email (Outlook)</td>
+                    <td><strong>Cloud</strong></td>
+                    <td>Ne jamais héberger un serveur mail</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>2.4 Test minimal avant migration complète</h3>
+        <div class="box box-success">
+            <strong>Oui, on peut tester une version minimale d'abord</strong>
+            <ol style="margin-left: 20px; margin-top: 8px;">
+                <li>Installer un ou deux services Docker sur le Mac Mini (ex : un outil d'automatisation + une base de données)</li>
+                <li>Vérifier que Cloudflare Tunnel fonctionne (accès depuis l'extérieur)</li>
+                <li>Tester Ollama avec un prompt simple</li>
+                <li>Valider la stabilité pendant 1 semaine</li>
+                <li>Migrer progressivement les autres services</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- ============ SECTION 3 ============ -->
+    <div class="section" id="section3">
+        <h2><span class="section-number">3</span> Maintenance et administration au quotidien</h2>
+
+        <h3>3.1 Mises à jour</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Composant</th>
+                    <th>Fréquence</th>
+                    <th>Comment</th>
+                    <th>Risque</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>macOS — correctifs de sécurité</strong></td>
+                    <td>Automatique</td>
+                    <td>Activés par défaut, ne redémarrent pas</td>
+                    <td><span class="badge badge-green">Faible</span></td>
+                </tr>
+                <tr>
+                    <td><strong>macOS — mises à jour majeures</strong></td>
+                    <td>Manuelle, 1-2x/an</td>
+                    <td>Désactivées en auto. Appliquer après vérification de compatibilité Docker</td>
+                    <td><span class="badge badge-yellow">Moyen</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Docker / OrbStack</strong></td>
+                    <td>Mensuelle</td>
+                    <td><code>brew upgrade orbstack</code></td>
+                    <td><span class="badge badge-green">Faible</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Services Docker (n8n, etc.)</strong></td>
+                    <td>Mensuelle</td>
+                    <td><code>docker compose pull && docker compose up -d</code></td>
+                    <td><span class="badge badge-green">Faible</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Ollama + modèles</strong></td>
+                    <td>Trimestrielle</td>
+                    <td><code>brew upgrade ollama</code></td>
+                    <td><span class="badge badge-green">Faible</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3.2 Sauvegardes automatisées</h3>
+        <p>Un script de backup tourne chaque nuit à 3h du matin, sauvegardant les bases de données et les volumes Docker.</p>
+
+        <p><strong>Stratégie de backup en 3 niveaux :</strong></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Niveau</th>
+                    <th>Outil</th>
+                    <th>Fréquence</th>
+                    <th>Destination</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1. Backup applicatif</td>
+                    <td>Script bash (cron)</td>
+                    <td>Quotidien 3h</td>
+                    <td>Disque local</td>
+                </tr>
+                <tr>
+                    <td>2. Backup système</td>
+                    <td>Time Machine</td>
+                    <td>Toutes les heures</td>
+                    <td>Disque USB externe</td>
+                </tr>
+                <tr>
+                    <td>3. Backup hors-site</td>
+                    <td>Restic → Backblaze B2</td>
+                    <td>Quotidien (nuit)</td>
+                    <td>Cloud (~5 €/mois)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="box box-warning">
+            <strong>Point critique pour les services avec chiffrement</strong>
+            Certains outils (comme n8n) utilisent une clé de chiffrement pour protéger les credentials stockés.
+            Si cette clé est perdue, les credentials deviennent illisibles.
+            <strong>Toujours sauvegarder les clés de chiffrement séparément</strong> (gestionnaire de mots de passe, coffre-fort).
+        </div>
+
+        <h3>3.3 Surveillance des performances</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Outil</th>
+                    <th>Ce qu'il surveille</th>
+                    <th>Accès</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Uptime Kuma</strong></td>
+                    <td>Disponibilité de chaque service (alertes email/Teams si panne)</td>
+                    <td>Interface web (Docker)</td>
+                </tr>
+                <tr>
+                    <td><strong>Glances</strong></td>
+                    <td>CPU, RAM, disque, réseau en temps réel</td>
+                    <td>Interface web sur port 61208</td>
+                </tr>
+                <tr>
+                    <td><strong>Stats</strong></td>
+                    <td>Monitoring visuel dans la barre de menu macOS</td>
+                    <td>Menu bar macOS</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3.4 Responsabilité de l'administration</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tâche</th>
+                    <th>Fréquence</th>
+                    <th>Temps estimé</th>
+                    <th>Compétence requise</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Vérifier les alertes Uptime Kuma</td>
+                    <td>Quotidien</td>
+                    <td>2 min</td>
+                    <td>Basique</td>
+                </tr>
+                <tr>
+                    <td>Mettre à jour les services Docker</td>
+                    <td>Mensuel</td>
+                    <td>15 min</td>
+                    <td>Intermédiaire</td>
+                </tr>
+                <tr>
+                    <td>Vérifier les backups</td>
+                    <td>Hebdomadaire</td>
+                    <td>5 min</td>
+                    <td>Basique</td>
+                </tr>
+                <tr>
+                    <td>Mise à jour macOS majeure</td>
+                    <td>1-2x par an</td>
+                    <td>1-2h</td>
+                    <td>Intermédiaire</td>
+                </tr>
+                <tr>
+                    <td>Résolution d'incident</td>
+                    <td>Ponctuel</td>
+                    <td>Variable</td>
+                    <td>Avancé (rare)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="box box-info">
+            <strong>Formation nécessaire ?</strong>
+            Non, pas de formation externe nécessaire. Les commandes sont documentées dans ce rapport
+            et le guide technique associé. L'administration quotidienne se résume à vérifier un dashboard web
+            et lancer occasionnellement une commande <code>docker compose pull && docker compose up -d</code>.
+            En cas de problème complexe, un intervenant externe ponctuel (freelance DevOps, ~50-80 €/h)
+            peut dépanner à distance via SSH.
+        </div>
+    </div>
+
+    <!-- ============ SECTION 4 ============ -->
+    <div class="section" id="section4">
+        <h2><span class="section-number">4</span> Coûts et logistique</h2>
+
+        <h3>4.1 Budget détaillé</h3>
+
+        <div class="comparison-grid">
+            <div class="comparison-card">
+                <h4>Option Intermédiaire</h4>
+                <table style="font-size: 0.85rem;">
+                    <tr><td>Mac Mini M4 Pro 24Go/512Go</td><td style="text-align:right"><strong>1 649 €</strong></td></tr>
+                    <tr><td>Onduleur APC BX950MI-FR</td><td style="text-align:right">100 €</td></tr>
+                    <tr><td>Disque externe USB 1 To (Time Machine)</td><td style="text-align:right">60 €</td></tr>
+                    <tr><td>Adaptateur HDMI factice</td><td style="text-align:right">10 €</td></tr>
+                    <tr><td>Câble Ethernet Cat 6 (3m)</td><td style="text-align:right">8 €</td></tr>
+                    <tr style="border-top: 2px solid var(--gray-300);">
+                        <td><strong>Total investissement</strong></td>
+                        <td style="text-align:right"><strong>~1 827 €</strong></td>
+                    </tr>
+                </table>
+                <p style="margin-top: 10px; font-size: 0.85rem; color: var(--gray-600);">
+                    LLM jusqu'à 13B confortables, 30B limités
+                </p>
+            </div>
+            <div class="comparison-card recommended">
+                <h4>Option Performance (48 Go / 1 To)</h4>
+                <table style="font-size: 0.85rem;">
+                    <tr><td>Mac Mini M4 Pro 48Go/1To</td><td style="text-align:right"><strong>2 199 €</strong></td></tr>
+                    <tr><td>Onduleur APC BX1200MI-FR</td><td style="text-align:right">130 €</td></tr>
+                    <tr><td>Disque externe USB 1 To (Time Machine)</td><td style="text-align:right">60 €</td></tr>
+                    <tr><td>Adaptateur HDMI factice</td><td style="text-align:right">10 €</td></tr>
+                    <tr><td>Câble Ethernet Cat 6 (3m)</td><td style="text-align:right">8 €</td></tr>
+                    <tr style="border-top: 2px solid var(--gray-300);">
+                        <td><strong>Total investissement</strong></td>
+                        <td style="text-align:right"><strong>~2 407 €</strong></td>
+                    </tr>
+                </table>
+                <p style="margin-top: 10px; font-size: 0.85rem; color: var(--gray-600);">
+                    LLM jusqu'à 70B, multi-services simultanés, pérenne
+                </p>
+            </div>
+        </div>
+
+        <h4>Détail des coûts récurrents</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Poste</th>
+                    <th>Coût mensuel</th>
+                    <th>Coût annuel</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Électricité (Mac Mini M4 Pro ~15W moyen, 24/7)</td>
+                    <td>~5 €</td>
+                    <td>~60 €</td>
+                </tr>
+                <tr>
+                    <td>Backup cloud (Backblaze B2, ~10 Go)</td>
+                    <td>~1 €</td>
+                    <td>~12 €</td>
+                </tr>
+                <tr>
+                    <td>Nom de domaine (.be ou .com)</td>
+                    <td>~1 €</td>
+                    <td>~10-15 €</td>
+                </tr>
+                <tr>
+                    <td>Cloudflare Tunnel</td>
+                    <td>Gratuit</td>
+                    <td>Gratuit</td>
+                </tr>
+                <tr>
+                    <td>OrbStack / Docker</td>
+                    <td>Gratuit*</td>
+                    <td>Gratuit*</td>
+                </tr>
+                <tr>
+                    <td>SIM data 4G (routeur backup, optionnel)</td>
+                    <td>~10 €</td>
+                    <td>~120 €</td>
+                </tr>
+                <tr style="background: var(--accent-light) !important; font-weight: 600;">
+                    <td>Total (sans 4G backup)</td>
+                    <td>~7 €</td>
+                    <td>~85 €</td>
+                </tr>
+                <tr style="background: var(--accent-light) !important; font-weight: 600;">
+                    <td>Total (avec 4G backup)</td>
+                    <td>~17 €</td>
+                    <td>~205 €</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Comparaison avec le VPS Hostinger actuel</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Mac Mini M4 Pro (local)</th>
+                    <th>VPS Hostinger</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Coût année 1</td><td>~2 490 € (achat + récurrent)</td><td>~120-360 €</td></tr>
+                <tr><td>Coût année 2</td><td>~85 €</td><td>~120-360 €</td></tr>
+                <tr><td>Coût année 3</td><td>~85 €</td><td>~120-360 €</td></tr>
+                <tr style="font-weight: 600;"><td>Total sur 3 ans</td><td>~2 660 €</td><td>~360-1 080 €</td></tr>
+                <tr><td>Performance CPU</td><td><span class="badge badge-green">14 cœurs dédiés</span></td><td><span class="badge badge-yellow">2-4 cœurs partagés</span></td></tr>
+                <tr><td>RAM</td><td><span class="badge badge-green">48 Go dédiés</span></td><td><span class="badge badge-yellow">4-8 Go</span></td></tr>
+                <tr><td>Bande passante mémoire</td><td><span class="badge badge-green">273 Go/s</span></td><td><span class="badge badge-yellow">~50 Go/s</span></td></tr>
+                <tr><td>LLM local possible</td><td><span class="badge badge-green">Oui (jusqu'à 70B)</span></td><td><span class="badge badge-red">Non</span></td></tr>
+                <tr><td>Données en local</td><td><span class="badge badge-green">Oui (RGPD+)</span></td><td><span class="badge badge-yellow">Chez un tiers</span></td></tr>
+            </tbody>
+        </table>
+
+        <div class="box box-info">
+            <strong>Point clé</strong>
+            L'investissement initial est plus élevé qu'un VPS, mais le vrai avantage n'est pas financier :
+            c'est la possibilité de faire tourner des LLM puissants en local (impossible sur un VPS standard),
+            d'avoir les données sous notre contrôle (RGPD), et de disposer d'une machine de production
+            sans aucune limite de CPU, RAM ou bande passante.
+        </div>
+
+        <h3>4.2 Emplacement physique</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Contrainte</th>
+                    <th>Exigence</th>
+                    <th>Commentaire</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Emplacement</strong></td>
+                    <td>Local technique ou armoire réseau</td>
+                    <td>Près du routeur pour câble Ethernet direct. Peut aussi être sur une étagère discrète.</td>
+                </tr>
+                <tr>
+                    <td><strong>Électricité</strong></td>
+                    <td>1 prise secteur (via l'onduleur)</td>
+                    <td>Consommation : 5-15W = négligeable</td>
+                </tr>
+                <tr>
+                    <td><strong>Refroidissement</strong></td>
+                    <td>Aucun besoin particulier</td>
+                    <td>Le Mac Mini M4 Pro est quasi silencieux et ne chauffe pratiquement pas. Pas besoin de climatisation.</td>
+                </tr>
+                <tr>
+                    <td><strong>Réseau</strong></td>
+                    <td>Câble Ethernet vers le routeur</td>
+                    <td>Wi-Fi possible mais Ethernet recommandé pour la stabilité</td>
+                </tr>
+                <tr>
+                    <td><strong>Sécurité physique</strong></td>
+                    <td>Endroit non accessible au public</td>
+                    <td>Un bureau fermé suffit. Le Mac Mini est petit et discret (12,7 cm × 12,7 cm).</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ============ SECTION 5 ============ -->
+    <div class="section" id="section5">
+        <h2><span class="section-number">5</span> Risques et solutions de secours</h2>
+
+        <h3>5.1 Matrice des risques</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Risque</th>
+                    <th>Probabilité</th>
+                    <th>Impact</th>
+                    <th>Mitigation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Coupure Internet du bureau</strong></td>
+                    <td><span class="badge badge-yellow">Moyen</span></td>
+                    <td><span class="badge badge-red">Élevé</span></td>
+                    <td>
+                        <strong>Option A :</strong> Routeur 4G de secours (~50 € + 10 €/mois SIM data) configuré en failover automatique<br>
+                        <strong>Option B :</strong> Accepter l'indisponibilité temporaire (si les coupures sont rares et courtes)
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Coupure de courant</strong></td>
+                    <td><span class="badge badge-green">Faible</span></td>
+                    <td><span class="badge badge-yellow">Moyen</span></td>
+                    <td>
+                        Onduleur (UPS) → 30-60 min d'autonomie pour un arrêt propre.<br>
+                        macOS s'éteint automatiquement à 20% batterie UPS.<br>
+                        Redémarrage auto configuré (<code>pmset autorestart</code>).
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Panne matérielle du Mac Mini</strong></td>
+                    <td><span class="badge badge-green">Très faible</span></td>
+                    <td><span class="badge badge-red">Élevé</span></td>
+                    <td>
+                        Garantie Apple 1 an (extensible AppleCare+ 3 ans, ~99 €).<br>
+                        Backups hors-site → restauration sur un autre Mac ou VPS en urgence.<br>
+                        <strong>Plan B</strong> : redéployer sur VPS en 1-2h grâce aux backups Docker.
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Intrusion / cyberattaque</strong></td>
+                    <td><span class="badge badge-green">Faible</span></td>
+                    <td><span class="badge badge-red">Élevé</span></td>
+                    <td>
+                        Cloudflare Tunnel = aucun port ouvert sur Internet.<br>
+                        SSH par clé uniquement (pas de mot de passe).<br>
+                        Firewall PF avec protection anti brute-force.<br>
+                        Mises à jour de sécurité automatiques.
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Perte de données</strong></td>
+                    <td><span class="badge badge-green">Très faible</span></td>
+                    <td><span class="badge badge-red">Critique</span></td>
+                    <td>
+                        3 niveaux de backup (local + Time Machine + cloud).<br>
+                        Backup quotidien automatique des bases de données.<br>
+                        Clés de chiffrement sauvegardées séparément.
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Mise à jour macOS qui casse Docker</strong></td>
+                    <td><span class="badge badge-yellow">Moyen</span></td>
+                    <td><span class="badge badge-yellow">Moyen</span></td>
+                    <td>
+                        Mises à jour majeures désactivées en automatique.<br>
+                        Procédure : arrêter les services → backup → mise à jour → vérification → redémarrage.
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Départ de la personne responsable</strong></td>
+                    <td><span class="badge badge-yellow">Possible</span></td>
+                    <td><span class="badge badge-yellow">Moyen</span></td>
+                    <td>
+                        Ce rapport + le guide technique = documentation complète.<br>
+                        Toute l'infrastructure est en Docker → facilement reprise par un tiers.<br>
+                        En dernier recours : migration retour vers VPS en quelques heures.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>5.2 Plan B — Solution cloud hybride</h3>
+        <div class="box box-info">
+            <strong>Plan B en cas de problème majeur avec le Mac Mini</strong>
+            <p style="margin-top: 8px;">
+                Si le Mac Mini tombe en panne durablement, nous pouvons redéployer les services sur un VPS en 1-2 heures :
+            </p>
+            <ol style="margin-left: 20px; margin-top: 8px;">
+                <li>Louer un VPS (Hostinger, Hetzner, OVH) — opérationnel en 5 min</li>
+                <li>Installer Docker + restaurer les backups depuis Backblaze B2</li>
+                <li>Mettre à jour le DNS Cloudflare pour pointer vers le nouveau serveur</li>
+                <li>Les services reprennent — seules les données entre le dernier backup et la panne sont perdues (max 24h)</li>
+            </ol>
+            <p style="margin-top: 8px;">
+                <strong>C'est l'un des grands avantages de Docker</strong> : l'infrastructure est portable.
+                Les mêmes fichiers <code>docker-compose.yml</code> fonctionnent sur n'importe quel serveur.
+            </p>
+        </div>
+    </div>
+
+    <!-- ============ SECTION 6 ============ -->
+    <div class="section" id="section6">
+        <h2><span class="section-number">6</span> Recommandations et prochaines étapes</h2>
+
+        <h3>6.1 Recommandation</h3>
+        <div class="box box-success">
+            <strong>Go — Nous recommandons de lancer le projet</strong>
+            <p style="margin-top: 8px;">
+                Le Mac Mini M4 Pro 48 Go est une solution fiable, puissante et adaptée aux ambitions de DAP.
+                L'investissement (~2 400 €) est maîtrisé, le risque est couvert grâce à Cloudflare Tunnel
+                et aux backups multi-niveaux. Avec 48 Go de RAM et 1 To de stockage, cette machine peut
+                héberger l'ensemble de nos outils actuels ET futurs, y compris des LLM performants en local.
+            </p>
+        </div>
+
+        <h3>6.2 Planning proposé — Déploiement en 3 phases</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="week">Semaine 1 — Préparation</div>
+                <h4>Achat et configuration initiale</h4>
+                <ul style="margin-left: 20px; font-size: 0.9rem;">
+                    <li>Commander le Mac Mini M4 Pro 48 Go / 1 To + accessoires</li>
+                    <li>Configurer macOS (headless, SSH, VNC, anti-veille)</li>
+                    <li>Installer Homebrew, OrbStack, Cloudflare Tunnel</li>
+                    <li>Configurer l'onduleur + Time Machine</li>
+                    <li>Mettre en place la sécurité (SSH par clé, firewall PF)</li>
+                </ul>
+            </div>
+            <div class="timeline-item">
+                <div class="week">Semaine 2 — Pilote</div>
+                <h4>Test en parallèle du VPS</h4>
+                <ul style="margin-left: 20px; font-size: 0.9rem;">
+                    <li>Déployer les premiers services via Docker Compose</li>
+                    <li>Installer Ollama + télécharger les modèles (Mistral 7B, DeepSeek R1 32B)</li>
+                    <li>Vérifier l'accès distant via Cloudflare Tunnel</li>
+                    <li>Mettre en place les backups automatiques + monitoring (Uptime Kuma)</li>
+                    <li>Test de coupure de courant : vérifier le redémarrage auto</li>
+                    <li>Laisser tourner 5-7 jours en parallèle du VPS</li>
+                </ul>
+            </div>
+            <div class="timeline-item">
+                <div class="week">Semaine 3 — Migration</div>
+                <h4>Bascule progressive vers le Mac Mini</h4>
+                <ul style="margin-left: 20px; font-size: 0.9rem;">
+                    <li>Migrer les services de production un par un</li>
+                    <li>Recréer les credentials et mettre à jour les webhooks</li>
+                    <li>Tester chaque service après migration</li>
+                    <li>Configurer le backup cloud (Restic → Backblaze B2)</li>
+                    <li>Garder le VPS Hostinger en standby pendant 2 semaines supplémentaires</li>
+                    <li>Couper le VPS une fois la stabilité confirmée</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>6.3 Démonstration / Pilote</h3>
+        <div class="box box-info">
+            <strong>Oui, un pilote est prévu (Semaine 2)</strong>
+            <p style="margin-top: 8px;">
+                Avant de migrer quoi que ce soit en production, nous ferons tourner le Mac Mini
+                en parallèle du VPS Hostinger pendant au moins une semaine. Cela permet de :
+            </p>
+            <ul style="margin-left: 20px; margin-top: 5px;">
+                <li>Valider la stabilité de la connexion Internet du bureau</li>
+                <li>Vérifier le bon fonctionnement de Cloudflare Tunnel</li>
+                <li>Tester des services Docker de bout en bout</li>
+                <li>S'assurer que le redémarrage automatique fonctionne après coupure de courant</li>
+                <li>Mesurer les performances d'Ollama sur un cas réel</li>
+            </ul>
+            <p style="margin-top: 8px;">
+                <strong>Aucun risque pour la production</strong> : le VPS reste actif tant que le pilote n'est pas concluant.
+            </p>
+        </div>
+    </div>
+
+    <!-- ============ ARCHITECTURE ============ -->
+    <div class="section">
+        <h2>Architecture cible</h2>
+        <div class="architecture">
+            <div class="arch-diagram">
+┌─────────────────────────────────────────────────────────┐
+│                      INTERNET                           │
+│                                                         │
+│  Twilio ──────┐    Telavox ──────┐    Navigateurs ──┐  │
+│               │                  │                   │  │
+└───────────────┼──────────────────┼───────────────────┼──┘
+                │                  │                   │
+         ┌──────▼──────────────────▼───────────────────▼──┐
+         │              CLOUDFLARE TUNNEL                  │
+         │         (HTTPS automatique, DDoS protection)    │
+         │              aucun port ouvert                  │
+         └──────────────────────┬──────────────────────────┘
+                                │
+         ┌──────────────────────▼──────────────────────────┐
+         │          MAC MINI M4 PRO 48 Go (local)          │
+         │                                                 │
+         │   ┌─────────────────────────────────────────┐   │
+         │   │            OrbStack (Docker)             │   │
+         │   │                                         │   │
+         │   │   ┌───────────┐    ┌──────────────┐     │   │
+         │   │   │  Services │    │  PostgreSQL   │     │   │
+         │   │   │  (n8n,    │───▶│  + autres DB  │     │   │
+         │   │   │  APIs...) │    │  :5432        │     │   │
+         │   │   └───────────┘    └──────────────┘     │   │
+         │   │                                         │   │
+         │   │   ┌───────────┐    ┌──────────────┐     │   │
+         │   │   │  Uptime   │    │   Glances    │     │   │
+         │   │   │  Kuma     │    │  (monitoring) │     │   │
+         │   │   │  :3001    │    │  :61208       │     │   │
+         │   │   └───────────┘    └──────────────┘     │   │
+         │   └─────────────────────────────────────────┘   │
+         │                                                 │
+         │   ┌───────────┐                                 │
+         │   │  Ollama   │  ← LLM locaux (7B → 70B)       │
+         │   │  :11434   │    Mistral, DeepSeek R1, etc.   │
+         │   └───────────┘                                 │
+         │                                                 │
+         │   ┌───────────────────┐                         │
+         │   │  Time Machine     │──▶ Disque USB externe   │
+         │   │  + backup.sh      │──▶ Backblaze B2 (cloud) │
+         │   └───────────────────┘                         │
+         │                                                 │
+         │   ┌───────────┐                                 │
+         │   │    UPS    │  ← Onduleur APC (30-60 min)     │
+         │   └───────────┘                                 │
+         └─────────────────────────────────────────────────┘
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ CHECKLIST ============ -->
+    <div class="section" id="checklist">
+        <h2>Checklist des actions à mener</h2>
+
+        <ul class="checklist">
+            <li class="phase-header">PHASE 0 — Validation (avant achat)</li>
+            <li><strong>Soumettre ce rapport à Christophe</strong> pour validation du budget et de l'approche — <em>Responsable : Ihsane & Etienne</em></li>
+            <li><strong>Vérifier la connexion Internet du bureau</strong> : débit upload (min. 20 Mbps), stabilité — <em>Responsable : Ihsane & Etienne</em></li>
+            <li><strong>Identifier l'emplacement physique</strong> du Mac Mini (près du routeur, prise électrique) — <em>Responsable : Ihsane & Etienne</em></li>
+            <li><strong>Valider le budget</strong> : ~2 400 € investissement initial — <em>Décision : Christophe</em></li>
+
+            <li class="phase-header">PHASE 1 — Achat et installation (Semaine 1)</li>
+            <li><strong>Commander le matériel</strong> : Mac Mini M4 Pro 48Go/1To + onduleur + disque USB + adaptateur HDMI + câble Ethernet</li>
+            <li><strong>Configurer macOS</strong> : compte admin, anti-veille, redémarrage auto, auto-login</li>
+            <li><strong>Activer l'accès distant</strong> : SSH + VNC + installer adaptateur HDMI factice</li>
+            <li><strong>Installer Homebrew</strong></li>
+            <li><strong>Installer OrbStack</strong> (Docker)</li>
+            <li><strong>Configurer Cloudflare</strong> : compte + domaine + tunnel + service au démarrage</li>
+            <li><strong>Sécuriser</strong> : SSH par clé, firewall PF, mises à jour sécurité auto</li>
+            <li><strong>Configurer l'onduleur</strong> : brancher USB, configurer arrêt auto à 20%</li>
+            <li><strong>Configurer Time Machine</strong> sur disque externe USB</li>
+
+            <li class="phase-header">PHASE 2 — Pilote (Semaine 2)</li>
+            <li><strong>Déployer les premiers services</strong> via Docker Compose</li>
+            <li><strong>Installer Ollama</strong> + télécharger Mistral 7B et DeepSeek R1 32B</li>
+            <li><strong>Vérifier l'accès externe</strong> via Cloudflare Tunnel</li>
+            <li><strong>Mettre en place les backups</strong> : script bash + crontab</li>
+            <li><strong>Installer le monitoring</strong> : Uptime Kuma + Glances</li>
+            <li><strong>Test de coupure de courant</strong> : débrancher, vérifier le redémarrage auto</li>
+            <li><strong>Laisser tourner 5-7 jours</strong> en parallèle du VPS</li>
+
+            <li class="phase-header">PHASE 3 — Migration (Semaine 3)</li>
+            <li><strong>Migrer les services de production</strong> un par un depuis Hostinger</li>
+            <li><strong>Recréer les credentials</strong> (API keys Twilio, Claude, ElevenLabs, Telavox, etc.)</li>
+            <li><strong>Mettre à jour les webhooks</strong> pour pointer vers les nouvelles URLs</li>
+            <li><strong>Tester chaque service</strong> après migration</li>
+            <li><strong>Configurer le backup cloud</strong> (Restic → Backblaze B2)</li>
+            <li><strong>Garder le VPS Hostinger actif</strong> pendant 2 semaines supplémentaires</li>
+            <li><strong>Couper le VPS</strong> une fois la stabilité confirmée</li>
+        </ul>
+    </div>
+
+    <!-- ============ ANNEXE : SÉCURITÉ ============ -->
+    <div class="section">
+        <h2>Annexe — Configuration sécurité détaillée</h2>
+
+        <h3>Firewall PF (protection anti-brute-force)</h3>
+        <pre><code><span class="comment"># Ajouter dans /etc/pf.conf</span>
+
+<span class="comment"># Table pour les IPs bannies automatiquement</span>
+table &lt;bruteforce&gt; persist
+
+<span class="comment"># Bloquer les IPs bannies</span>
+block quick from &lt;bruteforce&gt;
+
+<span class="comment"># SSH : max 3 tentatives en 30 secondes, sinon ban</span>
+pass in on en0 proto tcp to port 2222 flags S/SA \
+  keep state (max-src-conn 5, max-src-conn-rate 3/30, \
+  overload &lt;bruteforce&gt; flush global)
+
+<span class="comment"># Activer</span>
+sudo pfctl -f /etc/pf.conf
+sudo pfctl -e</code></pre>
+
+        <h3>SSH — Authentification par clé uniquement</h3>
+        <pre><code><span class="comment"># Sur votre ordinateur de travail : générer une clé</span>
+ssh-keygen -t ed25519 -C "admin@dap"
+
+<span class="comment"># Copier la clé sur le Mac Mini</span>
+ssh-copy-id -p 2222 admin-dap@IP_MAC_MINI
+
+<span class="comment"># Sur le Mac Mini : désactiver l'authentification par mot de passe</span>
+<span class="comment"># Éditer /etc/ssh/sshd_config :</span>
+Port 2222
+PasswordAuthentication no
+PermitRootLogin no
+AllowUsers admin-dap</code></pre>
+
+        <h3>Mises à jour — Configuration recommandée</h3>
+        <pre><code><span class="comment"># Activer les mises à jour de sécurité automatiques</span>
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
+
+<span class="comment"># Désactiver les mises à jour majeures automatiques</span>
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticallyInstallMacOSUpdates -bool false
+
+<span class="comment"># Garder le téléchargement automatique (pour être prêt)</span>
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticDownload -bool true</code></pre>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>
+            <strong>Étude de faisabilité — Mac Mini comme serveur local DAP</strong><br>
+            Préparé par Ihsane & Etienne — 10 mars 2026 — v1.1<br>
+            Document accompagné d'un guide technique détaillé : <em>Mac-Mini-M4-Serveur-Guide.md</em>
+        </p>
+    </div>
+
+</div>
+
+</body>
+</html>

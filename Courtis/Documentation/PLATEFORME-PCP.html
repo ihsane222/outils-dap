@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plateforme PCP — Certification Assurances Belgique</title>
+<style>
+:root{--b:#2563eb;--bf:#1a2f5e;--bl:#dbeafe;--v:#15803d;--vl:#dcfce7;--o:#c2410c;--ol:#ffedd5;--p:#7c3aed;--pl:#ede9fe;--r:#b91c1c;--rl:#fee2e2;--g:#64748b;--bg:#f1f5f9;--sh:0 2px 8px rgba(0,0,0,.08);--shl:0 8px 20px rgba(0,0,0,.12);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:#1e293b;line-height:1.65;}
+
+/* NAV */
+.nav{background:var(--bf);display:flex;align-items:center;height:52px;padding:0 20px;gap:4px;position:sticky;top:0;z-index:99;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.nav .logo{color:#fff;font-weight:900;font-size:.95rem;margin-right:12px;white-space:nowrap;}
+.nav a{color:rgba(255,255,255,.6);text-decoration:none;font-size:.78rem;font-weight:600;padding:5px 12px;border-radius:20px;transition:.2s;white-space:nowrap;}
+.nav a:hover,.nav a.on{background:rgba(255,255,255,.15);color:#fff;}
+.nav a.exam-link{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);}
+
+/* SECTIONS */
+.sec{display:none;}.sec.on{display:block;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--bf),var(--b),#3b82f6);color:#fff;padding:56px 24px;text-align:center;}
+.hero h1{font-size:2rem;font-weight:900;margin-bottom:8px;}
+.hero p{opacity:.8;max-width:500px;margin:0 auto 40px;font-size:.95rem;}
+
+/* PATH */
+.path{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;max-width:860px;margin:0 auto;}
+.pcard{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.18);border-radius:16px;padding:24px 20px;width:180px;text-align:center;cursor:pointer;transition:.25s;}
+.pcard:hover{background:rgba(255,255,255,.18);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.3);}
+.pcard .pi{font-size:2rem;margin-bottom:10px;}
+.pcard .pn{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.55;}
+.pcard .pl{font-size:.9rem;font-weight:800;margin:4px 0;}
+.pcard .ps{font-size:.72rem;opacity:.6;}
+.parrow{color:rgba(255,255,255,.25);font-size:1.3rem;display:flex;align-items:center;}
+
+/* CONTENT */
+.wrap{max-width:840px;margin:0 auto;padding:32px 24px 80px;}
+
+/* BANNER */
+.banner{border-radius:14px;padding:24px 28px;color:#fff;margin-bottom:32px;display:flex;align-items:center;gap:18px;box-shadow:var(--shl);}
+.banner.b1{background:linear-gradient(135deg,#1d4ed8,#3b82f6);}
+.banner.b2{background:linear-gradient(135deg,#5b21b6,#7c3aed);}
+.banner.b3{background:linear-gradient(135deg,#15803d,#22c55e);}
+.banner .bi{font-size:2.2rem;}
+.banner h2{font-size:1.2rem;font-weight:900;margin-bottom:2px;}
+.banner p{opacity:.8;font-size:.85rem;}
+
+/* ACCORDION */
+.acc{background:#fff;border-radius:12px;margin-bottom:12px;box-shadow:var(--sh);overflow:hidden;}
+.acc-head{padding:16px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:.95rem;color:var(--bf);transition:.2s;user-select:none;}
+.acc-head:hover{background:#f8fafc;}
+.acc-head .arr{transition:transform .2s;font-size:.8rem;color:var(--g);}
+.acc.open .acc-head .arr{transform:rotate(90deg);}
+.acc-body{display:none;padding:0 20px 20px;}
+.acc.open .acc-body{display:block;}
+
+/* BLOCS */
+.info{border-radius:10px;padding:16px 18px;margin:16px 0;font-size:.9rem;line-height:1.6;position:relative;padding-left:48px;}
+.info::before{position:absolute;left:14px;top:14px;font-size:1.2rem;}
+.info.blue{background:var(--bl);border-left:5px solid var(--b);}
+.info.blue::before{content:'💡';}
+.info.red{background:var(--rl);border-left:5px solid var(--r);}
+.info.red::before{content:'⚠️';}
+.info.green{background:var(--vl);border-left:5px solid var(--v);}
+.info.green::before{content:'✅';}
+.info.orange{background:var(--ol);border-left:5px solid var(--o);}
+.info.orange::before{content:'📌';}
+.info strong{font-weight:800;}
+.keypoint{background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #f59e0b;border-radius:12px;padding:18px 20px;margin:18px 0;font-size:.95rem;font-weight:700;color:#92400e;text-align:center;box-shadow:0 2px 8px rgba(245,158,11,.2);}
+.keypoint .kp-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px;font-weight:800;color:#b45309;}
+.formule{background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:14px 18px;margin:14px 0;font-family:monospace;font-size:.95rem;font-weight:700;color:var(--bf);text-align:center;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.86rem;margin:12px 0;}
+th{background:#f1f5f9;padding:8px 12px;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--g);border-bottom:2px solid #e2e8f0;}
+td{padding:8px 12px;border-bottom:1px solid #f1f5f9;vertical-align:top;}
+tr:last-child td{border:none;}
+
+/* SCHEMA */
+.sch{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0;}
+.sb{flex:1;min-width:130px;background:#f8fafc;border:2px solid #e2e8f0;border-radius:10px;padding:12px;text-align:center;}
+.sb .sl{font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--g);margin-bottom:4px;}
+.sb .sv{font-size:.9rem;font-weight:800;color:var(--bf);}
+.sb.v{border-color:var(--v);background:var(--vl);}.sb.v .sv{color:var(--v);}
+.sb.o{border-color:var(--o);background:var(--ol);}.sb.o .sv{color:var(--o);}
+.sb.p{border-color:var(--p);background:var(--pl);}.sb.p .sv{color:var(--p);}
+
+/* PILLS */
+.pills{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:12px 0;}
+.pill{border-radius:10px;padding:14px;text-align:center;}
+.pill .pi2{font-size:1.3rem;margin-bottom:6px;}
+.pill .pt{font-size:.78rem;font-weight:800;margin-bottom:2px;}
+.pill .pd{font-size:.72rem;opacity:.8;}
+.pill.c1{background:var(--bl);color:var(--bf);}
+.pill.c2{background:var(--ol);color:var(--o);}
+.pill.c3{background:var(--pl);color:var(--p);}
+.pill.c4{background:var(--vl);color:var(--v);}
+
+/* MEMO GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:14px 0;}
+.mc{background:#fff;border-radius:10px;padding:16px;box-shadow:var(--sh);border-top:3px solid var(--b);}
+.mc.v{border-top-color:var(--v);}.mc.o{border-top-color:var(--o);}.mc.r{border-top-color:var(--r);}
+.mc .ml{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g);margin-bottom:4px;}
+.mc .mv{font-size:1.05rem;font-weight:900;color:var(--bf);}
+.mc.v .mv{color:var(--v);}.mc.o .mv{color:var(--o);}
+.mc .ms{font-size:.75rem;color:var(--g);margin-top:3px;}
+
+/* CTA */
+.cta{background:linear-gradient(135deg,var(--bf),var(--b));color:#fff;border-radius:14px;padding:28px;text-align:center;margin-top:32px;}
+.cta h3{font-size:1.05rem;font-weight:800;margin-bottom:6px;}
+.cta p{opacity:.8;font-size:.85rem;margin-bottom:14px;}
+.bw{background:#fff;color:var(--bf);padding:10px 24px;border-radius:10px;font-weight:800;cursor:pointer;border:none;font-size:.85rem;margin:4px;transition:.2s;}
+.bw:hover{background:#e0e7ff;}
+
+/* TIPS */
+.tips{max-width:800px;margin:36px auto 0;padding:0 24px;}
+.tips h3{font-size:1rem;font-weight:800;color:var(--bf);margin-bottom:12px;}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.tip{background:#fff;border-radius:10px;padding:14px;box-shadow:var(--sh);border-top:3px solid var(--b);}
+.tip.v{border-top-color:var(--v);}
+.tip .tt{font-size:.72rem;font-weight:700;text-transform:uppercase;color:var(--g);margin-bottom:4px;}
+.tip .tv{font-size:.88rem;}
+
+h4{font-size:.92rem;font-weight:700;color:var(--bf);margin:14px 0 6px;}
+p{margin-bottom:8px;font-size:.9rem;}
+ul,ol{margin:0 0 10px 18px;font-size:.88rem;}
+li{margin-bottom:3px;}
+
+/* ═══ EXAM ═══ */
+.exam-top{background:#fff;border-bottom:2px solid #e2e8f0;padding:0 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:52px;z-index:90;height:56px;gap:16px;box-shadow:var(--sh);}
+.etitle{font-size:.88rem;font-weight:700;color:var(--bf);flex:1;}
+.eprog{flex:2;display:flex;align-items:center;gap:10px;}
+.ebar{flex:1;height:7px;background:#e2e8f0;border-radius:4px;overflow:hidden;}
+.efill{height:100%;background:var(--b);border-radius:4px;transition:width .3s;width:0%;}
+.elbl{font-size:.75rem;font-weight:700;color:var(--g);white-space:nowrap;}
+.etimer{font-size:1.05rem;font-weight:800;color:var(--bf);display:flex;align-items:center;gap:6px;}
+.etimer.warn{color:var(--r);animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+
+.qcard{background:#fff;border-radius:14px;padding:24px;margin-bottom:16px;box-shadow:var(--sh);border-left:5px solid #e2e8f0;transition:.2s;}
+.qcard.ans{border-left-color:var(--b);}
+.qcard.ok{border-left-color:var(--v);background:#f0fdf4;}
+.qcard.ko{border-left-color:var(--r);background:#fff5f5;}
+.qn{width:28px;height:28px;border-radius:50%;background:#f1f5f9;color:var(--g);font-weight:800;font-size:.8rem;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.qcard.ans .qn{background:var(--bl);color:var(--b);}
+.qcard.ok .qn{background:var(--vl);color:var(--v);}
+.qcard.ko .qn{background:var(--rl);color:var(--r);}
+.qt{font-size:.95rem;font-weight:600;margin-bottom:16px;line-height:1.5;}
+.qopts{display:flex;flex-direction:column;gap:8px;}
+.qopt{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border-radius:8px;border:2px solid #e2e8f0;background:#fafafa;cursor:pointer;transition:.15s;font-size:.9rem;}
+.qopt:hover:not(.dis){border-color:#93c5fd;background:#eff6ff;}
+.qopt input{display:none;}
+.qopt .ol{width:24px;height:24px;border-radius:50%;background:#e2e8f0;color:#64748b;font-weight:700;font-size:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s;}
+.qopt.sel{border-color:var(--b);background:#eff6ff;}
+.qopt.sel .ol{background:var(--b);color:#fff;}
+.qopt.co{border-color:var(--v)!important;background:var(--vl)!important;}
+.qopt.co .ol{background:var(--v)!important;color:#fff!important;}
+.qopt.wo{border-color:var(--r)!important;background:var(--rl)!important;}
+.qopt.wo .ol{background:var(--r)!important;color:#fff!important;}
+.qopt.dis{cursor:default;pointer-events:none;}
+.qfb{display:none;margin-top:12px;padding:12px;border-radius:8px;font-size:.85rem;line-height:1.5;}
+.qfb.show{display:block;}
+.qfb.fbok{background:var(--vl);border:1px solid #86efac;color:#166534;}
+.qfb.fbko{background:var(--rl);border:1px solid #fca5a5;color:#991b1b;}
+
+.subzone{text-align:center;margin-top:32px;}
+.subcnt{font-size:.85rem;color:var(--g);margin-bottom:12px;}
+.subcnt span{font-weight:800;color:var(--bf);}
+.bsub{background:linear-gradient(135deg,var(--bf),var(--b));color:#fff;font-size:1rem;font-weight:800;padding:14px 40px;border-radius:12px;border:none;cursor:pointer;box-shadow:0 6px 16px rgba(37,99,235,.35);transition:.2s;}
+.bsub:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(37,99,235,.45);}
+.bsub:disabled{background:#94a3b8;box-shadow:none;cursor:default;transform:none;}
+
+/* RESULTS */
+.reshero{padding:48px 24px 32px;text-align:center;background:#fff;border-bottom:2px solid #e2e8f0;}
+.resmod{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g);margin-bottom:8px;}
+.restit{font-size:1.6rem;font-weight:900;color:var(--bf);margin-bottom:4px;}
+.ring{width:120px;height:120px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:24px auto;font-size:2.2rem;font-weight:900;}
+.ring.pass{background:var(--vl);color:var(--v);border:4px solid var(--v);}
+.ring.fail{background:var(--rl);color:var(--r);border:4px solid var(--r);}
+.ring .rsub{font-size:.75rem;font-weight:600;}
+.verd{display:inline-block;padding:6px 24px;border-radius:30px;font-weight:800;font-size:.95rem;margin-bottom:14px;}
+.verd.pass{background:var(--vl);color:var(--v);}
+.verd.fail{background:var(--rl);color:var(--r);}
+.rstats{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;margin:20px 0;}
+.stbox{text-align:center;}
+.stv{font-size:1.5rem;font-weight:900;color:var(--bf);}
+.stl{font-size:.7rem;color:var(--g);text-transform:uppercase;letter-spacing:.05em;}
+.bretry,.bhome{padding:10px 28px;border-radius:10px;font-weight:700;font-size:.88rem;cursor:pointer;transition:.2s;margin:4px;border:none;}
+.bretry{background:var(--b);color:#fff;}.bretry:hover{background:#1d4ed8;}
+.bhome{background:#f1f5f9;color:var(--bf);border:2px solid #e2e8f0;}.bhome:hover{background:#e2e8f0;}
+
+/* CHOOSE */
+.choose{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin:24px 0;}
+.chcard{background:#fff;border:2px solid #e2e8f0;border-radius:16px;padding:28px 24px;width:260px;text-align:center;cursor:pointer;transition:.25s;box-shadow:var(--sh);}
+.chcard:hover{border-color:var(--b);transform:translateY(-3px);box-shadow:var(--shl);}
+.chcard .ci{font-size:2rem;margin-bottom:12px;}
+.chcard .cm{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--g);}
+.chcard .ct{font-size:1rem;font-weight:800;color:var(--bf);margin:6px 0;}
+.chcard .cd{font-size:.82rem;color:var(--g);margin-bottom:14px;}
+.chcard .chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.chip{background:var(--bl);color:var(--b);font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:20px;}
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="logo">PCP Certification</div>
+  <a href="#" onclick="go('home')" id="n-home" class="on">Accueil</a>
+  <a href="#" onclick="go('m11')" id="n-m11">Module 1.1</a>
+  <a href="#" onclick="go('m12')" id="n-m12">Module 1.2</a>
+  <a href="#" onclick="go('memo')" id="n-memo">Memo</a>
+  <a href="#" onclick="go('exam')" id="n-exam" class="exam-link">Simulation Examen</a>
+</div>
+
+<!-- ══════════ HOME ══════════ -->
+<div id="home" class="sec on">
+<div class="hero">
+  <h1>Obtiens ton PCP en 4 etapes</h1>
+  <p>Formation acceleree pour reussir les 2 examens Certassur du premier coup. Zero superflu, 100% utile.</p>
+  <div class="path">
+    <div class="pcard" onclick="go('m11')"><div class="pi">1️⃣</div><div class="pn">Etape 1</div><div class="pl">Module 1.1</div><div class="ps">Marche & Contrat</div></div>
+    <div class="parrow">→</div>
+    <div class="pcard" onclick="go('m12')"><div class="pi">2️⃣</div><div class="pn">Etape 2</div><div class="pl">Module 1.2</div><div class="ps">Regles & Conduite</div></div>
+    <div class="parrow">→</div>
+    <div class="pcard" onclick="go('memo')"><div class="pi">⚡</div><div class="pn">Etape 3</div><div class="pl">Memo Express</div><div class="ps">Chiffres & pieges</div></div>
+    <div class="parrow">→</div>
+    <div class="pcard" onclick="go('exam')"><div class="pi">📋</div><div class="pn">Etape 4</div><div class="pl">Simulation</div><div class="ps">Examen reel</div></div>
+  </div>
+</div>
+<div class="tips">
+  <h3>Avant de commencer</h3>
+  <div class="tgrid">
+    <div class="tip"><div class="tt">Format</div><div class="tv">20 QCM a choix unique, 1 seule bonne reponse</div></div>
+    <div class="tip"><div class="tt">Duree</div><div class="tv">60 min par examen — largement suffisant</div></div>
+    <div class="tip"><div class="tt">Seuil</div><div class="tv">12/20 = 60% pour reussir</div></div>
+    <div class="tip v"><div class="tt">Strategie</div><div class="tv">Comprendre la logique, pas memoriser par coeur</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ MODULE 1.1 ══════════ -->
+<div id="m11" class="sec">
+<div class="wrap">
+<div class="banner b1"><div class="bi">⚖️</div><div><h2>Module 1.1 — Marche & Contrat</h2><p>Le marche belge, la loi du 4 avril 2014, les fondamentaux du contrat</p></div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">1. Les acteurs du marche belge <span class="arr">▶</span></div><div class="acc-body">
+<p>Deux autorites complementaires surveillent le marche — c'est une <strong>question classique</strong> a l'examen :</p>
+<div class="sch">
+  <div class="sb"><div class="sl">BNB</div><div class="sv">Controle prudentiel</div><p style="font-size:.72rem;color:var(--g);margin:4px 0 0">Solvabilite des compagnies</p></div>
+  <div class="sb v"><div class="sl">FSMA</div><div class="sv">Controle conduite</div><p style="font-size:.72rem;color:var(--v);margin:4px 0 0">Intermediaires + produits</p></div>
+  <div class="sb o"><div class="sl">EIOPA</div><div class="sv">Niveau europeen</div><p style="font-size:.72rem;color:var(--o);margin:4px 0 0">Coordination UE</p></div>
+</div>
+<div class="keypoint"><span class="kp-label">Point cle a retenir</span>BNB = solidite financiere des compagnies &nbsp;⇔&nbsp; FSMA = regles du jeu + intermediaires</div>
+<h4>Les categories d'intermediaires</h4>
+<table><thead><tr><th>Type</th><th>Mandant</th><th>Independance</th></tr></thead><tbody>
+<tr><td><strong>Courtier</strong></td><td>Le client</td><td>Total — compare le marche</td></tr>
+<tr><td><strong>Agent</strong></td><td>1 ou + compagnies</td><td>Lie au(x) mandant(s)</td></tr>
+<tr><td><strong>Sous-agent</strong></td><td>Le courtier/agent</td><td>Via un intermediaire</td></tr>
+<tr><td><strong>Accessoire</strong></td><td>Variable</td><td>Activite secondaire</td></tr>
+</tbody></table>
+<h4>Licence unique europeenne</h4>
+<p>Un assureur agree dans un pays UE peut exercer dans <strong>toute l'UE</strong> sans agrement supplementaire. Principe du <strong>Home Country Control</strong> = c'est le pays d'origine qui surveille.</p>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">2. La loi du 4 avril 2014 <span class="arr">▶</span></div><div class="acc-body">
+<p>C'est <strong>LA</strong> loi de reference pour les assurances terrestres en Belgique. Elle a remplace la loi de 1992.</p>
+<div class="info red"><strong>Ce qu'elle NE couvre PAS</strong> (toujours demande) : assurances maritimes sur corps et marchandises, transport fluvial, aerien.</div>
+<div class="keypoint"><span class="kp-label">A retenir absolument</span>La loi est IMPERATIVE : toute clause contraire au detriment du preneur = nulle</div>
+<h4>Interet d'assurance</h4>
+<p>Le preneur doit avoir un <strong>interet economique</strong> a ce que le sinistre ne se produise pas. Sans interet = contrat nul.</p>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">3. Le contrat d'assurance <span class="arr">▶</span></div><div class="acc-body">
+<h4>Nature juridique — 3 mots a retenir</h4>
+<div class="sch">
+  <div class="sb"><div class="sl">Synallagmatique</div><div class="sv">Obligations reciproques</div></div>
+  <div class="sb"><div class="sl">Onereux</div><div class="sv">Prime en echange</div></div>
+  <div class="sb v"><div class="sl">Aleatoire</div><div class="sv">Evenement incertain</div></div>
+</div>
+<h4>Les 4 parties</h4>
+<table><thead><tr><th>Qui</th><th>Role</th></tr></thead><tbody>
+<tr><td><strong>Preneur</strong></td><td>Souscrit et paie la prime</td></tr>
+<tr><td><strong>Assure</strong></td><td>Risque couvert</td></tr>
+<tr><td><strong>Beneficiaire</strong></td><td>Recoit la prestation</td></tr>
+<tr><td><strong>Personne lesee</strong></td><td>Victime tierce (en RC)</td></tr>
+</tbody></table>
+<div class="keypoint"><span class="kp-label">Moyen mnemotechnique</span>Preneur = PAIE &nbsp;|&nbsp; Assure = RISQUE couvert &nbsp;|&nbsp; Beneficiaire = RECOIT</div>
+<h4>Les documents</h4>
+<table><thead><tr><th>Document</th><th>C'est quoi</th></tr></thead><tbody>
+<tr><td><strong>Proposition</strong></td><td>Demande de couverture par le futur preneur</td></tr>
+<tr><td><strong>Police</strong></td><td>Le contrat lui-meme (CG + CP)</td></tr>
+<tr><td><strong>Avenant</strong></td><td>Modification en cours de contrat</td></tr>
+<tr><td><strong>Attestation</strong></td><td>Preuve de couverture</td></tr>
+</tbody></table>
+<p><strong>CG</strong> = clauses standard pour tous les contrats du meme produit. <strong>CP</strong> = adapte au profil du client.</p>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">4. Les principes fondamentaux <span class="arr">▶</span></div><div class="acc-body">
+<h4>Principe indemnitaire (non-vie)</h4>
+<p>L'assurance ne peut pas etre source d'enrichissement. Prestation limitee au <strong>prejudice reel</strong>. Ne s'applique PAS aux assurances forfaitaires (accidents, vie).</p>
+
+<h4>Sous-assurance → Regle de proportionnalite</h4>
+<div class="formule">Indemnite = Dommage × (Valeur assuree / Valeur reelle)</div>
+<div class="info orange"><strong>Exemple :</strong> Bien assure 500K / valeur reelle 800K / dommage 200K → 200.000 × 500/800 = <strong>125.000 €</strong></div>
+
+<h4>Subrogation legale</h4>
+<p>Apres indemnisation, l'assureur <strong>se substitue au client</strong> pour recuperer les sommes aupres du tiers responsable.</p>
+
+<h4>Declaration inexacte du risque</h4>
+<table><thead><tr><th>Situation</th><th>Consequence</th></tr></thead><tbody>
+<tr><td><strong>Bonne foi</strong></td><td>Adaptation de prime ou reduction proportionnelle</td></tr>
+<tr><td><strong>Mauvaise foi</strong></td><td>Nullite du contrat + primes conservees</td></tr>
+</tbody></table>
+
+<h4>Aggravation du risque</h4>
+<p>Declarer <strong>sans delai</strong> toute aggravation significative. L'assureur peut adapter la prime ou resilier.</p>
+
+<h4>Apres un sinistre</h4>
+<ol><li>Declarer dans les <strong>delais contractuels</strong></li><li>Prendre les <strong>mesures pour limiter les dommages</strong></li></ol>
+
+<h4>Valeur a neuf vs Valeur reelle</h4>
+<table><thead><tr><th>Notion</th><th>Definition</th></tr></thead><tbody>
+<tr><td><strong>Valeur a neuf</strong></td><td>Cout de remplacement, SANS deduction de vetuste</td></tr>
+<tr><td><strong>Valeur reelle</strong></td><td>Valeur a neuf MOINS la vetuste</td></tr>
+</tbody></table>
+
+<h4>Franchise</h4>
+<p><strong>Absolue</strong> = toujours deduite. <strong>Relative</strong> = disparait si le dommage la depasse.</p>
+
+<h4>Coassurance</h4>
+<p>Plusieurs assureurs couvrent un meme risque, chacun pour sa <strong>quote-part</strong>. Courant pour les grands risques.</p>
+</div></div>
+
+<div class="cta"><h3>Module 1.1 maitrise ?</h3><p>Passe aux regles de conduite — le module 1.2.</p><button class="bw" onclick="go('m12')">→ Module 1.2</button></div>
+</div></div>
+
+<!-- ══════════ MODULE 1.2 ══════════ -->
+<div id="m12" class="sec">
+<div class="wrap">
+<div class="banner b2"><div class="bi">🔒</div><div><h2>Module 1.2 — Regles et codes de conduite</h2><p>DDA, AssurMiFID, LBA, RGPD — tes obligations legales au quotidien</p></div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">1. La distribution d'assurances <span class="arr">▶</span></div><div class="acc-body">
+<p>Definition tres large (art. 5, 46° loi 4/04/2014) :</p>
+<ul><li>Presentation et proposition de produits</li><li>Preparation a la conclusion</li><li>Conclusion de contrats</li><li>Assistance pendant et apres le contrat</li></ul>
+<h4>PCP vs RD</h4>
+<table><thead><tr><th>Profil</th><th>Examens</th></tr></thead><tbody>
+<tr><td><strong>PCP</strong></td><td>Module 1.1 + 1.2 uniquement</td></tr>
+<tr><td><strong>RD non-vie</strong></td><td>1.1 + 1.2 + Module 2</td></tr>
+<tr><td><strong>RD vie</strong></td><td>1.1 + 1.2 + Module 3</td></tr>
+<tr><td><strong>RD vie + investissement</strong></td><td>1.1 + 1.2 + 3 + Module 4</td></tr>
+</tbody></table>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">2. Inscription FSMA — Obligatoire <span class="arr">▶</span></div><div class="acc-body">
+<p>L'inscription au <strong>registre public FSMA</strong> est la condition sine qua non pour exercer. Sans inscription = illegal + sanctions penales.</p>
+<h4>Les 4 conditions</h4>
+<div class="pills">
+  <div class="pill c1"><div class="pi2">📚</div><div class="pt">Connaissances</div><div class="pd">Certification Certassur</div></div>
+  <div class="pill c2"><div class="pi2">✋</div><div class="pt">Honorabilite</div><div class="pd">Casier vierge</div></div>
+  <div class="pill c3"><div class="pi2">🛡️</div><div class="pt">RC pro</div><div class="pd">Assurance obligatoire</div></div>
+  <div class="pill c4"><div class="pi2">💰</div><div class="pt">Garantie financiere</div><div class="pd">Protection des fonds</div></div>
+</div>
+<div class="keypoint"><span class="kp-label">Point cle</span>Passeport europeen : inscrit dans 1 pays UE = peut exercer dans TOUTE l'UE</div>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">3. La DDA — Les 3 grandes obligations <span class="arr">▶</span></div><div class="acc-body">
+<h4>1. Analyse des besoins</h4>
+<p><strong>Avant</strong> toute recommandation : analyser les besoins et exigences du client. A documenter et archiver.</p>
+<h4>2. Formation continue</h4>
+<div class="keypoint"><span class="kp-label">Chiffre cle</span>Formation continue = 15 heures / an (RD et PCP) — obligation permanente</div>
+<h4>3. Regles de conduite</h4>
+<ul><li>Agir dans le <strong>meilleur interet du client</strong></li><li>Gerer les <strong>conflits d'interet</strong> de maniere transparente</li><li>Transparence sur les <strong>remunerations</strong></li></ul>
+<h4>Documents d'information obligatoires</h4>
+<table><thead><tr><th>Document</th><th>Pour</th><th>Quand</th></tr></thead><tbody>
+<tr><td><strong>IPID</strong></td><td>Assurances non-vie</td><td>Avant conclusion</td></tr>
+<tr><td><strong>KID</strong></td><td>Produits PRIIPS (B23, B44)</td><td>Avant conclusion</td></tr>
+</tbody></table>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">4. AssurMiFID — Produits d'investissement <span class="arr">▶</span></div><div class="acc-body">
+<p>S'applique <strong>uniquement</strong> aux assurances vie avec composante d'investissement (branches 23, 44, PRIIPS). Pas aux non-vie classiques.</p>
+<h4>Test d'adequation</h4>
+<p>Avant de recommander, evaluer :</p>
+<ul><li>Connaissances et experience du client</li><li>Situation financiere et capacite a perdre</li><li>Objectifs et horizon de temps</li></ul>
+<div class="info red"><strong>Si le client n'est pas adequat :</strong> interdiction de recommander le produit.</div>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">5. LBA — Lutte anti-blanchiment <span class="arr">▶</span></div><div class="acc-body">
+<p>Loi du 18/09/2017. Les courtiers sont des entites assujetties.</p>
+<div class="pills">
+  <div class="pill c1"><div class="pi2">🪪</div><div class="pt">KYC</div><div class="pd">Identifier le client avant toute relation</div></div>
+  <div class="pill c2"><div class="pi2">👁️</div><div class="pt">Vigilance</div><div class="pd">Surveiller les transactions</div></div>
+  <div class="pill c3"><div class="pi2">🚨</div><div class="pt">CTIF</div><div class="pd">Declarer toute operation suspecte</div></div>
+</div>
+<h4>PPE — Personnes Politiquement Exposees</h4>
+<p>Fonctions publiques importantes → <strong>vigilance renforcee</strong> : identification approfondie, origine des fonds, approbation hierarchique.</p>
+<div class="keypoint"><span class="kp-label">Ne pas confondre</span>CTIF = recoit les declarations de soupcon &nbsp;⇔&nbsp; FSMA = surveille les intermediaires</div>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">6. RGPD — Protection des donnees <span class="arr">▶</span></div><div class="acc-body">
+<p>S'applique a <strong>toute organisation</strong> traitant des donnees de residents UE, quelle que soit la taille.</p>
+<table><thead><tr><th>Droit</th><th>Signification</th><th>Limite</th></tr></thead><tbody>
+<tr><td><strong>Acces</strong></td><td>Obtenir copie de ses donnees</td><td>Aucune</td></tr>
+<tr><td><strong>Rectification</strong></td><td>Corriger les inexactitudes</td><td>Aucune</td></tr>
+<tr><td><strong>Effacement</strong></td><td>Demander suppression</td><td>Obligations legales de conservation</td></tr>
+<tr><td><strong>Portabilite</strong></td><td>Format exploitable</td><td>Traitement automatise uniquement</td></tr>
+</tbody></table>
+<div class="info red"><strong>Le droit a l'effacement N'EST PAS absolu :</strong> en assurance, conservation ~10 ans apres fin du contrat (obligations legales/fiscales).</div>
+<h4>Retractation — Contrats a distance</h4>
+<table><thead><tr><th>Type</th><th>Delai</th></tr></thead><tbody>
+<tr><td>Non-vie</td><td><strong>14 jours</strong> calendrier</td></tr>
+<tr><td>Vie individuelle</td><td><strong>30 jours</strong> calendrier</td></tr>
+</tbody></table>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">7. Protection du consommateur & Publicite <span class="arr">▶</span></div><div class="acc-body">
+<p>Code de droit economique (Livre VI) : pratiques deloyales interdites, information claire et loyale.</p>
+<ul><li>Publicite <strong>identifiable comme telle</strong> et non trompeuse</li><li>Coherente avec les documents contractuels</li><li>Regles renforcees pour PRIIPS/B23</li></ul>
+<h4>Conflits d'interet</h4>
+<p>(1) Identifier le conflit → (2) Informer le client → (3) Agir dans son <strong>meilleur interet</strong>.</p>
+</div></div>
+
+<div class="cta"><h3>Les 2 modules maitrises !</h3><p>Va au Memo Express puis teste-toi en conditions reelles.</p><button class="bw" onclick="go('memo')">→ Memo Express</button> <button class="bw" onclick="go('exam')">→ Simulation</button></div>
+</div></div>
+
+<!-- ══════════ MEMO ══════════ -->
+<div id="memo" class="sec">
+<div class="wrap">
+<div class="banner b3"><div class="bi">⚡</div><div><h2>Memo Express — Le jour J</h2><p>Chiffres, distinctions et reflexes pour marquer les points</p></div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">Chiffres incontournables <span class="arr">▶</span></div><div class="acc-body">
+<div class="mgrid">
+  <div class="mc"><div class="ml">Questions/examen</div><div class="mv">20 QCM</div><div class="ms">1 bonne reponse</div></div>
+  <div class="mc"><div class="ml">Duree</div><div class="mv">60 minutes</div></div>
+  <div class="mc v"><div class="ml">Seuil reussite</div><div class="mv">12/20 = 60%</div></div>
+  <div class="mc"><div class="ml">Formation continue DDA</div><div class="mv">15h / an</div></div>
+  <div class="mc o"><div class="ml">Retractation non-vie</div><div class="mv">14 jours</div></div>
+  <div class="mc o"><div class="ml">Retractation vie</div><div class="mv">30 jours</div></div>
+  <div class="mc"><div class="ml">Conservation donnees</div><div class="mv">~10 ans</div><div class="ms">Apres fin du contrat</div></div>
+  <div class="mc v"><div class="ml">Inscription FSMA</div><div class="mv">Obligatoire</div></div>
+</div>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">Les 10 confusions classiques a l'examen <span class="arr">▶</span></div><div class="acc-body">
+<table><thead><tr><th>Confusion</th><th>La bonne distinction</th></tr></thead><tbody>
+<tr><td>BNB vs FSMA</td><td><strong>BNB</strong> = solvabilite / <strong>FSMA</strong> = conduite + intermediaires</td></tr>
+<tr><td>Preneur vs Assure</td><td><strong>Preneur</strong> = paie / <strong>Assure</strong> = risque couvert</td></tr>
+<tr><td>CG vs CP</td><td><strong>CG</strong> = standard / <strong>CP</strong> = personnalise</td></tr>
+<tr><td>Valeur reelle vs a neuf</td><td><strong>Reelle</strong> = a neuf - vetuste</td></tr>
+<tr><td>Courtier vs Agent</td><td><strong>Courtier</strong> = mandataire client / <strong>Agent</strong> = mandataire compagnie</td></tr>
+<tr><td>IPID vs KID</td><td><strong>IPID</strong> = non-vie / <strong>KID</strong> = PRIIPS (B23, B44)</td></tr>
+<tr><td>PCP vs RD</td><td><strong>PCP</strong> = module 1 / <strong>RD</strong> = module 1 + specifiques</td></tr>
+<tr><td>Indemnitaire vs Forfaitaire</td><td><strong>Indemnitaire</strong> = prejudice reel / <strong>Forfaitaire</strong> = capital fixe</td></tr>
+<tr><td>LBA vs CTIF</td><td><strong>LBA</strong> = cree les obligations / <strong>CTIF</strong> = recoit les declarations</td></tr>
+<tr><td>DDA vs AssurMiFID</td><td><strong>DDA</strong> = toutes assurances / <strong>AssurMiFID</strong> = investissement uniquement</td></tr>
+</tbody></table>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">Textes legaux a connaitre <span class="arr">▶</span></div><div class="acc-body">
+<table><thead><tr><th>Texte</th><th>Matiere</th></tr></thead><tbody>
+<tr><td><strong>Loi 4 avril 2014</strong></td><td>Contrat d'assurance terrestre — loi centrale</td></tr>
+<tr><td><strong>DDA (2016/97/UE)</strong></td><td>Distribution — analyse besoins, 15h formation</td></tr>
+<tr><td><strong>Loi 18/09/2017</strong></td><td>LBA — anti-blanchiment</td></tr>
+<tr><td><strong>RGPD (2016/679)</strong></td><td>Protection donnees personnelles</td></tr>
+<tr><td><strong>Code DE Livre VI</strong></td><td>Protection du consommateur</td></tr>
+<tr><td><strong>Directive PRIIPS</strong></td><td>KID obligatoire B23, B44</td></tr>
+</tbody></table>
+</div></div>
+
+<div class="acc open"><div class="acc-head" onclick="tog(this)">Reflexes "bonne reponse" <span class="arr">▶</span></div><div class="acc-body">
+<div class="pills">
+  <div class="pill c1"><div class="pt">Analyse besoins</div><div class="pd">TOUJOURS avant de recommander</div></div>
+  <div class="pill c2"><div class="pt">Interet du client</div><div class="pd">Toujours prime sur la commission</div></div>
+  <div class="pill c3"><div class="pt">Inscription FSMA</div><div class="pd">Obligatoire, jamais optionnelle</div></div>
+  <div class="pill c4"><div class="pt">Transparence</div><div class="pd">Sur tout : remuneration, risques, conflits</div></div>
+</div>
+<div class="info green"><strong>Astuce QCM :</strong> si une reponse dit "toujours" ou "jamais" sans nuance → souvent fausse. Si elle parle de proteger le client → souvent correcte.</div>
+<div class="info red"><strong>Pieges classiques :</strong>
+<ul style="margin-top:6px"><li>BNB ≠ FSMA (roles distincts)</li><li>Loi 4/04/2014 ne couvre PAS le maritime</li><li>Droit a l'effacement RGPD n'est PAS absolu</li><li>AssurMiFID ≠ toutes les assurances</li><li>CTIF ≠ FSMA</li></ul></div>
+</div></div>
+
+<div class="cta"><h3>Pret pour l'examen ?</h3><p>20 questions, 60 minutes, en conditions reelles.</p><button class="bw" onclick="go('exam')">→ Lancer la simulation</button></div>
+</div></div>
+
+<!-- ══════════ EXAM ══════════ -->
+<div id="exam" class="sec">
+  <div id="examChoose">
+    <div class="wrap" style="padding-top:48px;text-align:center;">
+      <h2 style="font-size:1.4rem;font-weight:900;color:var(--bf);margin-bottom:8px;">Simulation d'examen</h2>
+      <p style="color:var(--g);margin-bottom:28px;">Format identique a l'examen Certassur : 20 QCM, 60 min, seuil 12/20.</p>
+      <div class="choose">
+        <div class="chcard" onclick="startExam(1)"><div class="ci">⚖️</div><div class="cm">Examen 1</div><div class="ct">Module 1.1</div><div class="cd">Marche & Contrat</div><div class="chips"><span class="chip">20 questions</span><span class="chip">60 min</span></div></div>
+        <div class="chcard" onclick="startExam(2)"><div class="ci">🔒</div><div class="cm">Examen 2</div><div class="ct">Module 1.2</div><div class="cd">Regles & Conduite</div><div class="chips"><span class="chip">20 questions</span><span class="chip">60 min</span></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="examRun" style="display:none;">
+    <div class="exam-top"><div class="etitle" id="eTitle"></div><div class="eprog"><div class="ebar"><div class="efill" id="eBar"></div></div><div class="elbl" id="eLbl">0/20</div></div><div class="etimer" id="eTimer">60:00</div></div>
+    <div class="wrap" id="eBody"></div>
+  </div>
+  <div id="examRes" style="display:none;">
+    <div class="reshero">
+      <div class="resmod" id="rMod"></div><div class="restit" id="rTit"></div>
+      <div class="ring" id="rRing"><span id="rFrac"></span><span class="rsub" id="rPct"></span></div>
+      <div class="verd" id="rVerd"></div>
+      <div class="rstats"><div class="stbox"><div class="stv" id="rOk"></div><div class="stl">Correctes</div></div><div class="stbox"><div class="stv" id="rKo"></div><div class="stl">Incorrectes</div></div><div class="stbox"><div class="stv" id="rTime"></div><div class="stl">Temps</div></div></div>
+      <button class="bretry" onclick="startExam(curExam)">Recommencer</button>
+      <button class="bhome" onclick="showExamChoose()">Autre examen</button>
+    </div>
+    <div class="wrap" id="rReview"></div>
+  </div>
+</div>
+
+<script>
+/* ══════ NAV ══════ */
+function go(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  var n=document.getElementById('n-'+id);if(n)n.classList.add('on');
+  window.scrollTo(0,0);
+  if(id==='exam')showExamChoose();
+}
+function tog(h){h.parentElement.classList.toggle('open');}
+
+/* ══════ QUESTIONS ══════ */
+var E1={m:'Module 1.1',t:'Marche & Contrat',q:[
+{q:"Quel organisme assure le controle <strong>prudentiel</strong> des entreprises d'assurances en Belgique ?",o:["La FSMA","La BNB (Banque Nationale de Belgique)","Le SPF Economie","L'EIOPA"],a:1,j:"La <strong>BNB</strong> assure le controle prudentiel (solvabilite). La FSMA controle la conduite et les intermediaires."},
+{q:"La FSMA est competente pour controler :",o:["La solvabilite des compagnies","La conduite des marches, les intermediaires et les produits","Uniquement les marches boursiers","Les fraudes fiscales"],a:1,j:"La FSMA surveille la conduite des marches, les intermediaires (inscription au registre), les produits et les regles d'information."},
+{q:"Le principe de la <strong>licence unique europeenne</strong> signifie qu'une entreprise d'assurances :",o:["Peut exercer dans un seul Etat avec une licence","Peut operer dans tous les Etats UE avec l'agrement de son pays d'origine","Doit obtenir un agrement dans chaque Etat","Doit passer un examen europeen"],a:1,j:"Licence unique = passeport europeen. L'agrement du pays d'origine suffit pour operer dans toute l'UE (<strong>Home Country Control</strong>)."},
+{q:"La loi du 4 avril 2014 <strong>ne s'applique pas</strong> a :",o:["L'assurance incendie habitation","L'assurance vie branche 21","L'assurance maritime sur corps et marchandises","L'assurance RC familiale"],a:2,j:"La loi exclut les assurances maritimes sur corps et marchandises, transport fluvial et aerien."},
+{q:"Le contrat d'assurance est :",o:["Unilateral, gratuit et certain","Synallagmatique, onereux et aleatoire","Unilateral, onereux et aleatoire","Synallagmatique, gratuit et aleatoire"],a:1,j:"Synallagmatique (obligations reciproques), onereux (prime), aleatoire (evenement incertain)."},
+{q:"Le <strong>preneur</strong> d'assurance est :",o:["La personne dont le risque est couvert","Celui qui souscrit et s'engage a payer la prime","Celui qui recoit la prestation en cas de sinistre","L'entreprise d'assurances"],a:1,j:"Le preneur souscrit et paie. L'assure = risque couvert. Le beneficiaire = recoit la prestation."},
+{q:"En cas de <strong>declaration inexacte de bonne foi</strong>, l'assureur peut :",o:["Annuler retroactivement le contrat","Appliquer une reduction proportionnelle de la prestation","Poursuivre penalement le preneur","Refuser tout paiement"],a:1,j:"Bonne foi = adaptation de prime ou reduction proportionnelle. La nullite est reservee a la mauvaise foi."},
+{q:"La <strong>franchise</strong> represente :",o:["La reduction de prime apres des annees sans sinistre","La partie du dommage restant a charge de l'assure","Le montant maximal que l'assureur peut verser","La cotisation minimale pour ouvrir un dossier"],a:1,j:"Franchise = ce que l'assure paie lui-meme. Absolue (toujours deduite) ou relative (disparait si dommage superieur)."},
+{q:"La <strong>subrogation legale</strong> signifie que :",o:["L'assureur peut substituer un autre assureur","Apres indemnisation, l'assureur peut exercer le recours contre le tiers responsable","Le preneur est subroge dans les droits de l'assureur","L'assure peut changer d'assureur"],a:1,j:"Subrogation = l'assureur se met a la place du client pour recuperer aupres du tiers responsable."},
+{q:"Un <strong>avenant</strong> est :",o:["Une proposition d'assurance","Une police d'assurance","Un document qui modifie le contrat en cours","Une attestation d'assurance"],a:2,j:"L'avenant modifie les conditions du contrat existant (changement d'adresse, de garantie, etc.)."},
+{q:"Le principe <strong>indemnitaire</strong> signifie que :",o:["Le preneur est indemnise automatiquement","La prestation ne peut pas depasser le dommage reel","L'assureur ajoute une majoration pour dommages moraux","L'assure fixe le montant de l'indemnite"],a:1,j:"L'assurance non-vie ne peut pas etre source d'enrichissement. Indemnite <= prejudice reel."},
+{q:"Apres un sinistre, le preneur doit :",o:["Payer une surcotisation penalite","Declarer dans les delais ET minimiser les dommages","Resilier immediatement","Attendre le contact de l'assureur"],a:1,j:"Double obligation : declarer dans les delais contractuels + mesures conservatoires."},
+{q:"La <strong>valeur a neuf</strong> se distingue de la valeur reelle en ce que :",o:["Elle est toujours inferieure","Elle ne deduit pas la vetuste","Elle integre la hausse immobiliere","Elle ne concerne que les biens de moins de 5 ans"],a:1,j:"Valeur a neuf = cout de remplacement sans deduction de vetuste. Valeur reelle = a neuf - vetuste."},
+{q:"La <strong>regle de proportionnalite</strong> s'applique quand :",o:["L'assureur et l'assure ne s'accordent pas","La valeur assuree est inferieure a la valeur reelle","La prime n'a pas ete payee","Le sinistre est cause par negligence"],a:1,j:"Sous-assurance → indemnite reduite. Formule : Dommage × (Valeur assuree / Valeur reelle)."},
+{q:"L'<strong>interet d'assurance</strong> signifie que :",o:["Le preneur a un interet economique a la non-realisation du risque","Le contrat presente un interet general pour la societe","L'assureur justifie un interet commercial","L'assure presente un interet pour l'assurance vie"],a:0,j:"Le preneur doit avoir un interet patrimonial a ce que le sinistre ne se produise pas. Sans interet = nul."},
+{q:"En cas d'<strong>aggravation du risque</strong>, le preneur doit :",o:["Resilier immediatement","En informer l'assureur sans delai","Attendre la prochaine echeance","Ne rien faire si c'est temporaire"],a:1,j:"Declaration sans delai de toute aggravation significative. L'assureur peut adapter la prime ou resilier."},
+{q:"La <strong>coassurance</strong> designe :",o:["Deux preneurs pour un meme bien","Plusieurs assureurs couvrant conjointement un meme risque","Un assure avec plusieurs contrats chez le meme assureur","Un assureur sous-traitant a un reassureur"],a:1,j:"Coassurance = plusieurs compagnies, chacune pour sa quote-part. Courant pour les grands risques."},
+{q:"Les <strong>conditions generales</strong> sont :",o:["Des conditions negociees par client","Des clauses standard pour tous les contrats du meme produit","Des conditions fixees par arrete royal","Un resume des exclusions redige par la FSMA"],a:1,j:"CG = standard pour le produit. Les conditions particulieres personnalisent le contrat."},
+{q:"La <strong>police d'assurance</strong> est :",o:["La demande de couverture","Le document contractuel constatant droits et obligations","Un rapport d'expertise","Un document marketing"],a:1,j:"La police est le document ecrit materialisant le contrat (CG + CP). Elle fait foi en cas de litige."},
+{q:"Les dispositions de la loi du 4 avril 2014 sont de nature :",o:["Suppletive","Imperative — on ne peut y deroger au detriment du preneur","Facultative","Administrative"],a:1,j:"Caractere imperatif : toute clause contractuelle contraire au detriment du preneur/assure est nulle."}
+]};
+
+var E2={m:'Module 1.2',t:'Regles & Conduite',q:[
+{q:"La <strong>distribution d'assurances</strong> comprend :",o:["Uniquement la vente directe par les compagnies","Presentation, proposition, preparation, conclusion et assistance","Seulement la gestion des sinistres","L'edition de documentation commerciale"],a:1,j:"Definition large (art. 5, 46°) : presentation, proposition, preparation, conclusion et assistance."},
+{q:"La difference entre <strong>courtier</strong> et <strong>agent</strong> est :",o:["Le courtier vend plus de produits","Le courtier agit pour le client ; l'agent pour la/les compagnie(s)","L'agent peut exercer sans inscription FSMA","Le courtier est uniquement en non-vie"],a:1,j:"Courtier = mandataire du preneur (independant). Agent = mandataire de la compagnie."},
+{q:"L'<strong>intermediaire a titre accessoire</strong> distribue des assurances :",o:["Pour toutes les branches sans restriction","En activite principale, s'il est aussi courtier","En complement d'une autre activite principale","Uniquement pour les assurances de groupe"],a:2,j:"Activite secondaire (ex: garagiste + assurance accidents, agence de voyage + assurance annulation)."},
+{q:"L'inscription au <strong>registre FSMA</strong> est :",o:["Recommandee mais non obligatoire","Obligatoire sous peine de sanctions penales","Requise seulement au-dessus de 100 clients","Remplacee par Certassur"],a:1,j:"Condition sine qua non pour exercer. Exercice illegal = sanctions penales et civiles."},
+{q:"Avant de recommander un produit, le distributeur doit :",o:["Obtenir l'approbation de la compagnie","Effectuer une analyse des besoins du client","Presenter minimum 3 offres concurrentes","Verifier la solvabilite du client aupres de la BNB"],a:1,j:"Analyse des besoins = obligation legale DDA. A documenter et archiver."},
+{q:"L'<strong>IPID</strong> est un document :",o:["Interne a la compagnie","Standardise obligatoire remis avant conclusion d'un contrat non-vie","Requis exclusivement pour les B23","Facultatif sur demande du client"],a:1,j:"IPID = 2 pages max, avant conclusion, pour les assurances NON-VIE. KID = pour les PRIIPS."},
+{q:"La <strong>DDA</strong> impose notamment :",o:["Des tarifs uniformes dans l'UE","L'interdiction des commissions","Des regles de conduite, analyse des besoins et 15h de formation/an","La vente exclusivement en ligne"],a:2,j:"DDA : analyse des besoins, meilleur interet du client, transparence, 15h de formation continue/an."},
+{q:"<strong>AssurMiFID</strong> s'applique :",o:["A toutes les assurances non-vie","Aux assurances vie avec composante d'investissement (B23, B44)","Uniquement aux assurances de groupe","A tous les contrats du 2e pilier"],a:1,j:"AssurMiFID = uniquement les produits avec composante d'investissement (B23, B44, PRIIPS)."},
+{q:"Le <strong>test d'adequation</strong> evalue :",o:["La solvabilite de la compagnie","Les connaissances, situation financiere et objectifs du client","La conformite des clauses FSMA","La sante du client"],a:1,j:"Suitability test : connaissances, experience, situation financiere, capacite a supporter des pertes, objectifs."},
+{q:"La <strong>LBA</strong> impose aux courtiers :",o:["De refuser tout client etranger","D'identifier les clients (KYC) et declarer les operations suspectes a la CTIF","De consulter la FSMA avant chaque transaction","De conserver les fonds sur un compte separe"],a:1,j:"KYC + vigilance continue + declaration de soupcon a la CTIF."},
+{q:"L'organisme qui recoit les declarations de soupcon est :",o:["La FSMA","La BNB","La CTIF","Le SPF Finances"],a:2,j:"CTIF = Cellule de Traitement des Informations Financieres. Renseignement financier belge."},
+{q:"Les <strong>PPE</strong> font l'objet de :",o:["Procedure simplifiee vu leur profil public","Refus systematique","Vigilance renforcee (identification, origine des fonds, approbation hierarchique)","Declaration automatique a la CTIF"],a:2,j:"PPE = vigilance renforcee obligatoire. Pas de refus ni de declaration automatique."},
+{q:"Le <strong>RGPD</strong> s'applique :",o:["Uniquement aux entreprises de +250 employes","A toute organisation traitant des donnees de residents UE","Seulement aux donnees collectees en ligne","Uniquement aux donnees financieres"],a:1,j:"RGPD = toute organisation, quelle que soit sa taille, traitant des donnees de residents UE."},
+{q:"Le <strong>droit a l'effacement</strong> signifie :",o:["Suppression immediate de TOUTES les donnees","Suppression possible, mais cedant devant les obligations legales de conservation","Seules les donnees en ligne sont concernees","Effacement dans les 30 jours apres fin de contrat"],a:1,j:"Droit NON absolu. En assurance : conservation ~10 ans pour obligations legales/fiscales."},
+{q:"En cas de <strong>conflit d'interet</strong>, le distributeur doit :",o:["Privilegier la compagnie partenaire","Cesser la relation commerciale","Agir dans le meilleur interet du client, gerer le conflit de maniere transparente","Facturer des frais supplementaires"],a:2,j:"Identifier → informer le client → agir dans son meilleur interet. Transparence obligatoire."},
+{q:"Le <strong>passeport europeen</strong> pour les intermediaires signifie :",o:["Exercer uniquement en Belgique et au Luxembourg","Exercer dans tous les Etats UE par libre prestation ou succursale","Vendre des produits de compagnies europeennes sans compagnie belge","Equivalence de formation dans tout Etat membre"],a:1,j:"Un intermediaire inscrit dans un pays UE peut exercer dans toute l'UE : LPS ou succursale."},
+{q:"La <strong>formation continue</strong> obligatoire est de :",o:["5h/an","10h/an","15h/an","20h/an"],a:2,j:"15 heures minimum par an (DDA). Pour tous : RD et PCP. Obligation permanente."},
+{q:"La <strong>PCP</strong> se distingue du <strong>RD</strong> parce que :",o:["La PCP doit reussir tous les modules","La PCP ne doit reussir que le module 1 (1.1+1.2) ; le RD en plus les modules specifiques","Aucune difference de competence","La PCP peut exercer sans inscription FSMA"],a:1,j:"PCP = module 1 seulement. RD = module 1 + modules selon l'activite (2, 3, 4)."},
+{q:"Le delai de <strong>retractation</strong> pour un contrat d'assurance vie souscrit a distance est de :",o:["7 jours ouvrables","14 jours calendrier","30 jours calendrier","Aucun droit de retractation"],a:2,j:"14 jours pour la plupart des assurances, 30 jours pour l'assurance VIE individuelle a distance."},
+{q:"En matiere de <strong>publicite</strong> sur les produits d'assurance :",o:["Toute publicite doit etre approuvee par la FSMA","La publicite doit etre identifiable comme telle et non trompeuse","Les courtiers ne peuvent faire aucune publicite propre","La publicite est interdite pour les produits B23"],a:1,j:"Clairement identifiable comme publicite, non trompeuse, coherente avec les documents contractuels."}
+]};
+
+/* ══════ EXAM ENGINE ══════ */
+var curExam=0,curData=null,ans=[],timer=null,secsLeft=3600,t0=null,submitted=false;
+
+function showExamChoose(){
+  clearInterval(timer);
+  document.getElementById('examChoose').style.display='block';
+  document.getElementById('examRun').style.display='none';
+  document.getElementById('examRes').style.display='none';
+}
+
+function startExam(n){
+  curExam=n;curData=n===1?E1:E2;ans=Array(20).fill(null);submitted=false;secsLeft=3600;t0=Date.now();
+  document.getElementById('examChoose').style.display='none';
+  document.getElementById('examRun').style.display='block';
+  document.getElementById('examRes').style.display='none';
+  document.getElementById('eTitle').textContent=curData.m+' — '+curData.t;
+  renderQ();updProg();startTimer();window.scrollTo(0,0);
+}
+
+function renderQ(){
+  var b=document.getElementById('eBody'),L=['A','B','C','D'],h='';
+  curData.q.forEach(function(q,i){
+    h+='<div class="qcard" id="qc-'+i+'"><div class="qn">'+(i+1)+'</div><div class="qt">'+q.q+'</div><div class="qopts">';
+    q.o.forEach(function(o,j){h+='<label class="qopt" id="op-'+i+'-'+j+'" onclick="pick('+i+','+j+')"><input type="radio" name="q'+i+'"><span class="ol">'+L[j]+'</span><span>'+o+'</span></label>';});
+    h+='</div><div class="qfb" id="fb-'+i+'"></div></div>';
+  });
+  h+='<div class="subzone"><div class="subcnt">Repondues : <span id="aCnt">0</span> / 20</div><button class="bsub" onclick="submit()">Soumettre mon examen</button></div>';
+  b.innerHTML=h;
+}
+
+function pick(i,j){
+  if(submitted)return;ans[i]=j;
+  for(var k=0;k<4;k++){var o=document.getElementById('op-'+i+'-'+k);if(o)o.classList.toggle('sel',k===j);}
+  var c=document.getElementById('qc-'+i);if(c)c.classList.add('ans');updProg();
+}
+
+function updProg(){
+  var c=ans.filter(function(a){return a!==null;}).length,p=(c/20)*100;
+  var bar=document.getElementById('eBar'),lbl=document.getElementById('eLbl'),cnt=document.getElementById('aCnt');
+  if(bar)bar.style.width=p+'%';if(lbl)lbl.textContent=c+'/20';if(cnt)cnt.textContent=c;
+}
+
+function startTimer(){
+  clearInterval(timer);
+  timer=setInterval(function(){
+    secsLeft--;var d=document.getElementById('eTimer');
+    if(d){var m=Math.floor(secsLeft/60),s=secsLeft%60;d.textContent=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;if(secsLeft<=300)d.classList.add('warn');}
+    if(secsLeft<=0){clearInterval(timer);submit();}
+  },1000);
+}
+
+function submit(){
+  if(submitted)return;submitted=true;clearInterval(timer);
+  var tUsed=Math.round((Date.now()-t0)/1000),ok=0,L=['A','B','C','D'];
+  curData.q.forEach(function(q,i){
+    var c=document.getElementById('qc-'+i),fb=document.getElementById('fb-'+i),ch=ans[i],isOk=ch===q.a;
+    if(isOk)ok++;
+    if(c){c.classList.remove('ans');c.classList.add(isOk?'ok':'ko');}
+    for(var k=0;k<4;k++){var o=document.getElementById('op-'+i+'-'+k);if(!o)continue;o.classList.add('dis');o.classList.remove('sel');if(k===q.a)o.classList.add('co');if(k===ch&&!isOk)o.classList.add('wo');}
+    if(fb){fb.classList.add('show',isOk?'fbok':'fbko');fb.innerHTML=(isOk?'<strong>✓ Correct !</strong> ':'<strong>✗ Incorrect.</strong> Bonne reponse : <strong>'+L[q.a]+'</strong>. ')+q.j;}
+  });
+  showResults(ok,tUsed);
+}
+
+function showResults(ok,tUsed){
+  var pct=Math.round(ok/20*100),pass=ok>=12,m=Math.floor(tUsed/60),s=tUsed%60;
+  document.getElementById('rMod').textContent=curData.m;
+  document.getElementById('rTit').textContent=curData.t;
+  var ring=document.getElementById('rRing');ring.className='ring '+(pass?'pass':'fail');
+  document.getElementById('rFrac').textContent=ok+'/20';
+  document.getElementById('rPct').textContent=pct+'%';
+  var v=document.getElementById('rVerd');v.className='verd '+(pass?'pass':'fail');v.textContent=pass?'REUSSI':'ECHOUE';
+  document.getElementById('rOk').textContent=ok;
+  document.getElementById('rKo').textContent=20-ok;
+  document.getElementById('rTime').textContent=m+'m'+(s<10?'0':'')+s+'s';
+
+  // Copy review from exam body
+  var L=['A','B','C','D'],rev=document.getElementById('rReview'),h='<h2 style="font-size:1.1rem;font-weight:800;color:var(--bf);margin-bottom:20px;">Corrections detaillees</h2>';
+  curData.q.forEach(function(q,i){
+    var ch=ans[i],isOk=ch===q.a;
+    h+='<div class="qcard '+(isOk?'ok':'ko')+'"><div class="qn">'+(i+1)+'</div><div class="qt">'+q.q+'</div><div class="qopts">';
+    q.o.forEach(function(o,j){
+      var cls='qopt dis';if(j===q.a)cls+=' co';else if(j===ch&&!isOk)cls+=' wo';
+      h+='<div class="'+cls+'"><span class="ol">'+L[j]+'</span><span>'+o+'</span></div>';
+    });
+    h+='</div><div class="qfb show '+(isOk?'fbok':'fbko')+'">'+(isOk?'<strong>✓ Correct !</strong> ':'<strong>✗ Incorrect.</strong> Bonne reponse : <strong>'+L[q.a]+'</strong>. ')+q.j+'</div></div>';
+  });
+  rev.innerHTML=h;
+
+  document.getElementById('examRun').style.display='none';
+  document.getElementById('examRes').style.display='block';
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

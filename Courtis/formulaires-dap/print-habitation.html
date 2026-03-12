@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Version papier — Assurance Habitation | DAP</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    color: #1a1a2e;
+    background: #f4f6fa;
+    padding: 20px;
+  }
+
+  .print-header {
+    background: #1a1a2e;
+    color: white;
+    padding: 20px 28px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .print-header img { height: 48px; background: white; padding: 6px 14px; border-radius: 8px; }
+  .print-header-title { font-size: 18px; font-weight: 700; color: #e8b84b; }
+  .print-header-sub { font-size: 12px; color: #ccc; margin-top: 4px; }
+  .print-date { font-size: 11px; color: #aaa; text-align: right; }
+
+  .print-body {
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 28px;
+  }
+
+  .step-title {
+    background: #1a1a2e;
+    color: #e8b84b;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin: 24px 0 16px;
+  }
+  .step-title:first-of-type { margin-top: 0; }
+
+  .section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .section-head {
+    background: #f8f9ff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .section-body { padding: 16px; }
+
+  .q-block { margin-bottom: 14px; }
+  .q-block:last-child { margin-bottom: 0; }
+  .q-label {
+    font-weight: 700;
+    font-size: 12.5px;
+    color: #1a1a2e;
+    margin-bottom: 5px;
+    display: block;
+  }
+  .q-label .req { color: #e8b84b; margin-left: 2px; }
+
+  .answer-line {
+    border-bottom: 1px solid #999;
+    min-height: 28px;
+    margin: 4px 0 2px;
+  }
+  .answer-line-sm {
+    border-bottom: 1px solid #999;
+    min-height: 22px;
+    margin: 4px 0 2px;
+  }
+  .answer-area {
+    border-bottom: 1px solid #999;
+    min-height: 52px;
+    margin: 4px 0 2px;
+  }
+
+  .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+    font-size: 13px;
+  }
+  .checkbox-square {
+    width: 16px; height: 16px;
+    border: 1.5px solid #333;
+    display: inline-block;
+    flex-shrink: 0;
+    border-radius: 2px;
+  }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  .conditional {
+    background: #f9f9f9;
+    border-left: 3px solid #e8b84b;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 14px;
+    margin: 10px 0;
+  }
+  .conditional .cond-label {
+    font-size: 11px;
+    color: #888;
+    font-style: italic;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .conditional .q-label { color: #666; }
+
+  .divider { border: none; border-top: 1px dashed #ddd; margin: 16px 0; }
+
+  .print-footer {
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+    margin-top: 24px;
+    padding-top: 14px;
+    border-top: 1px solid #ddd;
+  }
+  .print-footer strong { color: #1a1a2e; }
+
+  .solidarity-box {
+    background: #fff8e8;
+    border: 1px solid #e8b84b;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: #7a5a00;
+  }
+
+  .nb-box {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 6px;
+  }
+  .nb-box span { font-size: 12px; color: #666; }
+  .nb-input { border-bottom: 1px solid #999; width: 60px; min-height: 22px; display:inline-block; }
+
+  @media print {
+    body { background: white; padding: 0; font-size: 11px; }
+    .print-header { background: #1a1a2e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 14px 20px; border-radius: 0; }
+    .print-header-title { color: #e8b84b !important; }
+    .step-title { background: #1a1a2e !important; color: #e8b84b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section { break-inside: avoid; }
+    .q-block { break-inside: avoid; }
+    .conditional { break-inside: avoid; }
+    .print-body { border: none; border-radius: 0; padding: 16px; }
+    .solidarity-box { background: #fff8e8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-header">
+  <div>
+    <img src="assets/logo-dap.png" alt="DAP">
+  </div>
+  <div style="flex:1; padding: 0 20px;">
+    <div class="print-header-title">Demande d'offre — Assurance Habitation / Incendie</div>
+    <div class="print-header-sub">Formulaire à compléter et retourner à votre conseiller DAP</div>
+  </div>
+  <div class="print-date">
+    Date : ______ / ______ / __________
+  </div>
+</div>
+
+<div class="print-body">
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 1 : IDENTITÉ + QUALITÉ -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 1 — Identité &amp; Qualité par rapport au bien</div>
+
+  <div class="section">
+    <div class="section-head">Section 1 — Identité du preneur</div>
+    <div class="section-body">
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Nom <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Prénom <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Date de naissance <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Téléphone <span class="req">*</span> <em style="font-weight:400;font-size:11px;">(04XX XX XX XX)</em></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Email <span class="req">*</span></span>
+        <div class="answer-line"></div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Adresse personnelle <span class="req">*</span> <em style="font-weight:400;font-size:11px;">(si différente de l'adresse du bien à assurer)</em></span>
+        <div class="answer-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 2 — Qualité par rapport au bien</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Votre qualité par rapport au bien à assurer <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Propriétaire occupant</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Locataire</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Propriétaire non-occupant</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Co-locataire</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Usufruitier</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Nu-propriétaire</div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si Locataire ou Co-locataire — Information loyer (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Loyer mensuel hors charges (€)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 3 — Adresse du bien à assurer</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">L'adresse du bien est-elle différente de votre adresse personnelle ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si OUI — Adresse du bien à assurer (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Adresse complète du bien <em style="font-weight:400;font-size:11px;">(rue, numéro, code postal, commune)</em></span>
+          <div class="answer-area"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 2 : DESCRIPTION DU BIEN -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 2 — Description du bien</div>
+
+  <div class="section">
+    <div class="section-head">Section 4 — Description du bien</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Type de bien <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Appartement</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Maison unifamiliale</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Villa</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Kot/Studio</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+      </div>
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Superficie habitable (m²) <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Année de construction <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Type de chauffage principal <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Mazout</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Gaz naturel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Pompe à chaleur</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Électrique</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Pellets/Bois</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Type de toiture <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Ardoises naturelles</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Ardoises artificielles</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Tuiles</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Toiture plate</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Chaume</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+      </div>
+      <div class="row-3">
+        <div class="q-block">
+          <span class="q-label">Façade classée (patrimoine) ? <span class="req">*</span></span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Hauteur sous plafond &gt; 3m ? <span class="req">*</span></span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Matériaux nobles présents ? <span class="req">*</span> <em style="font-weight:400;font-size:10px;">(marbre, parquet...)</em></span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 6 — Spécificités appartement <em style="font-size:11px; font-weight:400;">(si applicable — pour Appartement ou Kot/Studio)</em></div>
+    <div class="section-body">
+      <div class="conditional">
+        <div class="cond-label">Si le bien est un appartement ou un kot/studio (si applicable)</div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Étage de l'appartement <em style="font-weight:400;font-size:11px;">(0 = RDC)</em></span>
+            <div class="answer-line-sm"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Nombre total d'étages de l'immeuble</span>
+            <div class="answer-line-sm"></div>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Hébergement touristique (Airbnb...) ?</span>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Activité professionnelle dans le bien ?</span>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+          </div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Ascenseur dans l'immeuble ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 5 — Composition du bien (nombre de pièces)</div>
+    <div class="section-body">
+      <p style="font-size:12px; color:#666; margin-bottom:12px;">Indiquer le nombre de pièces par type (inscrire 0 si inexistant)</p>
+      <div class="row-3">
+        <div class="q-block">
+          <span class="q-label">Cuisine(s) <span class="req">*</span></span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Living(s) / Salon(s) <span class="req">*</span></span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Chambre(s) <span class="req">*</span></span>
+          <div class="answer-line-sm"></div>
+        </div>
+      </div>
+      <div class="row-3">
+        <div class="q-block">
+          <span class="q-label">Salle(s) de bain <span class="req">*</span></span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Bureau(x)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Dressing(s)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+      </div>
+      <div class="row-3">
+        <div class="q-block">
+          <span class="q-label">Salle(s) de bien-être</span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Salle de loisir / Hobby</span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Buanderie / Repassage</span>
+          <div class="answer-line-sm"></div>
+        </div>
+      </div>
+      <div class="row-3">
+        <div class="q-block">
+          <span class="q-label">Cave(s)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Grenier(s)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Autres pièces &ge; 4 m²</span>
+          <div class="answer-line-sm"></div>
+        </div>
+      </div>
+
+      <div class="conditional">
+        <div class="cond-label">Si au moins 1 cave — Affectation(s) de la/des cave(s) (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Affectation(s) de la/des cave(s)</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Débarras</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Chaufferie</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Buanderie</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Atelier</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Sous-sol habitable (plafond &ge; 2,10 m) ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 3 : DÉPENDANCES + ÉTAT -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 3 — Dépendances &amp; État du bâtiment</div>
+
+  <div class="section">
+    <div class="section-head">Section 7 — Dépendances et équipements</div>
+    <div class="section-body">
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Cave aménagée ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Pas de cave</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non aménagée</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Aménagée</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Grenier aménagé ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Pas de grenier</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non aménagé</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Aménagé</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Équipements et annexes présents sur le bien</span>
+        <div class="row-2">
+          <div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Balcon</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Loggia</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Terrasse</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Pergola</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Véranda</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Jardin</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Piscine</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Panneaux solaires (photovoltaïques)</div>
+          </div>
+          <div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Feu ouvert / Cheminée</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Toiture terrasse</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Toiture terrasse végétalisée</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Mezzanine</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Atelier (jardin)</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Remise de jardin</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Ossature bois</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Éolienne</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="conditional">
+        <div class="cond-label">Si Piscine cochée — Superficie (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Superficie de la piscine (m²)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+      </div>
+
+      <div class="conditional">
+        <div class="cond-label">Si Feu ouvert / Cheminée cochée — Précision (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">De quel type s'agit-il ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Feu ouvert utilisé</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Cheminée décorative (fermée)</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Insert / Poêle à bois</div>
+        </div>
+      </div>
+
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Garage(s) / Emplacement(s) de parking <em style="font-weight:400;font-size:11px;">(nombre total)</em></span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Annexe &gt; 20 m² ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+      </div>
+
+      <div class="conditional">
+        <div class="cond-label">Si Annexe &gt; 20 m² — Destination de l'annexe (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Destination de l'annexe</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Habitation secondaire</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Stockage</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Atelier / Studio</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <span class="q-label">Cuisine équipée d'une valeur &gt; 25 000 € ? <em style="font-weight:400;font-size:11px;">(électroménagers encastrés inclus)</em></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 8 — État du bâtiment</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">État général du bâtiment <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Standard</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Rénové il y a moins de 10 ans</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> En cours de construction</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> En rénovation lourde</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Éco-construction</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Bâtiment passif</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Travaux importants (&gt; 25 000 €) prévus dans les 12 prochains mois ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 4 : SINISTRES + ASSURANCE + COUVERTURES + PAIEMENT -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 4 — Sinistres &amp; Finalisation</div>
+
+  <div class="section">
+    <div class="section-head">Section 9 — Antécédents sinistres</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Nombre de sinistres habitation (5 dernières années) <span class="req">*</span></span>
+        <div class="answer-line-sm"></div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si au moins 1 sinistre — Détails (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Nature du ou des sinistres</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Incendie</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Dégât des eaux</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Tempête</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Vol/Vandalisme</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Bris de vitre</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Montant(s) réglé(s) par l'assureur (€)</span>
+          <div class="answer-area"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Refoulement d'égout, inondation ou fissures (10 dernières années) ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 10 — Assurance actuelle</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Êtes-vous actuellement assuré(e) pour ce bien ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si OUI — Informations sur l'assurance actuelle (si applicable)</div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Compagnie actuelle</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Numéro de contrat</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Prime annuelle (€)</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Date d'échéance</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Créance hypothécaire sur ce bien ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+        <div class="conditional">
+          <div class="cond-label">Si OUI — Banque créancière (si applicable)</div>
+          <div class="q-block">
+            <span class="q-label">Nom de la banque créancière</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 11 — Couvertures souhaitées</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Couvertures souhaitées <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Incendie &amp; périls connexes (obligatoire)</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Dégât des eaux</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Tempête/Grêle/Neige</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Vol &amp; Vandalisme</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Bris de vitre</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> RC Vie privée</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Protection juridique</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Couvrir le contenu (mobilier, effets personnels) ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si OUI — Valeur du contenu (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Valeur estimée du contenu (€)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 12 — Paiement</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Fréquence de paiement <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Annuel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Semestriel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Trimestriel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Mensuel</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">IBAN pour domiciliation <em style="font-weight:400;font-size:11px;">(BE XX XXXX XXXX XXXX)</em></span>
+        <div class="answer-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">DAP Solidarity</div>
+    <div class="section-body">
+      <div class="solidarity-box">
+        DAP reverse 10 % de sa commission à une association caritative de votre choix. Veuillez cocher l'association que vous souhaitez soutenir :
+      </div>
+      <div class="q-block">
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Un Pas de Côté</strong> — Aide aux personnes en transition de vie</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Le Pont des Arts</strong> — Accès à la culture pour tous</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Stop Harcèlement</strong> — Lutte contre le harcèlement scolaire et en ligne</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Union des Artistes</strong> — Soutien aux artistes indépendants</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>L'Ilot</strong> — Accompagnement des personnes sans-abri</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Co-Construire</strong> — Projets d'économie sociale et solidaire</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Dynamo International</strong> — Travail de rue et aide à la jeunesse</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Remarques</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Remarques ou informations complémentaires</span>
+        <div class="answer-area" style="min-height:70px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div style="margin-top:20px;">
+    <div class="q-block">
+      <span class="q-label">Signature du souscripteur :</span>
+      <div style="border-bottom:1px solid #999; min-height:50px; margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <div class="print-footer">
+    <strong>DAP Courtage d'assurances</strong> — Confidentiel — Document réservé à l'usage interne
+  </div>
+
+</div>
+</body>
+</html>

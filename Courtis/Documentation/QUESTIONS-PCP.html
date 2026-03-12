@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Questions d'entraînement — Certification PCP Assurances</title>
+<script>
+// Fonctions définies AVANT tout appel
+function renderQuestions(containerId, questions, cssClass, moduleNum) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const letters = ['A','B','C','D'];
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = `question-card ${cssClass}`;
+    card.innerHTML = `
+      <div class="q-number">Module ${moduleNum} — Question ${i+1}</div>
+      <div class="question-text">${q.q}</div>
+      <div class="options">
+        ${q.opts.map((opt, j) => `
+          <div class="option">
+            <span class="letter">${letters[j]}</span>
+            <span>${opt}</span>
+          </div>`).join('')}
+      </div>
+      <button class="answer-toggle" onclick="toggleAnswer(this)">👁 Voir la réponse</button>
+      <div class="answer-box">
+        <div class="correct">✅ Réponse correcte : ${q.ans}</div>
+        <div class="justif">${q.just}</div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function renderAnswers(tbodyId, questions) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  questions.forEach((q, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>Q${i+1}</strong></td>
+      <td><span class="ans-correct">${q.ans}</span></td>
+      <td>${q.just}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleAnswer(btn) {
+  const box = btn.nextElementSibling;
+  box.classList.toggle('show');
+  btn.textContent = box.classList.contains('show') ? '🙈 Masquer la réponse' : '👁 Voir la réponse';
+}
+
+function toggleCas(btn) {
+  const box = btn.nextElementSibling;
+  box.classList.toggle('show');
+  btn.textContent = box.classList.contains('show') ? '🙈 Masquer la réponse' : '👉 Afficher la réponse';
+}
+</script>
+<style>
+  :root {
+    --blue-dark: #1a2f5e;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --orange: #ea580c;
+    --orange-light: #ffedd5;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --gray: #6b7280;
+    --gray-light: #f9fafb;
+    --white: #ffffff;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, #1e40af 100%);
+    color: white;
+    padding: 40px 40px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+  }
+  header h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+  header p { opacity: 0.85; font-size: 0.95rem; }
+  .header-badges { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+  .badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  /* NAV */
+  nav {
+    background: white;
+    padding: 14px 40px;
+    border-bottom: 2px solid #e2e8f0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  nav a {
+    padding: 6px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  nav a.mod1 { background: var(--blue-light); color: var(--blue); border-color: var(--blue); }
+  nav a.mod2 { background: var(--orange-light); color: var(--orange); border-color: var(--orange); }
+  nav a.mod3 { background: var(--purple-light); color: var(--purple); border-color: var(--purple); }
+  nav a.recap { background: var(--green-light); color: var(--green); border-color: var(--green); }
+  nav a:hover { opacity: 0.75; transform: translateY(-1px); }
+
+  /* MAIN */
+  main { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* MODULE HEADER */
+  .module-header {
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin: 48px 0 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: var(--shadow);
+  }
+  .module-header.m1 { background: linear-gradient(135deg, #1d4ed8, #2563eb); color: white; }
+  .module-header.m2 { background: linear-gradient(135deg, #c2410c, #ea580c); color: white; }
+  .module-header.m3 { background: linear-gradient(135deg, #6d28d9, #7c3aed); color: white; }
+  .module-header.recap-h { background: linear-gradient(135deg, #15803d, #16a34a); color: white; }
+  .module-header .icon { font-size: 2.5rem; }
+  .module-header h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
+  .module-header p { opacity: 0.85; font-size: 0.9rem; }
+
+  /* QUESTION CARD */
+  .question-card {
+    background: white;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border-left: 5px solid #e2e8f0;
+    transition: box-shadow 0.2s;
+  }
+  .question-card:hover { box-shadow: var(--shadow-lg); }
+  .question-card.m1 { border-left-color: var(--blue); }
+  .question-card.m2 { border-left-color: var(--orange); }
+  .question-card.m3 { border-left-color: var(--purple); }
+
+  .q-number {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .m1 .q-number { background: var(--blue-light); color: var(--blue); }
+  .m2 .q-number { background: var(--orange-light); color: var(--orange); }
+  .m3 .q-number { background: var(--purple-light); color: var(--purple); }
+
+  .question-text {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .option:hover { border-color: #94a3b8; background: #f1f5f9; }
+  .option .letter {
+    font-weight: 700;
+    font-size: 0.85rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ANSWER TOGGLE */
+  .answer-toggle {
+    background: none;
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 600;
+    width: 100%;
+    text-align: left;
+    transition: all 0.2s;
+  }
+  .answer-toggle:hover { border-color: #94a3b8; color: #475569; background: #f8fafc; }
+
+  .answer-box {
+    display: none;
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--green-light);
+    border: 2px solid #86efac;
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+  .answer-box.show { display: block; }
+  .answer-box .correct { font-weight: 800; color: var(--green); font-size: 1rem; }
+  .answer-box .justif { color: #166534; margin-top: 6px; }
+
+  /* ANSWERS TABLE */
+  .answers-section {
+    background: white;
+    border-radius: 14px;
+    padding: 28px;
+    margin: 28px 0;
+    box-shadow: var(--shadow);
+  }
+  .answers-section h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 700;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+    color: #475569;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8fafc; }
+  .ans-correct {
+    display: inline-block;
+    background: var(--green-light);
+    color: var(--green);
+    font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+  }
+
+  /* CHIFFRES CLES */
+  .chiffres-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .chiffre-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--green);
+  }
+  .chiffre-card .notion { font-size: 0.82rem; color: var(--gray); font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .chiffre-card .valeur { font-size: 1.2rem; font-weight: 800; color: var(--blue-dark); }
+
+  /* CAS PRATIQUES */
+  .cas-card {
+    background: white;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--orange);
+  }
+  .cas-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; color: var(--orange); }
+  .cas-enonce { background: #fff7ed; border: 2px solid #fed7aa; border-radius: 10px; padding: 16px; margin-bottom: 16px; font-size: 0.95rem; }
+  .cas-reponse { background: #f0fdf4; border: 2px solid #86efac; border-radius: 10px; padding: 16px; display: none; }
+  .cas-reponse.show { display: block; }
+  .cas-reponse .formula { background: #dcfce7; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 0.95rem; font-weight: 700; color: #166534; margin: 10px 0; }
+
+  /* SCORE */
+  .score-banner {
+    background: linear-gradient(135deg, #1a2f5e, #1e40af);
+    color: white;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 40px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+  }
+  .score-banner h2 { font-size: 1.5rem; margin-bottom: 8px; }
+  .score-banner p { opacity: 0.8; margin-bottom: 20px; }
+  .score-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+  .score-stat { text-align: center; }
+  .score-stat .val { font-size: 2.2rem; font-weight: 900; }
+  .score-stat .lbl { font-size: 0.8rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* SEPARATOR */
+  hr { border: none; border-top: 2px solid #e2e8f0; margin: 40px 0; }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--gray);
+    font-size: 0.85rem;
+    border-top: 2px solid #e2e8f0;
+    margin-top: 40px;
+    background: white;
+  }
+
+  strong { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📝 Questions d'Entraînement — Certification PCP</h1>
+  <p>Intermédiaires en assurances · Format Certassur · Belgique 2026</p>
+  <div class="header-badges">
+    <span class="badge">20 questions / examen</span>
+    <span class="badge">Seuil 60% (12/20)</span>
+    <span class="badge">Durée 1h / examen</span>
+    <span class="badge">55 questions au total</span>
+  </div>
+</header>
+
+<nav>
+  <a href="#mod11" class="mod1">Module 1.1 — Contrat</a>
+  <a href="#mod12" class="mod1">Module 1.2 — Législations</a>
+  <a href="#mod2" class="mod2">Module 2 — Non-Vie</a>
+  <a href="#mod3" class="mod3">Module 3 — Vie & Pensions</a>
+  <a href="#chiffres" class="recap">Chiffres Clés 2026</a>
+  <a href="#cas" class="recap">Cas Pratiques</a>
+</nav>
+
+<main>
+
+<!-- SCORE BANNER -->
+<div class="score-banner">
+  <h2>Préparez-vous comme à l'examen réel</h2>
+  <p>Répondez aux questions, puis cliquez pour révéler la bonne réponse et l'explication.</p>
+  <div class="score-stats">
+    <div class="score-stat"><div class="val">4</div><div class="lbl">Modules</div></div>
+    <div class="score-stat"><div class="val">55</div><div class="lbl">Questions</div></div>
+    <div class="score-stat"><div class="val">5</div><div class="lbl">Cas pratiques</div></div>
+    <div class="score-stat"><div class="val">60%</div><div class="lbl">Seuil réussite</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ MODULE 1.1 -->
+<div id="mod11">
+<div class="module-header m1">
+  <div class="icon">⚖️</div>
+  <div>
+    <h2>Module 1.1 — Marché de l'assurance & Contrat</h2>
+    <p>20 questions · Loi du 4 avril 2014 · Contrat · Intermédiaires · FSMA</p>
+  </div>
+</div>
+
+<script>
+const q11 = [
+  { q: "Quelle loi régit principalement les assurances terrestres en Belgique ?", opts: ["Loi du 25 juin 1992 sur le contrat d'assurance terrestre","Loi du 4 avril 2014 relative aux assurances","Loi du 21 novembre 1989 sur la RC automobile","Code civil belge de 1804"], ans: "B", just: "La loi du 4 avril 2014 est la loi centrale des assurances terrestres belges. Elle a remplacé la loi de 1992." },
+  { q: "Dans un contrat d'assurance, qui est le <strong>preneur</strong> ?", opts: ["La personne dont le risque est assuré","La personne qui reçoit la prestation en cas de sinistre","La personne qui souscrit et paie la prime","L'entreprise d'assurances"], ans: "C", just: "Le preneur souscrit le contrat et paie la prime. L'assuré est celui dont le risque est couvert (peut être la même personne)." },
+  { q: "La loi du 4 avril 2014 <strong>ne s'applique pas</strong> à :", opts: ["L'assurance incendie habitation","L'assurance vie branche 21","L'assurance maritime sur marchandises","L'assurance RC familiale"], ans: "C", just: "La loi exclut les assurances maritimes sur marchandises, les assurances de transport, maritimes, fluviales et aériennes." },
+  { q: "Quel est le caractère principal des dispositions de la loi du 4 avril 2014 ?", opts: ["Supplétif — les parties peuvent y déroger librement","Impératif — les parties ne peuvent pas y déroger","Facultatif — applicable uniquement sur demande","Administratif — uniquement opposable aux assureurs"], ans: "B", just: "Le caractère impératif protège l'assuré. Les parties ne peuvent pas y déroger, même d'un commun accord (sauf exceptions)." },
+  { q: "La <strong>subrogation</strong> en assurance signifie que :", opts: ["L'assuré peut changer d'assureur sans frais après un sinistre","L'assureur, après indemnisation, peut se retourner contre le tiers responsable","Le bénéficiaire peut refuser la prestation en faveur d'un tiers","Le preneur est exonéré de paiement de prime après un sinistre"], ans: "B", just: "La subrogation permet à l'assureur de récupérer les sommes versées auprès du tiers responsable du sinistre." },
+  { q: "En cas de <strong>déclaration inexacte du risque</strong> par le preneur (de bonne foi), l'assureur peut :", opts: ["Annuler rétroactivement le contrat sans indemnité","Adapter la prime ou réduire la prestation proportionnellement","Poursuivre pénalement le preneur","Refuser tout paiement quelle que soit la cause du sinistre"], ans: "B", just: "La bonne foi est protégée : adaptation de prime ou réduction proportionnelle de la prestation. La nullité rétroactive est réservée à la mauvaise foi." },
+  { q: "Le document qui modifie un contrat d'assurance en cours s'appelle :", opts: ["Une proposition","Une police","Un avenant","Une attestation"], ans: "C", just: "L'avenant est le document qui modifie (en cours d'exécution) les conditions d'un contrat d'assurance existant." },
+  { q: "Quelle est l'obligation du preneur <strong>après un sinistre</strong> ?", opts: ["Payer une surcotisation à titre de pénalité","Déclarer le sinistre dans les délais et minimiser les dommages","Résilier immédiatement le contrat","Attendre que l'assureur contacte en premier"], ans: "B", just: "Le preneur doit déclarer le sinistre dans les délais contractuels ET prendre les mesures pour limiter les dommages." },
+  { q: "Quelle est la <strong>FSMA</strong> ?", opts: ["La Fédération des Syndicats des Marchés d'Assurances","L'autorité de contrôle des marchés financiers et des assurances en Belgique","Un organe européen de régulation des assurances","L'association professionnelle des courtiers belges"], ans: "B", just: "La FSMA (Financial Services and Markets Authority) est l'autorité belge qui contrôle les intermédiaires, les entreprises d'assurance et les produits." },
+  { q: "Pour s'inscrire comme courtier d'assurances, laquelle de ces conditions est <strong>incorrecte</strong> ?", opts: ["Posséder les connaissances professionnelles requises","Satisfaire aux conditions d'honorabilité","Avoir au moins 10 ans d'expérience dans le secteur","Être couvert par une assurance RC professionnelle"], ans: "C", just: "Il n'existe pas de condition d'ancienneté de 10 ans. Les conditions sont : connaissances, honorabilité, RC professionnelle, garantie financière." },
+  { q: "La différence entre un <strong>courtier</strong> et un <strong>agent</strong> d'assurances est :", opts: ["Le courtier travaille pour le compte du preneur ; l'agent est lié à une ou plusieurs compagnies","Le courtier travaille uniquement en vie ; l'agent en non-vie","L'agent peut vendre plus de produits que le courtier","Il n'y a aucune différence légale entre les deux"], ans: "A", just: "Le courtier représente le preneur (indépendant). L'agent est mandataire d'une ou plusieurs compagnies." },
+  { q: "La <strong>clause bénéficiaire déterminée</strong> dans une assurance vie signifie que :", opts: ["Le capital tombe dans la succession du défunt","Le bénéficiaire reçoit le capital hors succession","Seul le conjoint peut être désigné bénéficiaire","La compagnie choisit librement le bénéficiaire"], ans: "B", just: "Le bénéficiaire déterminé reçoit le capital en dehors de la succession (protection contre créanciers du preneur)." },
+  { q: "Le document <strong>KID</strong> (Key Information Document) est obligatoire pour :", opts: ["Tous les contrats d'assurance sans exception","Les produits PRIIPS (dont certaines assurances vie avec composante d'investissement)","Uniquement les contrats de plus de 100.000 €","Les contrats de retraite du 2e pilier"], ans: "B", just: "Le KID est requis pour les produits PRIIPS (packaged retail and insurance-based investment products), notamment les B23 et B44." },
+  { q: "L'assurance RC professionnelle est <strong>obligatoire légalement</strong> pour :", opts: ["Tous les travailleurs indépendants","Les courtiers d'assurances, architectes, réviseurs d'entreprises","Seulement les professions médicales","Les professions libérales qui le souhaitent"], ans: "B", just: "La loi impose la RC professionnelle à certaines professions réglementées : courtiers, architectes, réviseurs, etc." },
+  { q: "Les <strong>conditions générales</strong> d'une police d'assurance sont :", opts: ["Des conditions spécifiques négociées pour chaque assuré","Des clauses standard applicables à tous les contrats du même type","Des conditions fixées par la FSMA pour chaque produit","Un résumé des exclusions uniquement"], ans: "B", just: "Les CG sont standardisées pour tous les contrats du même produit. Les conditions particulières personnalisent le contrat." },
+  { q: "En vertu de la <strong>DDA</strong> (Directive Distribution des Assurances), le distributeur doit :", opts: ["Proposer uniquement des produits qu'il juge rentables","Analyser les besoins du client avant toute proposition","Vendre exclusivement des produits de sa propre compagnie","Refuser les clients sans revenus stables"], ans: "B", just: "La DDA impose une analyse des besoins (needs analysis) avant toute recommandation de produit d'assurance." },
+  { q: "Le <strong>registre FSMA</strong> des intermédiaires d'assurances est :", opts: ["Un registre interne non accessible au public","Un registre public où l'inscription est obligatoire pour exercer","Un registre volontaire pour les courtiers souhaitant une certification","Un registre européen géré par l'EIOPA"], ans: "B", just: "L'inscription au registre FSMA est une condition sine qua non pour exercer comme intermédiaire d'assurances en Belgique." },
+  { q: "Qu'est-ce que le <strong>Fonds Commun de Garantie Belge (FCGB)</strong> ?", opts: ["Un fonds d'épargne pour les courtiers en difficulté","Un fonds qui indemnise les victimes d'accidents causés par un conducteur non assuré ou non identifié","Un fonds de garantie pour les primes impayées des assureurs","Un fonds de formation professionnelle pour les intermédiaires"], ans: "B", just: "Le FCGB est le filet de sécurité qui protège les victimes de la route lorsque le responsable est non assuré ou en fuite." },
+  { q: "Le <strong>principe de l'indemnisation</strong> en assurance non-vie signifie que :", opts: ["L'assureur peut verser plus que le dommage réel pour fidéliser le client","La prestation ne peut pas dépasser la valeur du dommage réel subi","L'indemnité est toujours calculée sur la valeur à neuf","Le preneur décide lui-même du montant de l'indemnité"], ans: "B", just: "Le principe indemnitaire : l'assurance ne peut pas être source d'enrichissement. La prestation = le dommage réel." },
+  { q: "Lors de la vente d'une assurance, l'analyse des <strong>besoins du client</strong> est :", opts: ["Optionnelle et laissée au bon vouloir du distributeur","Une obligation légale issue de la directive DDA","Requise seulement pour les assurances vie","Remplacée par la remise du KID"], ans: "B", just: "Obligation légale DDA (transposée en droit belge). S'applique à tous les types d'assurances, vie et non-vie." },
+];
+renderQuestions('mod11-questions', q11, 'm1', '1.1');
+</script>
+<div id="mod11-questions"></div>
+
+<div class="answers-section">
+  <h3>✅ Réponses — Module 1.1</h3>
+  <table>
+    <thead><tr><th>Q</th><th>Réponse</th><th>Justification</th></tr></thead>
+    <tbody id="ans11"></tbody>
+  </table>
+</div>
+<script>renderAnswers('ans11', q11);</script>
+</div>
+
+<!-- ═══════════════════════════════════════════════ MODULE 1.2 -->
+<div id="mod12">
+<div class="module-header m1">
+  <div class="icon">🔒</div>
+  <div>
+    <h2>Module 1.2 — Législations diverses</h2>
+    <p>10 questions · DDA · RGPD · LBA · AssurMiFID</p>
+  </div>
+</div>
+
+<script>
+const q12 = [
+  { q: "La <strong>LBA</strong> (Loi sur le Blanchiment de capitaux) impose aux courtiers :", opts: ["De refuser tout client étranger","D'identifier leurs clients et de signaler les opérations suspectes à la CTIF","De consulter la FSMA avant chaque transaction","De conserver les fonds des clients sur un compte séparé"], ans: "B", just: "La LBA impose : identification des clients (KYC), vigilance renforcée (PPE), et déclaration des opérations suspectes à la CTIF." },
+  { q: "Le <strong>RGPD</strong> s'applique :", opts: ["Uniquement aux grandes entreprises de plus de 250 employés","À toute organisation traitant des données personnelles de résidents de l'UE","Seulement pour le traitement de données médicales","Uniquement aux transactions en ligne"], ans: "B", just: "Le RGPD s'applique à toute organisation (quelle que soit sa taille) traitant des données de résidents de l'UE." },
+  { q: "Dans le cadre de la LBA, qu'est-ce qu'une <strong>personne politiquement exposée (PPE)</strong> ?", opts: ["Tout client qui a un mandat politique local","Une personne qui exerce ou a exercé des fonctions publiques importantes (chef d'État, ministre...)","Tout client ayant des liens avec l'étranger","Un client dont la prime dépasse 10.000 €"], ans: "B", just: "PPE = personnes exerçant des fonctions publiques importantes ou leur entourage proche. Vigilance renforcée obligatoire." },
+  { q: "L'<strong>AssurMiFID</strong> (en Belgique) concerne principalement :", opts: ["Toutes les assurances non-vie","Les assurances vie avec composante d'investissement (branche 23, 44)","Uniquement les assurances de groupe","Les assurances automobile obligatoires"], ans: "B", just: "AssurMiFID s'applique aux produits d'assurance à composante d'investissement (B23, B44), pas aux assurances non-vie classiques." },
+  { q: "Durée de conservation des données client selon le RGPD :", opts: ["Indéfiniment si le client a donné son consentement","Le temps nécessaire aux finalités du traitement, avec des limites légales spécifiques","Maximum 2 ans après la fin du contrat","Maximum 10 ans dans tous les cas"], ans: "B", just: "Le RGPD impose la limitation de la conservation : uniquement le temps nécessaire + obligations légales spécifiques (ex: 10 ans en assurance)." },
+  { q: "Quel organisme belge reçoit les déclarations de transactions suspectes (LBA) ?", opts: ["La FSMA","La Banque Nationale de Belgique","La CTIF (Cellule de Traitement des Informations Financières)","Le SPF Finances"], ans: "C", just: "La CTIF (Cellule de Traitement des Informations Financières) est le renseignement financier belge qui reçoit et traite les déclarations de soupçon." },
+  { q: "La <strong>DDA</strong> impose notamment aux distributeurs :", opts: ["Un tarif uniforme pour tous les produits d'assurance","La formation continue des distributeurs (15h/an minimum)","L'interdiction des commissions pour les courtiers","Un registre européen unique pour tous les intermédiaires"], ans: "B", just: "La DDA impose 15h de formation continue par an, l'analyse des besoins client, et des règles de conduite strictes." },
+  { q: "Dans le cadre de l'AssurMiFID, le <strong>test d'adéquation</strong> est :", opts: ["Un test médical pour souscrire une assurance vie","Une évaluation des connaissances et de la situation financière du client pour vérifier que le produit lui convient","Un test de solvabilité de l'assureur","Un contrôle des diplômes du distributeur"], ans: "B", just: "Le test d'adéquation évalue les connaissances, l'expérience, la situation financière et les objectifs du client." },
+  { q: "La <strong>formation continue</strong> obligatoire pour les intermédiaires d'assurances est de :", opts: ["5 heures par an","10 heures par an","15 heures par an (selon la DDA)","20 heures par an"], ans: "C", just: "La DDA impose un minimum de 15 heures de formation continue par an pour maintenir les connaissances professionnelles." },
+  { q: "Le <strong>droit à l'effacement</strong> (RGPD) signifie que :", opts: ["Le client peut demander la suppression de toutes ses données dans tous les cas","Le client peut demander la suppression lorsque les données ne sont plus nécessaires ou qu'il retire son consentement, sauf obligations légales","L'assureur doit supprimer les données dès la fin du contrat","Seules les données en ligne sont concernées"], ans: "B", just: "Le droit à l'effacement n'est pas absolu : il cède devant les obligations légales de conservation (ex: en assurance, souvent 10 ans)." },
+];
+renderQuestions('mod12-questions', q12, 'm1', '1.2');
+</script>
+<div id="mod12-questions"></div>
+
+<div class="answers-section">
+  <h3>✅ Réponses — Module 1.2</h3>
+  <table>
+    <thead><tr><th>Q</th><th>Réponse</th><th>Justification</th></tr></thead>
+    <tbody id="ans12"></tbody>
+  </table>
+</div>
+<script>renderAnswers('ans12', q12);</script>
+</div>
+
+<!-- ═══════════════════════════════════════════════ MODULE 2 -->
+<div id="mod2">
+<div class="module-header m2">
+  <div class="icon">🏠</div>
+  <div>
+    <h2>Module 2 — Assurances Non-Vie</h2>
+    <p>20 questions · Incendie · RC · Auto · Personnes · Pertes d'Exploitation</p>
+  </div>
+</div>
+
+<script>
+const q2 = [
+  { q: "Quelle est la garantie <strong>FLEXA</strong> en assurance incendie ?", opts: ["Feu, Lessivage, Électricité, Xénon, Amiante","Feu, Foudre, Explosion, chute d'Aéronef","Fissures, Lézardes, Effondrement, Xéroderme, Attentat","Froid, Lumière solaire, Évaporation, X-rays, Avalanche"], ans: "B", just: "FLEXA est le mnémonique des garanties de base incendie : Feu, Foudre, Explosion, chute d'Aéronef." },
+  { q: "En assurance incendie <strong>risques simples</strong>, le seuil inférieur est de :", opts: ["100.000 €","500.000 €","743.680,57 €","1.000.000 €"], ans: "C", just: "Le seuil inférieur (AR 24/12/1992) est de 743.680,57 €. Au-delà de certains seuils, on parle de risques spéciaux." },
+  { q: "La <strong>règle de proportionnalité</strong> s'applique quand :", opts: ["Le sinistre est causé par négligence du preneur","Le bien est sous-assuré (valeur assurée < valeur réelle)","Le preneur n'a pas payé sa prime dans les délais","Il y a plusieurs assureurs pour le même bien"], ans: "B", just: "Sous-assurance → l'indemnité est réduite proportionnellement. Formule : indemnité = dommage × (valeur assurée / valeur réelle)." },
+  { q: "La <strong>valeur réelle</strong> d'un bien est :", opts: ["La valeur de vente sur le marché immobilier","Le coût de reconstruction à l'identique","La valeur à neuf diminuée de la vétusté","La valeur d'achat initiale"], ans: "C", just: "Valeur réelle = valeur à neuf – dépréciation pour vétusté. C'est la valeur économique actuelle du bien." },
+  { q: "La formule <strong>\"Tous Risques Sauf\"</strong> signifie :", opts: ["Tout est exclu sauf l'incendie","Tout est couvert sauf les exclusions expressément listées","Le contrat couvre tous les risques sans exception","L'assureur peut refuser n'importe quel sinistre"], ans: "B", just: "Formule très favorable à l'assuré : toute cause est couverte sauf ce qui est explicitement exclu dans la police." },
+  { q: "Les <strong>trois conditions cumulatives</strong> pour la responsabilité civile sont :", opts: ["Âge, capacité juridique, assurance","Faute (ou fait générateur), dommage, lien de causalité","Intention, préjudice, témoins","Contrat, garantie, franchise"], ans: "B", just: "Pour engager la RC : (1) une faute ou fait générateur, (2) un dommage réel et certain, (3) un lien causal entre les deux." },
+  { q: "La <strong>RC familiale</strong> couvre :", opts: ["Uniquement le preneur principal","Le preneur, son conjoint/cohabitant, les enfants à charge et le personnel domestique","Tous les membres de la famille jusqu'au 4e degré","Uniquement les accidents corporels dans le domicile"], ans: "B", just: "La RC familiale couvre le ménage dans la vie privée : preneur, conjoint, enfants à charge, et personnel domestique en fonction." },
+  { q: "Le principe <strong>\"claims made\"</strong> en RC professionnelle signifie que :", opts: ["La garantie joue pour les sinistres survenus pendant le contrat","La garantie joue pour les réclamations introduites pendant la durée du contrat, quelle que soit la date de la faute","Le client doit réclamer dans les 30 jours après le sinistre","L'assureur peut refuser les réclamations tardives"], ans: "B", just: "Claims made : c'est la date de la réclamation qui détermine la garantie applicable, pas la date de la faute commise." },
+  { q: "En RC médicale, la responsabilité du médecin est une obligation :", opts: ["De résultat — le médecin doit guérir le patient","De moyen — le médecin doit mettre en œuvre tous les moyens disponibles","De garantie — tout acte médical est garanti par la compagnie","De résultat sauf en chirurgie générale"], ans: "B", just: "Obligation de moyen (pas de résultat) : le médecin doit utiliser tous les moyens disponibles. Exceptions : chirurgie esthétique, certains actes." },
+  { q: "La <strong>RC Produits</strong> (loi 25/02/1991) est de nature :", opts: ["Contractuelle uniquement","Extracontractuelle, sans faute — il suffit de prouver le défaut et le dommage","Pénale","Délictuelle avec nécessité de prouver la faute"], ans: "B", just: "Responsabilité objective (sans faute) : la victime doit seulement prouver le défaut du produit et le dommage subi." },
+  { q: "Un <strong>\"défaut\"</strong> au sens de la loi RC Produits est :", opts: ["Un produit dont le prix est trop élevé","Un produit qui ne fonctionne pas correctement","Un produit qui n'offre pas la sécurité à laquelle on peut légitimement s'attendre","Un produit sans notice d'utilisation"], ans: "C", just: "Le défaut est défini par rapport aux attentes légitimes de sécurité du public, pas par rapport aux performances." },
+  { q: "La <strong>RC auto</strong> est obligatoire pour :", opts: ["Les voitures de plus de 5 ans","Tous les véhicules automoteurs terrestres mis en circulation (sauf voies ferrées)","Les voitures personnelles uniquement","Les véhicules d'une valeur supérieure à 5.000 €"], ans: "B", just: "Loi du 21/11/1989 : RC auto obligatoire pour tout véhicule automoteur terrestre. Pas de franchise opposable aux victimes." },
+  { q: "La convention <strong>RDR</strong> (Règlement Direct) permet :", opts: ["De régler les sinistres sans expert","À l'assureur de la victime d'indemniser directement son client, puis de se retourner contre l'assureur du responsable","Au conducteur responsable d'être indemnisé en priorité","De fixer les tarifs des primes RC auto"], ans: "B", just: "RDR accélère l'indemnisation : l'assureur de la victime paie directement, puis récupère auprès de l'assureur du responsable." },
+  { q: "Le <strong>plafond RDR</strong> pour les dommages matériels auto est de :", opts: ["3.500 €","5.000 €","6.500 €","8.500 €"], ans: "D", just: "Le plafond RDR est de 8.500 € depuis le 1er juillet 2007 (précédemment 6.500 €)." },
+  { q: "L'assurance <strong>accidents corporels</strong> est de nature :", opts: ["Indemnitaire — remboursement des frais réels","Forfaitaire — prestations convenues à l'avance indépendamment du préjudice réel","Sociale — identique aux allocations INAMI","Obligatoire pour tous les travailleurs"], ans: "B", just: "Forfaitaire = les montants (capital décès, IP, IT) sont fixés à l'avance dans la police, indépendamment du préjudice réel." },
+  { q: "L'assurance <strong>hospitalisation</strong> couvre principalement :", opts: ["La perte de revenus pendant l'hospitalisation","Les accidents survenant à l'hôpital","Les frais restant à charge après l'intervention de la mutuelle (ticket modérateur, suppléments, honoraires)","Les maladies professionnelles uniquement"], ans: "C", just: "L'hospitalisation complète la mutuelle en couvrant le ticket modérateur, les suppléments de chambre, et les honoraires non remboursés." },
+  { q: "L'assurance <strong>revenu garanti</strong> est particulièrement importante pour les indépendants car :", opts: ["Ils gagnent plus que les salariés","L'INAMI leur verse une indemnité d'invalidité forfaitaire très faible","Ils ne peuvent pas cotiser à l'INAMI","Leur contrat de travail les protège déjà suffisamment"], ans: "B", just: "Les indépendants ont droit à un forfait INAMI en cas d'invalidité, mais ce montant est très insuffisant pour maintenir leur niveau de vie." },
+  { q: "L'assurance <strong>pertes d'exploitation</strong> couvre :", opts: ["Les dommages matériels causés par un incendie","La perte de CA due à des problèmes de gestion","Les pertes de marge brute et frais fixes pendant une interruption d'activité suite à un sinistre matériel","Les dettes commerciales impayées"], ans: "C", just: "La PE est un complément à l'assurance dommages : elle indemnise les pertes immatérielles (marge brute + frais fixes) pendant l'interruption." },
+  { q: "La <strong>marge brute</strong> dans une assurance PE correspond à :", opts: ["Le bénéfice net de l'exercice","Le chiffre d'affaires brut","Le chiffre d'affaires diminué des charges variables","Le capital investi dans l'entreprise"], ans: "C", just: "Marge brute = CA – charges variables (achats, matières premières). Elle inclut les salaires et le bénéfice net." },
+  { q: "La différence entre <strong>RC exploitation</strong> et <strong>RC après livraison/produits</strong> :", opts: ["La RC exploitation couvre aussi les vols","Il n'y a aucune différence","La RC exploitation couvre les dommages pendant l'activité ; la RC produits couvre les dommages après livraison","La RC produits est obligatoire, pas la RC exploitation"], ans: "C", just: "RC exploitation = pendant l'activité (avant/pendant livraison). RC après livraison = dommages causés par le produit après sa mise en circulation." },
+];
+renderQuestions('mod2-questions', q2, 'm2', '2');
+</script>
+<div id="mod2-questions"></div>
+
+<div class="answers-section">
+  <h3>✅ Réponses — Module 2</h3>
+  <table>
+    <thead><tr><th>Q</th><th>Réponse</th><th>Justification</th></tr></thead>
+    <tbody id="ans2"></tbody>
+  </table>
+</div>
+<script>renderAnswers('ans2', q2);</script>
+</div>
+
+<!-- ═══════════════════════════════════════════════ MODULE 3 -->
+<div id="mod3">
+<div class="module-header m3">
+  <div class="icon">💼</div>
+  <div>
+    <h2>Module 3 — Assurance Vie & Pensions</h2>
+    <p>25 questions · Branches 21/23/26/44 · Pensions 2e pilier · Fiscalité · Succession</p>
+  </div>
+</div>
+
+<script>
+const q3 = [
+  { q: "La principale différence entre la <strong>branche 21</strong> et la <strong>branche 23</strong> est :", opts: ["La branche 21 est réservée aux entreprises","En branche 21 le taux est garanti par l'assureur ; en branche 23 le capital est lié à des fonds d'investissement sans garantie","La branche 23 offre un meilleur taux garanti","La branche 21 est soumise à une taxe sur les primes plus élevée"], ans: "B", just: "B21 = sécurité (taux garanti + PB). B23 = performance potentielle mais risque porté par le preneur (aucune garantie de capital)." },
+  { q: "En <strong>branche 23</strong>, qui supporte le risque d'investissement ?", opts: ["L'assureur, qui garantit le capital","L'État, via un fonds de garantie","Le preneur (l'assuré)","La compagnie de réassurance"], ans: "C", just: "En B23, l'assureur a une obligation de moyen (pas de résultat). Le risque de marché est entièrement supporté par le preneur." },
+  { q: "La <strong>taxe sur les primes</strong> pour une assurance branche 23 est de :", opts: ["0%","2%","4,40%","9,25%"], ans: "B", just: "Taxe sur les primes = 2% pour la branche 23, comme la plupart des assurances vie. (4,40% pour l'assurance groupe et l'EIP)." },
+  { q: "Les plus-values d'une branche 23 sont <strong>exonérées</strong> d'impôt si :", opts: ["Le contrat dure plus de 5 ans","La prime annuelle est inférieure à 1.000 €","La durée est supérieure à 8 ans OU si couverture décès ≥ 130% avec Preneur = Assuré = Bénéficiaire vie","Le preneur est âgé de plus de 60 ans"], ans: "C", just: "Double condition d'exonération : durée > 8 ans OU triangle d'identité avec décès ≥ 130%. Les deux conditions existent alternativement." },
+  { q: "Le <strong>rendement minimum garanti</strong> pour les contrats d'assurance de groupe depuis le 1er janvier 2025 est :", opts: ["0%","1,75%","2,5% (loi Vandenbroucke)","3,25%"], ans: "C", just: "La loi du 28/04/2003 (modifiée) impose un rendement minimum garanti de 2,5% depuis le 01/01/2025 (précédemment 1,75%)." },
+  { q: "La <strong>règle des 80%</strong> en pensions complémentaires signifie que :", opts: ["80% des primes versées sont déductibles fiscalement","Le capital constitué ne peut générer une rente dépassant 80% du dernier salaire brut régulier, en tenant compte de la pension légale","L'employeur doit contribuer à hauteur de 80% de la prime","80% du capital est taxé à la liquidation"], ans: "B", just: "La règle des 80% est un plafond fiscal : la rente totale (légale + complémentaire) ne peut dépasser 80% du dernier salaire brut." },
+  { q: "Depuis mars 2022, la pension légale est estimée à <strong>___</strong> du salaire dans le calcul de la règle des 80% :", opts: ["25% du salaire","33% du salaire","50% du salaire","60% du salaire"], ans: "C", just: "Avant mars 2022 : estimation à 25%. Depuis mars 2022 : 50%. Ce changement réduit la marge disponible pour les primes déductibles." },
+  { q: "L'<strong>EIP</strong> (Engagement Individuel de Pension) salarié est plafonné à :", opts: ["2.020 € par an","3.140 € par an (2026)","4.086 € par an","Pas de plafond (règle des 80% uniquement)"], ans: "B", just: "EIP salarié = max 3.140 € (2026). L'EIP dirigeant indépendant n'a pas de plafond absolu mais est soumis à la règle des 80%." },
+  { q: "La <strong>PLCI classique</strong> en 2026 représente :", opts: ["6% du revenu professionnel net, max 2.450 €","8% du salaire brut, max 3.140 €","8,17% du RPNI (n-3), max 4.086,34 €","9,40% du RPNI, max 4.701,54 €"], ans: "C", just: "PLCI classique = 8,17% du RPNI de l'année n-3, avec un maximum absolu de 4.086,34 € en 2026." },
+  { q: "La <strong>PLCI sociale</strong> se distingue de la classique par :", opts: ["Elle est réservée aux salariés en difficulté","Elle est gérée par l'État","Un taux plus élevé (9,40%) et une couverture sociale (10% de la prime)","Elle offre un avantage fiscal réduit"], ans: "C", just: "PLCI sociale : 9,40% du RPNI (max 4.701,54 € en 2026) + 10% de la prime consacrée à des garanties sociales (invalidité, famille)." },
+  { q: "La <strong>CPTI</strong> (Convention de Pension pour Travailleur Indépendant) est destinée à :", opts: ["Les salariés sans assurance de groupe","Les dirigeants de société anonyme","Les indépendants personnes physiques (sans société) — équivalent de l'EIP","Les fonctionnaires souhaitant compléter leur pension"], ans: "C", just: "La CPTI est l'EIP des indépendants personnes physiques : elle permet de constituer une pension complémentaire en dehors d'une société." },
+  { q: "La <strong>PLCS</strong> (Pension Libre Complémentaire pour Salariés) est plafonnée à :", opts: ["5% du revenu brut n-2, max 3.000 €","8,17% du RPNI, max 4.086 €","3% du revenu brut n-2, max 2.020 €","6% du salaire annuel brut, max 2.450 €"], ans: "C", just: "PLCS = 3% du revenu brut n-2, max 2.020 €. L'employeur est preneur et prélève la prime sur le salaire net du travailleur." },
+  { q: "Le <strong>double avantage fiscal de la PLCI</strong> pour un indépendant est :", opts: ["Réduction d'impôt de 30% + exemption de TVA","Déduction fiscale au taux marginal + réduction des cotisations sociales 3 ans plus tard","Réduction d'impôt de 25% + pas de taxe sur les primes","Exemption totale de droits de succession"], ans: "B", just: "PLCI = déduction IPP au taux marginal (jusqu'à 50%) + les cotisations sociales baissent 3 ans plus tard car le RPNI est réduit." },
+  { q: "L'<strong>Épargne-Pension</strong> — plafond MAJORÉ en 2026 :", opts: ["1.350 € avec réduction d'impôt de 30%","1.050 € avec réduction d'impôt de 25%","1.350 € avec réduction d'impôt de 25% (avantage max 337,50 €)","1.200 € avec réduction d'impôt de 30%"], ans: "C", just: "Option majorée : 1.350 € à 25% = avantage max 337,50 €. Gelé jusqu'en 2029. Attention : <1.260 € → option classique 30% est meilleure !" },
+  { q: "Taux de taxation sur l'Épargne-Pension à <strong>60 ans</strong> :", opts: ["5%","8% (taxe libératoire anticipative)","10%","16,5%"], ans: "B", just: "8% à 60 ans (ou 10 ans avant terme si > 60 ans). Taxe libératoire prélevée anticipativement. Les primes versées après 60 ans ne sont plus taxées à terme." },
+  { q: "L'<strong>ELT</strong> (Épargne à Long Terme) est taxée à 60 ans à :", opts: ["8%","10% (taxe libératoire anticipative)","16,5%","0% si durée > 10 ans"], ans: "B", just: "ELT à 60 ans = 10% sur la valeur de rachat théorique. Différent de l'épargne-pension (8%). Capital avant 1993 : 16,5%." },
+  { q: "Plafond de l'<strong>ELT</strong> (Épargne à Long Terme) en 2026 :", opts: ["1.350 €","1.900 €","2.450 € (gelé jusqu'en 2029)","3.000 €"], ans: "C", just: "ELT = max 2.450 € (gelé jusqu'en 2029 par le gouvernement, pas d'indexation). Réduction d'impôt : 30%." },
+  { q: "En cas de <strong>rachat anticipé</strong> d'un contrat ELT ayant bénéficié d'immunisation fiscale :", opts: ["10%","16,5%","25%","33%"], ans: "D", just: "Rachat anticipé après immunisation fiscale = 33% de taxation (tarif distinct et pénalisant). Raison de plus de respecter la durée minimale." },
+  { q: "La <strong>cotisation de solidarité</strong> sur les pensions complémentaires depuis le 01/01/2026 est de :", opts: ["0% à 2% selon le montant versé","Supprimée","2% fixe sur tout capital versé","3,55%"], ans: "C", just: "À partir de 2026, la cotisation de solidarité est uniformisée à 2% fixe sur tout capital de pension complémentaire (avant : 0/1/2% selon montant)." },
+  { q: "Un preneur désigne un <strong>bénéficiaire déterminé</strong>. En cas de décès :", opts: ["Le capital tombe dans la succession et est soumis au barème général","Le capital est exonéré de tous droits","Le capital est perçu hors succession mais reste soumis aux droits de succession (art. 8 C.Succ.)","Le capital revient automatiquement à l'État"], ans: "C", just: "Bénéficiaire déterminé = capital hors succession (protection contre créanciers) MAIS l'art. 8 du C.Succ. taxe quand même la prestation reçue." },
+  { q: "L'astuce pour <strong>éviter les droits de succession</strong> sur un capital assurance vie :", opts: ["Désigner la succession comme bénéficiaire","Répartir le capital entre plusieurs bénéficiaires","Souscrire un contrat de plus de 10 ans","Que le Preneur = Bénéficiaire (il reçoit son propre capital en cas de décès de l'assuré)"], ans: "D", just: "Si Preneur = Bénéficiaire, il reçoit son propre argent → pas de transmission à titre gratuit → pas de droits de succession." },
+  { q: "Depuis le 01/09/2018, la réserve héréditaire des enfants est de :", opts: ["75% de la succession divisée entre les enfants","50% de la succession, quel que soit le nombre d'enfants","25% par enfant","33% pour 1 enfant, 25% pour 2 enfants, 20% pour 3 enfants"], ans: "B", just: "Réforme 2018 : réserve des enfants = 50% de la succession totale (à partager entre tous les enfants). La part individuelle diminue avec le nombre d'enfants." },
+  { q: "En cas de <strong>donation mobilière</strong>, le délai pour éviter les droits de succession est de :", opts: ["1 an","2 ans","3 ans","5 ans"], ans: "C", just: "Biens mobiliers : délai de 3 ans. Biens immobiliers : délai de 5 ans. Pendant ce délai → recommandé de souscrire une assurance décès temporaire." },
+  { q: "La <strong>rente fictive</strong> (PLCI, CPTI) au terme à 65 ans représente :", opts: ["3,5%","4%","4,5%","5% (déclarée pendant 10 ans)"], ans: "D", just: "À 65 ans : rente fictive = 5% × capital × 10 ans. Cette rente est déclarée à l'IPP pendant 10 ans (= traitement en revenu différé)." },
+  { q: "La <strong>Pension INAMI</strong> est réservée à :", opts: ["Tous les indépendants affiliés à la FSMA","Les salariés du secteur médical","Les professions médicales conventionnées dont la prime est versée directement par l'INAMI","Les professions libérales membres d'un ordre professionnel"], ans: "C", just: "Pension INAMI = PLCI sociale spéciale pour médecins/dentistes conventionnés. L'INAMI verse directement la prime à la compagnie (≈ 5.546 €/an)." },
+];
+renderQuestions('mod3-questions', q3, 'm3', '3');
+</script>
+<div id="mod3-questions"></div>
+
+<div class="answers-section">
+  <h3>✅ Réponses — Module 3</h3>
+  <table>
+    <thead><tr><th>Q</th><th>Réponse</th><th>Justification</th></tr></thead>
+    <tbody id="ans3"></tbody>
+  </table>
+</div>
+<script>renderAnswers('ans3', q3);</script>
+</div>
+
+<!-- ═══════════════════════════════════════════════ CHIFFRES CLÉS -->
+<div id="chiffres">
+<div class="module-header recap-h">
+  <div class="icon">⚡</div>
+  <div>
+    <h2>Quiz Éclair — Chiffres Clés 2026</h2>
+    <p>Maîtriser ces chiffres est indispensable pour l'examen</p>
+  </div>
+</div>
+
+<div class="chiffres-grid">
+  <div class="chiffre-card"><div class="notion">Seuil risque simple (inférieur)</div><div class="valeur">743.680,57 €</div></div>
+  <div class="chiffre-card"><div class="notion">PLCI classique (taux / plafond)</div><div class="valeur">8,17% / 4.086,34 €</div></div>
+  <div class="chiffre-card"><div class="notion">PLCI sociale (taux / plafond)</div><div class="valeur">9,40% / 4.701,54 €</div></div>
+  <div class="chiffre-card"><div class="notion">EIP salarié (plafond)</div><div class="valeur">3.140 €</div></div>
+  <div class="chiffre-card"><div class="notion">PLCS (taux / plafond)</div><div class="valeur">3% / 2.020 €</div></div>
+  <div class="chiffre-card"><div class="notion">Rendement garanti assurance groupe</div><div class="valeur">min 2,5% (depuis 01/01/2025)</div></div>
+  <div class="chiffre-card"><div class="notion">Épargne-pension — Option classique</div><div class="valeur">1.050 € → 30% → 315 €</div></div>
+  <div class="chiffre-card"><div class="notion">Épargne-pension — Option majorée</div><div class="valeur">1.350 € → 25% → 337,50 €</div></div>
+  <div class="chiffre-card"><div class="notion">ELT plafond (gelé jusqu'en 2029)</div><div class="valeur">2.450 €</div></div>
+  <div class="chiffre-card"><div class="notion">Taxation ELT à 60 ans</div><div class="valeur">10%</div></div>
+  <div class="chiffre-card"><div class="notion">Taxation Épargne-Pension à 60 ans</div><div class="valeur">8%</div></div>
+  <div class="chiffre-card"><div class="notion">Rachat anticipé (contrat fiscalisé)</div><div class="valeur">33%</div></div>
+  <div class="chiffre-card"><div class="notion">Cotisation de solidarité 2026</div><div class="valeur">2% fixe</div></div>
+  <div class="chiffre-card"><div class="notion">Barème IPP — taux supérieur</div><div class="valeur">50% (au-delà de 48.320 €)</div></div>
+  <div class="chiffre-card"><div class="notion">Réserve héréditaire enfants (depuis 2018)</div><div class="valeur">50% de la succession</div></div>
+  <div class="chiffre-card"><div class="notion">Plafond RDR auto</div><div class="valeur">8.500 €</div></div>
+  <div class="chiffre-card"><div class="notion">Branche 23 — taxe sur primes</div><div class="valeur">2%</div></div>
+  <div class="chiffre-card"><div class="notion">Exonération B23 si</div><div class="valeur">Durée > 8 ans OU décès ≥ 130%</div></div>
+  <div class="chiffre-card"><div class="notion">Formation continue DDA</div><div class="valeur">15 heures/an</div></div>
+  <div class="chiffre-card"><div class="notion">Questions par examen Certassur</div><div class="valeur">20 questions — seuil 60%</div></div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ CAS PRATIQUES -->
+<div id="cas">
+<div class="module-header m2" style="margin-top:48px;">
+  <div class="icon">🧮</div>
+  <div>
+    <h2>Exercices Pratiques — Cas Concrets</h2>
+    <p>5 cas avec calculs · Réponses détaillées</p>
+  </div>
+</div>
+
+<div class="cas-card">
+  <h3>Cas 1 — Règle de proportionnalité</h3>
+  <div class="cas-enonce">Un bâtiment commercial est assuré pour <strong>500.000 €</strong> alors que sa valeur réelle est de <strong>800.000 €</strong>. Un incendie cause un dommage de <strong>200.000 €</strong>.<br><br><strong>Quelle indemnité l'assuré recevra-t-il ?</strong></div>
+  <button class="answer-toggle" onclick="toggleCas(this)">👉 Afficher la réponse</button>
+  <div class="cas-reponse">
+    <div class="formula">Indemnité = Dommage × (Valeur assurée / Valeur réelle)<br>= 200.000 € × (500.000 / 800.000)<br>= 200.000 € × 0,625<br>= <strong>125.000 €</strong></div>
+    <p>L'assuré est sous-assuré de 37,5% → il supporte lui-même 37,5% du dommage (75.000 €). Il ne reçoit que 62,5% de son préjudice.</p>
+  </div>
+</div>
+
+<div class="cas-card">
+  <h3>Cas 2 — Épargne-pension : quelle option choisir ?</h3>
+  <div class="cas-enonce">Martine veut verser <strong>1.200 €</strong> dans son épargne-pension. Elle hésite entre les deux options.<br><br><strong>Calculez l'avantage fiscal de chaque option et recommandez la meilleure.</strong></div>
+  <button class="answer-toggle" onclick="toggleCas(this)">👉 Afficher la réponse</button>
+  <div class="cas-reponse">
+    <div class="formula">Option 1.050 € (30%) : max 1.050 € → avantage = 1.050 × 30% = <strong>315 €</strong><br>Option 1.350 € (25%) : verse 1.200 € → avantage = 1.200 × 25% = <strong>300 €</strong></div>
+    <p>✅ <strong>Option classique (1.050 €) est plus avantageuse</strong> (315 € > 300 €), même si elle verse moins.<br><br>💡 Règle pratique : En dessous de <strong>1.260 € versés</strong>, l'option classique 30% est toujours meilleure.</p>
+  </div>
+</div>
+
+<div class="cas-card">
+  <h3>Cas 3 — PLCI : calcul de la prime maximale</h3>
+  <div class="cas-enonce">Julien est indépendant. Son <strong>RPNI de l'année n-3</strong> était de <strong>38.000 €</strong>.<br><br><strong>Quelle est sa prime PLCI classique maximum en 2026 ?</strong></div>
+  <button class="answer-toggle" onclick="toggleCas(this)">👉 Afficher la réponse</button>
+  <div class="cas-reponse">
+    <div class="formula">Prime = 8,17% × 38.000 € = <strong>3.104,60 €</strong><br>(inférieur au plafond de 4.086,34 € → montant retenu = 3.104,60 €)</div>
+    <p>Si son taux marginal est <strong>50%</strong>, il récupère environ <strong>1.552 €</strong> d'impôts.<br>En plus, ses cotisations sociales baisseront 3 ans plus tard (calcul sur RPNI diminué).<br>Économie totale estimée : <strong>> 60% de la prime versée</strong>.</p>
+  </div>
+</div>
+
+<div class="cas-card">
+  <h3>Cas 4 — Droits de succession</h3>
+  <div class="cas-enonce">Jean et Marie vivent en <strong>concubinage</strong> (non marié, non cohabitant légal). Jean souscrit une assurance vie de <strong>200.000 €</strong> en désignant Marie comme bénéficiaire déterminée.<br><br><strong>Quelle sera la situation fiscale à son décès ?</strong></div>
+  <button class="answer-toggle" onclick="toggleCas(this)">👉 Afficher la réponse</button>
+  <div class="cas-reponse">
+    <p>• Marie reçoit les 200.000 € <strong>hors succession</strong> (clause bénéficiaire déterminée ✓)<br>• Mais l'<strong>art. 8 du Code des droits de succession</strong> s'applique<br>• En tant que concubine (non cohabitante légale), Marie est une <strong>"autre personne"</strong></p>
+    <div class="formula">Taux : jusqu'à <strong>80%</strong> en Région bruxelloise/wallonne<br>= jusqu'à 160.000 € de droits sur 200.000 € !</div>
+    <p>⚠️ Planification recommandée : donation bancaire + assurance décès temporaire couvrant le délai de 3 ans, ou passage par la cohabitation légale (taux réduits).</p>
+  </div>
+</div>
+
+<div class="cas-card">
+  <h3>Cas 5 — Règle des 80%</h3>
+  <div class="cas-enonce">Un dirigeant a un salaire brut de <strong>120.000 €/an</strong>. La pension légale est estimée à 50% selon la règle 2022.<br><br><strong>Quelle rente maximale peut-il viser avec ses contrats du 2e pilier ?</strong></div>
+  <button class="answer-toggle" onclick="toggleCas(this)">👉 Afficher la réponse</button>
+  <div class="cas-reponse">
+    <div class="formula">Plafond 80% = 80% × 120.000 = <strong>96.000 €/an</strong><br>Pension légale estimée = 50% × 120.000 = <strong>60.000 €/an</strong><br>Marge disponible = 96.000 – 60.000 = <strong>36.000 €/an</strong></div>
+    <p>En capital à 65 ans (rente fictive 5% × 10 ans) :<br>Capital max ≈ 36.000 / 0,05 = <strong>720.000 €</strong> de capital complémentaire autorisé.</p>
+  </div>
+</div>
+</div>
+
+</main>
+
+<footer>
+  <p>Questions créées sur base de : Certassur · FSMA · Febelfin Academy · EFPME/IFPME · Données 2026</p>
+  <p style="margin-top:8px; color:#94a3b8;">Certification PCP — Intermédiaires en assurances Belgique</p>
+</footer>
+
+</body>
+</html>

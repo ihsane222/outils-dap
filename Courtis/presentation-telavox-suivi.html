@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAP — Suivi des appels Telavox · Présentation</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: #f4f6f9;
+  color: #1a1a2e;
+  line-height: 1.6;
+}
+:root {
+  --navy:   #1a1a2e;
+  --blue:   #0f3460;
+  --gold:   #e8b84b;
+  --gold-l: #fdf3d7;
+  --red:    #ef4444;
+  --red-l:  #fef2f2;
+  --orange: #f59e0b;
+  --green:  #10b981;
+  --green-l:#d1fae5;
+  --border: #e2e8f0;
+  --bg:     #f4f6f9;
+  --muted:  #6b7280;
+}
+
+.page { max-width: 960px; margin: 0 auto; padding: 0 28px 100px; }
+
+/* ── COVER ── */
+.cover {
+  background: linear-gradient(140deg, #1a1a2e 0%, #0f3460 60%, #16213e 100%);
+  color: white;
+  padding: 80px 52px 68px;
+  margin-bottom: 72px;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -120px;
+  width: 480px; height: 480px;
+  background: rgba(232,184,75,0.06);
+  border-radius: 50%;
+}
+.cover::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: 25%;
+  width: 320px; height: 320px;
+  background: rgba(255,255,255,0.025);
+  border-radius: 50%;
+}
+.cover-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(232,184,75,0.15);
+  border: 1px solid rgba(232,184,75,0.35);
+  color: var(--gold);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  padding: 6px 16px; border-radius: 100px;
+  margin-bottom: 30px;
+  position: relative; z-index: 1;
+}
+.cover h1 {
+  font-size: 46px; font-weight: 900; line-height: 1.1;
+  margin-bottom: 20px;
+  position: relative; z-index: 1;
+  max-width: 660px;
+}
+.cover h1 em { color: var(--gold); font-style: normal; }
+.cover-desc {
+  font-size: 17px;
+  color: rgba(255,255,255,0.58);
+  max-width: 540px; line-height: 1.75;
+  margin-bottom: 48px;
+  position: relative; z-index: 1;
+}
+.cover-pills {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  position: relative; z-index: 1;
+}
+.cover-pill {
+  display: flex; align-items: center; gap: 9px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.85);
+  font-size: 13px; font-weight: 600;
+  padding: 10px 18px; border-radius: 10px;
+}
+
+/* ── SECTION ── */
+.section { margin-bottom: 72px; }
+.section-header { margin-bottom: 36px; }
+.section-num-row {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 10px;
+}
+.section-badge {
+  width: 34px; height: 34px;
+  background: var(--navy); color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 800;
+  flex-shrink: 0;
+}
+.section-label {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--muted);
+}
+.section-title {
+  font-size: 30px; font-weight: 900; color: var(--navy);
+  margin-bottom: 8px;
+}
+.section-sub { font-size: 15px; color: var(--muted); }
+
+/* ── PROB / SOL ── */
+.prob-sol {
+  display: grid;
+  grid-template-columns: 1fr 56px 1fr;
+  gap: 0;
+  align-items: start;
+  margin-bottom: 0;
+}
+.prob-col {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(26,26,46,0.05);
+}
+.prob-col-header {
+  padding: 16px 22px;
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+.prob-col-header.red   { background: #fef2f2; color: #b91c1c; border-bottom: 2px solid #fecaca; }
+.prob-col-header.green { background: #dcfce7; color: #15803d; border-bottom: 2px solid #86efac; }
+.prob-col-body { padding: 22px; }
+.prob-item {
+  display: flex; gap: 11px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  font-size: 14px; line-height: 1.55;
+}
+.prob-item:last-child { margin-bottom: 0; }
+.prob-item-icon { flex-shrink: 0; font-size: 17px; margin-top: 1px; }
+.arrow-col {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; color: var(--gold);
+  padding-top: 64px;
+}
+
+/* ── FEATURE CARDS ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.feat-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 26px 24px;
+  box-shadow: 0 2px 12px rgba(26,26,46,0.05);
+  position: relative;
+  overflow: hidden;
+}
+.feat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.feat-card.c-red::before    { background: var(--red); }
+.feat-card.c-orange::before { background: var(--orange); }
+.feat-card.c-blue::before   { background: var(--blue); }
+.feat-card.c-green::before  { background: var(--green); }
+.feat-card.c-gold::before   { background: var(--gold); }
+.feat-card.c-navy::before   { background: var(--navy); }
+
+.feat-icon {
+  font-size: 30px;
+  margin-bottom: 14px;
+  display: block;
+}
+.feat-title {
+  font-size: 17px; font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.feat-desc {
+  font-size: 13px; color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.feat-detail {
+  display: flex; flex-direction: column; gap: 7px;
+}
+.feat-bullet {
+  display: flex; align-items: flex-start; gap: 9px;
+  font-size: 13px; line-height: 1.4; color: var(--navy);
+}
+.feat-bullet::before {
+  content: '→';
+  color: var(--gold);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 0px;
+}
+
+/* ── KPI MOCKUP ── */
+.kpi-mockup {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.kpi-m {
+  background: white;
+  border-radius: 12px;
+  padding: 18px 16px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-m::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.kpi-m.r::before { background: var(--red); }
+.kpi-m.o::before { background: var(--orange); }
+.kpi-m.b::before { background: var(--blue); }
+.kpi-m.g::before { background: var(--green); }
+.kpi-m-icon { font-size: 18px; margin-bottom: 6px; }
+.kpi-m-num { font-size: 32px; font-weight: 900; line-height: 1; margin-bottom: 3px; }
+.kpi-m.r .kpi-m-num { color: var(--red); }
+.kpi-m.o .kpi-m-num { color: var(--orange); }
+.kpi-m.b .kpi-m-num { color: var(--blue); }
+.kpi-m.g .kpi-m-num { color: var(--green); }
+.kpi-m-label { font-size: 11px; color: var(--muted); font-weight: 500; }
+
+/* ── CARD MOCKUP ── */
+.cards-mockup {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.card-m {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.card-m.urgent { border-left: 3px solid var(--red); background: #fef9f9; }
+.card-m-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.card-m-num { font-size: 15px; font-weight: 700; }
+.badge-m {
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+}
+.badge-m.red    { background: var(--red);    color: white; }
+.badge-m.orange { background: #fff3cd; color: #92400e; border: 1px solid #fde68a; }
+.badge-m.gray   { background: #f3f4f6; color: var(--muted); }
+.card-m-meta { font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.6; }
+.card-m-btns { display: flex; gap: 7px; flex-wrap: wrap; }
+.btn-m {
+  font-size: 11px; font-weight: 600;
+  padding: 5px 11px; border-radius: 7px; border: none;
+  cursor: default;
+}
+.btn-m.green-l { background: #dcfce7; color: #166534; }
+.btn-m.blue-l  { background: #dbeafe; color: #1d4ed8; }
+.btn-m.gray-l  { background: #f3f4f6; color: var(--muted); border: 1px solid var(--border); }
+
+/* ── MODAL MOCKUP ── */
+.modal-m {
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  max-width: 440px;
+  margin: 0 auto;
+}
+.modal-m-head {
+  background: linear-gradient(140deg, var(--navy), var(--blue));
+  color: white; padding: 16px 20px;
+}
+.modal-m-title { font-size: 14px; font-weight: 700; }
+.modal-m-sub   { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.modal-m-body  { padding: 18px; }
+.modal-m-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
+.modal-m-btns  { display: flex; gap: 8px; margin-bottom: 14px; }
+.modal-m-btn {
+  flex: 1; padding: 9px 6px;
+  border-radius: 9px;
+  font-size: 12px; font-weight: 600;
+  text-align: center;
+}
+.modal-m-btn.ok     { background: #dcfce7; color: #166534; border: 2px solid #86efac; }
+.modal-m-btn.later  { background: #fffbeb; color: #92400e; border: 2px solid #fde68a; }
+.modal-m-btn.no     { background: #f9fafb; color: var(--muted); border: 2px solid var(--border); }
+.modal-m-textarea {
+  width: 100%; height: 56px;
+  background: #f8fafc; border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px;
+  font-size: 12px; color: var(--muted); resize: none;
+  margin-bottom: 12px; font-family: inherit;
+  display: flex; align-items: flex-start;
+}
+.modal-m-confirm {
+  width: 100%; padding: 11px;
+  background: var(--green); color: white;
+  border-radius: 9px; border: none;
+  font-size: 13px; font-weight: 700;
+  cursor: default; text-align: center;
+}
+
+/* ── FLOW ── */
+.flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 0 auto;
+  max-width: 800px;
+}
+.flow-step {
+  flex: 1;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 18px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  position: relative;
+}
+.flow-icon { font-size: 28px; margin-bottom: 12px; }
+.flow-title { font-size: 13px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+.flow-desc  { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.flow-arrow {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--gold);
+  padding: 0 6px;
+  flex-shrink: 0;
+}
+
+/* ── TECHNO ── */
+.techno-row {
+  display: flex; gap: 14px; flex-wrap: wrap;
+}
+.techno-chip {
+  display: flex; align-items: center; gap: 9px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 13px; font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+.techno-chip-icon { font-size: 20px; }
+
+/* ── CTA ── */
+.cta-block {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--blue) 100%);
+  border-radius: 20px;
+  padding: 52px 48px;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.cta-block::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 300px; height: 300px;
+  background: rgba(232,184,75,0.07);
+  border-radius: 50%;
+}
+.cta-block h2 {
+  font-size: 30px; font-weight: 900;
+  margin-bottom: 14px;
+  position: relative; z-index: 1;
+}
+.cta-block h2 em { color: var(--gold); font-style: normal; }
+.cta-block p {
+  font-size: 15px; color: rgba(255,255,255,0.58);
+  max-width: 480px; margin: 0 auto 32px;
+  line-height: 1.7;
+  position: relative; z-index: 1;
+}
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 9px;
+  background: var(--gold);
+  color: var(--navy);
+  font-size: 14px; font-weight: 800;
+  padding: 14px 32px; border-radius: 12px;
+  text-decoration: none;
+  position: relative; z-index: 1;
+  transition: all 0.2s;
+  cursor: pointer; border: none;
+}
+.cta-btn:hover { background: #f0c75a; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,184,75,0.35); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .cover { padding: 52px 28px 48px; }
+  .cover h1 { font-size: 30px; }
+  .features-grid, .cards-mockup, .kpi-mockup { grid-template-columns: 1fr; }
+  .prob-sol { grid-template-columns: 1fr; }
+  .arrow-col { display: none; }
+  .flow { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="page">
+    <div class="cover-eyebrow">📞 DAP × Telavox · Nouvelle fonctionnalité</div>
+    <h1>Ne laissez plus<br>un client sans <em>rappel</em>.</h1>
+    <p class="cover-desc">
+      Une plateforme de suivi des appels manqués conçue pour les équipes DAP —
+      pour que chaque appel entrant trouve une réponse, et que chaque courtier sache exactement quoi faire.
+    </p>
+    <div class="cover-pills">
+      <div class="cover-pill"><span class="cover-pill-icon">🔴</span> Détection des rappeleurs</div>
+      <div class="cover-pill"><span class="cover-pill-icon">✋</span> Prise en charge individuelle</div>
+      <div class="cover-pill"><span class="cover-pill-icon">✅</span> Clôture avec note</div>
+      <div class="cover-pill"><span class="cover-pill-icon">📊</span> KPIs en temps réel</div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- 1. PROBLÈME / SOLUTION -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num-row">
+        <div class="section-badge">1</div>
+        <div class="section-label">Le contexte</div>
+      </div>
+      <div class="section-title">Un problème silencieux mais coûteux</div>
+      <div class="section-sub">Ce que vivent les courtiers DAP chaque jour, et comment on y répond.</div>
+    </div>
+
+    <div class="prob-sol">
+      <div class="prob-col">
+        <div class="prob-col-header red">❌ Avant — Sans l'outil</div>
+        <div class="prob-col-body">
+          <div class="prob-item"><span class="prob-item-icon">😤</span><span>Un client appelle, personne ne décroche. Il rappelle. Encore. Toujours sans réponse.</span></div>
+          <div class="prob-item"><span class="prob-item-icon">🤷</span><span>Aucun courtier ne sait qu'un appel est en attente de rappel — pas de mémoire collective.</span></div>
+          <div class="prob-item"><span class="prob-item-icon">🔁</span><span>Deux courtiers peuvent rappeler le même client le même jour sans le savoir.</span></div>
+          <div class="prob-item"><span class="prob-item-icon">📭</span><span>Après un appel traité, aucune trace de ce qui a été dit — tout repose sur la mémoire individuelle.</span></div>
+        </div>
+      </div>
+      <div class="arrow-col">→</div>
+      <div class="prob-col">
+        <div class="prob-col-header green">✅ Après — Avec l'outil</div>
+        <div class="prob-col-body">
+          <div class="prob-item"><span class="prob-item-icon">🔴</span><span>Les rappeleurs sont identifiés automatiquement et mis en évidence — impossible de les manquer.</span></div>
+          <div class="prob-item"><span class="prob-item-icon">✋</span><span>Chaque courtier prend explicitement un appel en charge — une seule personne par suivi.</span></div>
+          <div class="prob-item"><span class="prob-item-icon">📝</span><span>À la clôture, une note est enregistrée. Le suivant sait ce qui s'est passé.</span></div>
+          <div class="prob-item"><span class="prob-item-icon">📊</span><span>Les KPIs affichent en temps réel l'état de l'équipe — rien ne passe entre les mailles.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. KPI BAR -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num-row">
+        <div class="section-badge">2</div>
+        <div class="section-label">Vue d'ensemble</div>
+      </div>
+      <div class="section-title">4 chiffres, toute la situation</div>
+      <div class="section-sub">Dès l'ouverture de l'outil, chaque courtier voit l'état exact de l'équipe en un coup d'œil.</div>
+    </div>
+
+    <div class="kpi-mockup">
+      <div class="kpi-m r">
+        <div class="kpi-m-icon">🔴</div>
+        <div class="kpi-m-num">3</div>
+        <div class="kpi-m-label">Rappeleurs</div>
+      </div>
+      <div class="kpi-m o">
+        <div class="kpi-m-icon">⏳</div>
+        <div class="kpi-m-num">8</div>
+        <div class="kpi-m-label">Sans prise en charge</div>
+      </div>
+      <div class="kpi-m b">
+        <div class="kpi-m-icon">✋</div>
+        <div class="kpi-m-num">2</div>
+        <div class="kpi-m-label">Mes suivis actifs</div>
+      </div>
+      <div class="kpi-m g">
+        <div class="kpi-m-icon">✅</div>
+        <div class="kpi-m-num">12</div>
+        <div class="kpi-m-label">Traités aujourd'hui</div>
+      </div>
+    </div>
+
+    <div style="background:white;border-radius:12px;border:1px solid var(--border);padding:18px 22px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+      <span style="font-size:20px;flex-shrink:0">💡</span>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6">
+        <strong style="color:var(--navy)">Cliquer sur une tuile</strong> fait défiler directement vers la section correspondante.
+        Le badge <strong style="color:var(--red)">Rappeleurs</strong> pulse en rouge dès qu'il y a une urgence — impossible à ignorer.
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. FONCTIONNALITÉS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num-row">
+        <div class="section-badge">3</div>
+        <div class="section-label">Les fonctionnalités</div>
+      </div>
+      <div class="section-title">Conçu pour agir, pas pour regarder</div>
+      <div class="section-sub">Chaque fonctionnalité répond à un vrai besoin terrain identifié avec les équipes.</div>
+    </div>
+
+    <div class="features-grid">
+      <div class="feat-card c-red">
+        <span class="feat-icon">🔴</span>
+        <div class="feat-title">Détection des rappeleurs</div>
+        <div class="feat-desc">Tout numéro ayant appelé 2 fois ou plus sans suivi clôturé remonte automatiquement en zone rouge — en haut de l'écran, visible par tous.</div>
+        <div class="feat-detail">
+          <div class="feat-bullet">Nombre d'appels, premier et dernier appel affiché</div>
+          <div class="feat-bullet">Timeline complète des tentatives d'appel</div>
+          <div class="feat-bullet">Badge animé pulsant pour les cas les plus urgents</div>
+        </div>
+      </div>
+
+      <div class="feat-card c-orange">
+        <span class="feat-icon">⏳</span>
+        <div class="feat-title">File d'attente avec ancienneté</div>
+        <div class="feat-desc">Les appels sans prise en charge sont triés du plus ancien au plus récent. Des badges colorés signalent visuellement les délais dépassés.</div>
+        <div class="feat-detail">
+          <div class="feat-bullet">Neutre → Orange (2h+) → Rouge clignotant (6h+)</div>
+          <div class="feat-bullet">Visible par toute l'équipe tant que non pris en charge</div>
+          <div class="feat-bullet">Un clic suffit pour prendre la main</div>
+        </div>
+      </div>
+
+      <div class="feat-card c-blue">
+        <span class="feat-icon">✋</span>
+        <div class="feat-title">Prise en charge individuelle</div>
+        <div class="feat-desc">En cliquant "Je prends", le courtier s'assigne le suivi. La card disparaît de la file commune et apparaît dans ses suivis personnels.</div>
+        <div class="feat-detail">
+          <div class="feat-bullet">Une seule personne responsable par appel</div>
+          <div class="feat-bullet">Transition animée — feedback immédiat</div>
+          <div class="feat-bullet">Sélecteur de courtier pour voir les suivis de chacun</div>
+        </div>
+      </div>
+
+      <div class="feat-card c-green">
+        <span class="feat-icon">✅</span>
+        <div class="feat-title">Clôture avec note & résultat</div>
+        <div class="feat-desc">À la fermeture d'un suivi, une mini-fenêtre demande le résultat et une note optionnelle. Tout est sauvegardé pour le prochain courtier.</div>
+        <div class="feat-detail">
+          <div class="feat-bullet">3 résultats : Résolu / À recontacter / Sans suite</div>
+          <div class="feat-bullet">Note libre jusqu'à 200 caractères</div>
+          <div class="feat-bullet">Le compteur "Traités aujourd'hui" s'incrémente</div>
+        </div>
+      </div>
+
+      <div class="feat-card c-gold">
+        <span class="feat-icon">📞</span>
+        <div class="feat-title">Click-to-call intégré</div>
+        <div class="feat-desc">Chaque card dispose d'un bouton "Appeler" qui compose le numéro directement via Telavox — sans copier-coller ni jongler entre les outils.</div>
+        <div class="feat-detail">
+          <div class="feat-bullet">Ouvre Telavox ou l'app téléphonie du poste</div>
+          <div class="feat-bullet">Disponible sur chaque card (rappeleur, attente, suivi)</div>
+          <div class="feat-bullet">Prêt pour l'intégration API Telavox future</div>
+        </div>
+      </div>
+
+      <div class="feat-card c-navy">
+        <span class="feat-icon">💾</span>
+        <div class="feat-title">État persistant & mode démo</div>
+        <div class="feat-desc">L'état de l'outil survit aux rechargements de page grâce au stockage local. Un mode démo permet de présenter l'outil sans données réelles.</div>
+        <div class="feat-detail">
+          <div class="feat-bullet">Les prises en charge et notes survivent au refresh</div>
+          <div class="feat-bullet">Toggle Démo / Live dans le header</div>
+          <div class="feat-bullet">Prêt pour connexion à l'API Telavox (JWT)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. FLUX -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num-row">
+        <div class="section-badge">4</div>
+        <div class="section-label">Le flux de travail</div>
+      </div>
+      <div class="section-title">De l'appel manqué au suivi clôturé</div>
+      <div class="section-sub">En 4 étapes simples, aucun appel ne tombe dans l'oubli.</div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-icon">📵</div>
+        <div class="flow-title">Appel manqué</div>
+        <div class="flow-desc">Le numéro apparaît dans la file d'attente visible par toute l'équipe</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">✋</div>
+        <div class="flow-title">Je prends</div>
+        <div class="flow-desc">Un courtier s'assigne le suivi — il disparaît de la file commune</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">📞</div>
+        <div class="flow-title">Je rappelle</div>
+        <div class="flow-desc">Click-to-call depuis la fiche, directement dans Telavox</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">✅</div>
+        <div class="flow-title">Je clôture</div>
+        <div class="flow-desc">Résultat + note → sauvegardé, KPI mis à jour, boucle fermée</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. APERÇU VISUEL -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num-row">
+        <div class="section-badge">5</div>
+        <div class="section-label">Aperçu de l'interface</div>
+      </div>
+      <div class="section-title">Des cards claires, des actions immédiates</div>
+      <div class="section-sub">Chaque card contient tout ce dont le courtier a besoin — sans surcharge.</div>
+    </div>
+
+    <div class="cards-mockup" style="margin-bottom:20px">
+      <div class="card-m urgent">
+        <div class="card-m-top">
+          <div class="card-m-num">+32 477 12 34 56</div>
+          <span class="badge-m red">3 appels</span>
+          <span class="badge-m orange">⚠️ 1h27</span>
+        </div>
+        <div class="card-m-meta">
+          📅 Premier appel : Lun 09:12<br>
+          🕐 Dernier appel : Auj. 14:33
+        </div>
+        <div class="card-m-btns">
+          <span class="btn-m green-l">📞 Appeler</span>
+          <span class="btn-m blue-l">👤 Je prends</span>
+          <span class="btn-m gray-l">📋 Historique</span>
+        </div>
+      </div>
+
+      <div class="card-m">
+        <div class="card-m-top">
+          <div class="card-m-num">+32 468 33 44 55</div>
+          <span class="badge-m red" style="animation:none">🚨 7h20 — Urgent</span>
+        </div>
+        <div class="card-m-meta">🕐 Auj. 08:05</div>
+        <div class="card-m-btns">
+          <span class="btn-m green-l">📞 Appeler</span>
+          <span class="btn-m blue-l">👤 Je prends</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-m">
+      <div class="modal-m-head">
+        <div class="modal-m-title">Clôturer le suivi</div>
+        <div class="modal-m-sub">+32 473 99 88 77</div>
+      </div>
+      <div class="modal-m-body">
+        <div class="modal-m-label">Résultat de l'appel</div>
+        <div class="modal-m-btns">
+          <div class="modal-m-btn ok">✅ Résolu</div>
+          <div class="modal-m-btn later">🔄 À recontacter</div>
+          <div class="modal-m-btn no">❌ Sans suite</div>
+        </div>
+        <div class="modal-m-label">Note (optionnelle)</div>
+        <div class="modal-m-textarea" style="display:flex;align-items:flex-start;padding:8px 10px;font-size:12px;color:var(--muted);font-style:italic">Sinistre traité, client informé de la procédure…</div>
+        <div class="modal-m-confirm">Confirmer la clôture →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. TECHNOLOGIES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num-row">
+        <div class="section-badge">6</div>
+        <div class="section-label">Technique</div>
+      </div>
+      <div class="section-title">Simple à déployer, prêt pour le live</div>
+      <div class="section-sub">Aucune infrastructure à installer. Un fichier HTML, et l'API Telavox quand vous êtes prêts.</div>
+    </div>
+
+    <div class="techno-row">
+      <div class="techno-chip"><span class="techno-chip-icon">📄</span> HTML / CSS / JS pur — zéro dépendance</div>
+      <div class="techno-chip"><span class="techno-chip-icon">💾</span> LocalStorage pour la persistance démo</div>
+      <div class="techno-chip"><span class="techno-chip-icon">📞</span> API Telavox REST + JWT (mode live)</div>
+      <div class="techno-chip"><span class="techno-chip-icon">📊</span> Google Sheets pour les notes partagées (optionnel)</div>
+      <div class="techno-chip"><span class="techno-chip-icon">🔔</span> Webhooks Telavox pour alertes Teams (roadmap)</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <h2>Prêt à tester <em>l'outil</em> ?</h2>
+    <p>L'outil est disponible dès maintenant en mode démo — toutes les interactions sont fonctionnelles et l'état est sauvegardé entre les sessions.</p>
+    <button class="cta-btn" onclick="window.open('dap-telavox-suivi.html','_blank')">
+      📞 Ouvrir l'outil de suivi →
+    </button>
+  </div>
+
+</div>
+</body>
+</html>

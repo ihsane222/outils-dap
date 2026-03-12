@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Pension — Groupe DAP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Lato:wght@400;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #012940;
+            --accent: #37A1D7;
+            --accent-hover: #2b8bbf;
+            --bg-light: #E2F3F4;
+            --white: #ffffff;
+            --text: #1a2a3a;
+            --text-light: #5a6a7a;
+            --border: #d0dde8;
+            --success: #27ae60;
+            --warning: #e67e22;
+            --danger: #e74c3c;
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg-light);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .calculator-container {
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(1, 41, 64, 0.1);
+            max-width: 640px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .calc-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #0a4a6e 100%);
+            color: var(--white);
+            padding: 2rem 2rem 1.5rem;
+            text-align: center;
+        }
+
+        .calc-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .calc-header p {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        /* Progress bar */
+        .progress-wrapper {
+            padding: 1.5rem 2rem 0.5rem;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .progress-steps::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 1;
+            transition: width 0.4s ease;
+        }
+
+        .progress-steps[data-step="1"]::after { width: 0%; }
+        .progress-steps[data-step="2"]::after { width: 33.3%; }
+        .progress-steps[data-step="3"]::after { width: 66.6%; }
+        .progress-steps[data-step="4"]::after { width: 100%; }
+
+        .step-indicator {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--white);
+        }
+
+        .step-indicator.done {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .step-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            text-align: center;
+            width: 25%;
+            font-weight: 500;
+        }
+
+        .step-label.active {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Form content */
+        .form-content {
+            padding: 1.5rem 2rem 2rem;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.2rem;
+        }
+
+        /* Form fields */
+        .field-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.4rem;
+        }
+
+        .field-group input,
+        .field-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text);
+            background: var(--white);
+            transition: border-color 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .field-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235a6a7a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .field-group input:focus,
+        .field-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .field-group .hint {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 0.3rem;
+        }
+
+        /* Radio cards */
+        .radio-cards {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-card {
+            flex: 1;
+            min-width: 120px;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--white);
+        }
+
+        .radio-card:hover {
+            border-color: var(--accent);
+            background: #f0f9fc;
+        }
+
+        .radio-card.selected {
+            border-color: var(--accent);
+            background: var(--bg-light);
+        }
+
+        .radio-card input {
+            display: none;
+        }
+
+        .radio-card .card-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .radio-card .card-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--white);
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-light);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-light);
+            color: var(--text);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Results */
+        .result-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #0a4a6e 100%);
+            border-radius: 12px;
+            padding: 1.8rem;
+            color: var(--white);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-amount {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .result-amount small {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 0.3rem;
+        }
+
+        .result-details {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .result-detail {
+            flex: 1;
+            min-width: 140px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 8px;
+            padding: 0.8rem;
+        }
+
+        .result-detail .detail-value {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .result-detail .detail-label {
+            font-size: 0.75rem;
+            opacity: 0.75;
+        }
+
+        /* Gap bar */
+        .gap-section {
+            background: #fef9f0;
+            border: 2px solid #f5deb3;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .gap-section.positive {
+            background: #f0faf4;
+            border-color: #b2dfdb;
+        }
+
+        .gap-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+        }
+
+        .gap-section.positive .gap-title {
+            color: var(--success);
+        }
+
+        .gap-bar-wrapper {
+            background: #e8e8e8;
+            border-radius: 6px;
+            height: 12px;
+            overflow: hidden;
+            margin: 0.6rem 0;
+        }
+
+        .gap-bar {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.6s ease;
+        }
+
+        .gap-text {
+            font-size: 0.85rem;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .gap-text strong {
+            color: var(--primary);
+        }
+
+        /* CTA section */
+        .cta-section {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-section p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .solutions-grid {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .solution-tag {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .solution-tag span {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 400;
+            color: var(--text-light);
+            margin-top: 0.2rem;
+        }
+
+        /* Success message */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .success-message .check-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .success-message h3 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .success-message p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Legal */
+        .legal-note {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            text-align: center;
+            padding: 1rem 2rem;
+            border-top: 1px solid var(--border);
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            body { padding: 0.75rem; }
+            .calc-header { padding: 1.5rem 1.2rem 1.2rem; }
+            .calc-header h1 { font-size: 1.25rem; }
+            .form-content { padding: 1.2rem 1.2rem 1.5rem; }
+            .progress-wrapper { padding: 1.2rem 1.2rem 0.3rem; }
+            .result-amount { font-size: 2.2rem; }
+            .radio-cards { flex-direction: column; }
+            .radio-card { min-width: auto; }
+            .result-details { flex-direction: column; }
+            .solutions-grid { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator-container">
+
+    <!-- Header -->
+    <div class="calc-header">
+        <h1>Calculateur de Pension</h1>
+        <p>Estimez votre pension légale belge en quelques clics</p>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrapper">
+        <div class="progress-steps" id="progressSteps" data-step="1">
+            <div class="step-indicator active" id="ind1">1</div>
+            <div class="step-indicator" id="ind2">2</div>
+            <div class="step-indicator" id="ind3">3</div>
+            <div class="step-indicator" id="ind4">4</div>
+        </div>
+        <div class="step-labels">
+            <div class="step-label active" id="lbl1">Profil</div>
+            <div class="step-label" id="lbl2">Carrière</div>
+            <div class="step-label" id="lbl3">Résultat</div>
+            <div class="step-label" id="lbl4">Conseil</div>
+        </div>
+    </div>
+
+    <div class="form-content">
+
+        <!-- STEP 1: Profil -->
+        <div class="step active" id="step1">
+            <div class="step-title">Votre profil</div>
+
+            <div class="field-group">
+                <label>Quel est votre statut ?</label>
+                <div class="radio-cards" id="statutCards">
+                    <label class="radio-card" onclick="selectCard(this, 'statut', 'salarie')">
+                        <input type="radio" name="statut" value="salarie">
+                        <div class="card-icon">💼</div>
+                        <div class="card-label">Salarié</div>
+                    </label>
+                    <label class="radio-card" onclick="selectCard(this, 'statut', 'independant')">
+                        <input type="radio" name="statut" value="independant">
+                        <div class="card-icon">🏢</div>
+                        <div class="card-label">Indépendant</div>
+                    </label>
+                    <label class="radio-card" onclick="selectCard(this, 'statut', 'fonctionnaire')">
+                        <input type="radio" name="statut" value="fonctionnaire">
+                        <div class="card-icon">🏛️</div>
+                        <div class="card-label">Fonctionnaire</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="birthYear">Année de naissance</label>
+                <input type="number" id="birthYear" placeholder="ex: 1975" min="1940" max="2005">
+            </div>
+
+            <div class="field-group">
+                <label>Situation au moment de la pension</label>
+                <div class="radio-cards" id="situationCards">
+                    <label class="radio-card" onclick="selectCard(this, 'situation', 'isole')">
+                        <input type="radio" name="situation" value="isole">
+                        <div class="card-icon">👤</div>
+                        <div class="card-label">Isolé</div>
+                    </label>
+                    <label class="radio-card" onclick="selectCard(this, 'situation', 'menage')">
+                        <input type="radio" name="situation" value="menage">
+                        <div class="card-icon">👥</div>
+                        <div class="card-label">Ménage</div>
+                    </label>
+                </div>
+                <div class="hint">Taux ménage si votre conjoint n'a pas ou peu de revenus propres</div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="goToStep(2)">Continuer</button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Carrière -->
+        <div class="step" id="step2">
+            <div class="step-title">Votre carrière</div>
+
+            <div class="field-group">
+                <label for="salaire" id="salaireLabel">Salaire brut annuel actuel (€)</label>
+                <input type="number" id="salaire" placeholder="ex: 45000" min="0" max="200000">
+                <div class="hint" id="plafondHint">Plafond pris en compte : 77 924 €/an</div>
+            </div>
+
+            <div class="field-group">
+                <label for="anneesCarriere">Années de carrière déjà prestées</label>
+                <input type="number" id="anneesCarriere" placeholder="ex: 20" min="0" max="50">
+            </div>
+
+            <div class="field-group">
+                <label for="anneesRestantes">Années restantes jusqu'à la pension</label>
+                <input type="number" id="anneesRestantes" placeholder="calculé automatiquement" min="0" max="45">
+                <div class="hint" id="ageRetraiteHint">Âge légal de la pension : calculé à l'étape suivante</div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="goToStep(1)">Retour</button>
+                <button class="btn btn-primary" onclick="calculerPension()">Calculer ma pension</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Résultat -->
+        <div class="step" id="step3">
+            <div class="step-title">Votre estimation de pension</div>
+
+            <div class="result-card">
+                <div class="result-label">Pension mensuelle brute estimée</div>
+                <div class="result-amount" id="resultAmount">— €</div>
+                <div class="result-details">
+                    <div class="result-detail">
+                        <div class="detail-value" id="resultAge">—</div>
+                        <div class="detail-label">Âge de la pension</div>
+                    </div>
+                    <div class="result-detail">
+                        <div class="detail-value" id="resultAnnees">—</div>
+                        <div class="detail-label">Années de carrière</div>
+                    </div>
+                    <div class="result-detail">
+                        <div class="detail-value" id="resultTaux">—</div>
+                        <div class="detail-label">Taux de remplacement</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gap-section" id="gapSection">
+                <div class="gap-title" id="gapTitle">⚠️ Écart avec votre revenu actuel</div>
+                <div class="gap-bar-wrapper">
+                    <div class="gap-bar" id="gapBar" style="width: 0%; background: var(--accent);"></div>
+                </div>
+                <div class="gap-text" id="gapText"></div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="goToStep(2)">Modifier</button>
+                <button class="btn btn-primary" onclick="goToStep(4)">Combler l'écart →</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Lead capture -->
+        <div class="step" id="step4">
+            <div class="step-title">Optimisez votre pension</div>
+
+            <div class="cta-section" id="ctaSection">
+                <h3>Comblez l'écart avec les bonnes solutions</h3>
+                <p>Un courtier DAP peut vous aider à constituer un complément de pension adapté à votre situation.</p>
+
+                <div class="solutions-grid">
+                    <div class="solution-tag">
+                        Assurance Vie
+                        <span>Épargne long terme</span>
+                    </div>
+                    <div class="solution-tag">
+                        EIP
+                        <span>Dirigeants d'entreprise</span>
+                    </div>
+                    <div class="solution-tag">
+                        PLCI
+                        <span>Indépendants</span>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="contactNom">Votre nom</label>
+                    <input type="text" id="contactNom" placeholder="Nom et prénom">
+                </div>
+
+                <div class="field-group">
+                    <label for="contactEmail">Votre email</label>
+                    <input type="email" id="contactEmail" placeholder="votre@email.be">
+                </div>
+
+                <div class="field-group">
+                    <label for="contactTel">Téléphone <span style="font-weight:400;color:var(--text-light)">(optionnel)</span></label>
+                    <input type="tel" id="contactTel" placeholder="0470 00 00 00">
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn btn-secondary" onclick="goToStep(3)">Retour</button>
+                    <button class="btn btn-primary" onclick="envoyerContact()">Être recontacté</button>
+                </div>
+            </div>
+
+            <div class="success-message" id="successMsg">
+                <div class="check-icon">✓</div>
+                <h3>Demande envoyée !</h3>
+                <p>Un courtier DAP vous recontactera dans les plus brefs délais pour analyser votre situation et vous proposer les meilleures solutions.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Legal -->
+    <div class="legal-note">
+        Estimation indicative basée sur les règles simplifiées de calcul de la pension légale belge.
+        Les montants réels peuvent varier. Contactez un courtier DAP pour une analyse personnalisée.<br>
+        MyPension.be étant temporairement en pause, cet outil vous offre une première estimation.
+    </div>
+
+</div>
+
+<script>
+    // State
+    const state = {
+        step: 1,
+        statut: null,
+        situation: null,
+        birthYear: null,
+        salaire: null,
+        anneesCarriere: null,
+        anneesRestantes: null,
+        pensionMensuelle: null,
+        tauxRemplacement: null
+    };
+
+    // Plafonds salariaux
+    const PLAFONDS = {
+        salarie: 77924,
+        independant: 73298,
+        fonctionnaire: 999999 // pas de plafond salarial, mais max 75% traitement ref
+    };
+
+    // Pension minimum garantie (carrière complète, mensuel brut)
+    const PENSION_MIN = {
+        salarie:      { isole: 1773, menage: 2217 },
+        independant:  { isole: 1809, menage: 2260 },
+        fonctionnaire:{ isole: 1773, menage: 2217 }
+    };
+
+    // Select radio card
+    function selectCard(el, field, value) {
+        const parent = el.closest('.radio-cards');
+        parent.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        state[field] = value;
+
+        // Update salary label and hint when status changes
+        if (field === 'statut') {
+            updateSalaireLabel();
+            updateAnneesRestantes();
+        }
+    }
+
+    function updateSalaireLabel() {
+        const label = document.getElementById('salaireLabel');
+        const hint = document.getElementById('plafondHint');
+        if (state.statut === 'independant') {
+            label.textContent = 'Revenu professionnel annuel net (€)';
+            hint.textContent = 'Plafond pris en compte : 73 298 €/an';
+        } else if (state.statut === 'fonctionnaire') {
+            label.textContent = 'Traitement brut annuel actuel (€)';
+            hint.textContent = 'Calcul basé sur le traitement de référence';
+        } else {
+            label.textContent = 'Salaire brut annuel actuel (€)';
+            hint.textContent = 'Plafond pris en compte : 77 924 €/an';
+        }
+    }
+
+    function getAgePension(birthYear) {
+        if (birthYear < 1960) return 65;
+        if (birthYear <= 1963) return 66;
+        return 67;
+    }
+
+    function updateAnneesRestantes() {
+        const birthYear = parseInt(document.getElementById('birthYear').value);
+        if (!birthYear) return;
+
+        state.birthYear = birthYear;
+        const agePension = getAgePension(birthYear);
+        const currentYear = new Date().getFullYear();
+        const ageActuel = currentYear - birthYear;
+        const restantes = Math.max(0, agePension - ageActuel);
+
+        document.getElementById('anneesRestantes').value = restantes;
+        document.getElementById('anneesRestantes').placeholder = restantes;
+        state.anneesRestantes = restantes;
+
+        document.getElementById('ageRetraiteHint').textContent =
+            `Âge légal de la pension : ${agePension} ans (né en ${birthYear})`;
+    }
+
+    // Listen for birth year changes
+    document.getElementById('birthYear').addEventListener('input', updateAnneesRestantes);
+
+    // Navigation
+    function goToStep(n) {
+        // Validation
+        if (n > state.step || n > 1) {
+            if (state.step === 1 && n === 2) {
+                if (!state.statut) return alert('Veuillez sélectionner votre statut.');
+                if (!document.getElementById('birthYear').value) return alert('Veuillez entrer votre année de naissance.');
+                if (!state.situation) return alert('Veuillez sélectionner votre situation.');
+                state.birthYear = parseInt(document.getElementById('birthYear').value);
+                updateAnneesRestantes();
+            }
+        }
+
+        state.step = n;
+
+        // Update steps visibility
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+
+        // Update progress
+        document.getElementById('progressSteps').dataset.step = n;
+
+        for (let i = 1; i <= 4; i++) {
+            const ind = document.getElementById('ind' + i);
+            const lbl = document.getElementById('lbl' + i);
+            ind.classList.remove('active', 'done');
+            lbl.classList.remove('active');
+
+            if (i < n) {
+                ind.classList.add('done');
+                ind.textContent = '✓';
+            } else if (i === n) {
+                ind.classList.add('active');
+                ind.textContent = i;
+                lbl.classList.add('active');
+            } else {
+                ind.textContent = i;
+            }
+        }
+    }
+
+    // Calcul pension
+    function calculerPension() {
+        const salaire = parseFloat(document.getElementById('salaire').value);
+        const anneesCarriere = parseInt(document.getElementById('anneesCarriere').value);
+        const anneesRestantesInput = document.getElementById('anneesRestantes').value;
+        const anneesRestantes = anneesRestantesInput ? parseInt(anneesRestantesInput) : state.anneesRestantes;
+
+        if (!salaire || salaire <= 0) return alert('Veuillez entrer votre salaire.');
+        if (!anneesCarriere && anneesCarriere !== 0) return alert('Veuillez entrer vos années de carrière.');
+
+        state.salaire = salaire;
+        state.anneesCarriere = anneesCarriere;
+        state.anneesRestantes = anneesRestantes || 0;
+
+        const totalAnnees = Math.min(45, anneesCarriere + state.anneesRestantes);
+        const taux = state.situation === 'menage' ? 0.75 : 0.60;
+        const agePension = getAgePension(state.birthYear);
+
+        let pensionAnnuelle;
+
+        if (state.statut === 'fonctionnaire') {
+            // Fonctionnaires : traitement ref × années / 60, max 75%
+            const traitementRef = salaire;
+            pensionAnnuelle = (traitementRef * totalAnnees) / 60;
+            const plafond = traitementRef * 0.75;
+            if (pensionAnnuelle > plafond) pensionAnnuelle = plafond;
+        } else {
+            // Salariés & indépendants
+            const plafond = PLAFONDS[state.statut];
+            const salairePlafonne = Math.min(salaire, plafond);
+            pensionAnnuelle = (salairePlafonne * totalAnnees / 45) * taux;
+        }
+
+        // Vérifier pension minimum
+        const minPension = PENSION_MIN[state.statut][state.situation] * 12;
+        if (totalAnnees >= 30 && pensionAnnuelle < minPension) {
+            // Prorata si carrière < 45 ans
+            const minProrata = minPension * (totalAnnees / 45);
+            if (pensionAnnuelle < minProrata) {
+                pensionAnnuelle = minProrata;
+            }
+        }
+
+        const pensionMensuelle = Math.round(pensionAnnuelle / 12);
+        state.pensionMensuelle = pensionMensuelle;
+
+        // Taux de remplacement (pension vs salaire mensuel brut)
+        const salaireMensuel = Math.round(salaire / 12);
+        const tauxRemplacement = Math.round((pensionMensuelle / salaireMensuel) * 100);
+        state.tauxRemplacement = tauxRemplacement;
+
+        // Afficher résultats
+        document.getElementById('resultAmount').innerHTML =
+            pensionMensuelle.toLocaleString('fr-BE') + ' € <small>/mois brut</small>';
+        document.getElementById('resultAge').textContent = agePension + ' ans';
+        document.getElementById('resultAnnees').textContent = totalAnnees + '/45';
+        document.getElementById('resultTaux').textContent = tauxRemplacement + '%';
+
+        // Gap analysis
+        const ecart = salaireMensuel - pensionMensuelle;
+        const gapSection = document.getElementById('gapSection');
+        const gapBar = document.getElementById('gapBar');
+        const gapText = document.getElementById('gapText');
+        const gapTitle = document.getElementById('gapTitle');
+
+        const ratio = Math.min(100, Math.round((pensionMensuelle / salaireMensuel) * 100));
+        gapBar.style.width = ratio + '%';
+
+        if (ecart > 0) {
+            gapSection.classList.remove('positive');
+            gapBar.style.background = ratio < 50 ? 'var(--danger)' : 'var(--warning)';
+            gapTitle.innerHTML = '⚠️ Écart avec votre revenu actuel';
+            gapText.innerHTML =
+                `Votre pension représentera environ <strong>${tauxRemplacement}%</strong> de votre salaire brut actuel.
+                 Il vous manquera environ <strong>${ecart.toLocaleString('fr-BE')} €/mois</strong> pour maintenir votre niveau de vie.`;
+        } else {
+            gapSection.classList.add('positive');
+            gapBar.style.background = 'var(--success)';
+            gapTitle.innerHTML = '✅ Bonne nouvelle !';
+            gapText.innerHTML =
+                `Votre pension couvre <strong>${tauxRemplacement}%</strong> de votre salaire actuel. Pensez tout de même à diversifier avec une épargne complémentaire.`;
+        }
+
+        goToStep(3);
+    }
+
+    // Envoi contact (webhook n8n)
+    function envoyerContact() {
+        const nom = document.getElementById('contactNom').value.trim();
+        const email = document.getElementById('contactEmail').value.trim();
+        const tel = document.getElementById('contactTel').value.trim();
+
+        if (!nom) return alert('Veuillez entrer votre nom.');
+        if (!email || !email.includes('@')) return alert('Veuillez entrer une adresse email valide.');
+
+        const data = {
+            nom: nom,
+            email: email,
+            telephone: tel || '',
+            statut: state.statut,
+            situation: state.situation,
+            birthYear: state.birthYear,
+            salaire: state.salaire,
+            anneesCarriere: state.anneesCarriere,
+            pensionEstimee: state.pensionMensuelle,
+            tauxRemplacement: state.tauxRemplacement,
+            date: new Date().toISOString()
+        };
+
+        // Envoi vers webhook n8n (à configurer)
+        // Remplacer l'URL par le webhook n8n de DAP
+        const WEBHOOK_URL = 'https://n8n.srv1387885.hstgr.cloud/webhook/pension-calculator';
+
+        fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).catch(function() {
+            // Silently fail — on affiche quand même le succès
+            // Les données seront visibles dans la console pour debug
+            console.log('Webhook data:', data);
+        });
+
+        // Afficher succès
+        document.getElementById('ctaSection').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAP — Suivi des appels Telavox</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #1a1a2e;
+  --blue:   #0f3460;
+  --gold:   #e8b84b;
+  --red:    #ef4444;
+  --red-bg: #fef2f2;
+  --red-border: #fecaca;
+  --orange: #f59e0b;
+  --orange-bg: #fffbeb;
+  --green:  #10b981;
+  --green-bg: #d1fae5;
+  --muted:  #6b7280;
+  --border: #e2e8f0;
+  --bg:     #f4f6f9;
+  --white:  #ffffff;
+  --card-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --card-shadow-hover: 0 8px 28px rgba(0,0,0,0.13);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--navy);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--blue) 100%);
+  color: white;
+  padding: 14px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.22);
+}
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.header-logo { height: 26px; }
+.header-sep  { width: 1px; height: 22px; background: rgba(255,255,255,0.18); flex-shrink: 0; }
+.header-title h1 { font-size: 15px; font-weight: 700; }
+.header-title p  { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 1px; }
+
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+.mode-badge {
+  font-size: 11px; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+  cursor: pointer; transition: all 0.2s; border: none;
+}
+.mode-badge.demo { background: rgba(232,184,75,0.18); border: 1px solid rgba(232,184,75,0.4); color: var(--gold); }
+.mode-badge.live { background: rgba(16,185,129,0.18); border: 1px solid rgba(16,185,129,0.4); color: #34d399; }
+
+.user-select {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 22px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+.user-select option { background: var(--navy); color: white; }
+
+/* ── KPI BAR ── */
+.kpi-bar {
+  max-width: 1280px;
+  margin: 24px auto 20px;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.kpi-card {
+  background: white;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: all 0.22s;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.kpi-card.k-rappeleurs::before { background: var(--red); }
+.kpi-card.k-attente::before    { background: var(--orange); }
+.kpi-card.k-suivis::before     { background: var(--blue); }
+.kpi-card.k-traites::before    { background: var(--green); }
+
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--card-shadow-hover); }
+.kpi-card.active { border-color: var(--gold); }
+
+.kpi-icon { font-size: 20px; margin-bottom: 8px; }
+.kpi-num {
+  font-size: 36px; font-weight: 800; line-height: 1;
+  margin-bottom: 4px;
+  transition: transform 0.15s;
+}
+.kpi-card.k-rappeleurs .kpi-num { color: var(--red); }
+.kpi-card.k-attente    .kpi-num { color: var(--orange); }
+.kpi-card.k-suivis     .kpi-num { color: var(--blue); }
+.kpi-card.k-traites    .kpi-num { color: var(--green); }
+.kpi-num.bump { transform: scale(1.18); }
+.kpi-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+/* Pulse ring pour les rappeleurs */
+.kpi-card.k-rappeleurs.has-urgent .kpi-icon {
+  display: inline-block;
+  animation: pulse-icon 2s infinite;
+}
+@keyframes pulse-icon {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.2); }
+}
+
+/* ── MAIN GRID ── */
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── SECTIONS ── */
+.section { margin-bottom: 20px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+}
+.section-count {
+  font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 20px;
+  background: var(--border); color: var(--muted);
+}
+.section.rappeleurs .section-count { background: var(--red-bg); color: var(--red); }
+.section.attente    .section-count { background: var(--orange-bg); color: var(--orange); }
+.section.suivis     .section-count { background: #eff6ff; color: var(--blue); }
+
+.empty-state {
+  background: white;
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  box-shadow: var(--card-shadow);
+}
+.empty-state-icon { font-size: 28px; margin-bottom: 8px; }
+
+/* ── CARDS ── */
+.call-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.22s;
+  border: 1px solid transparent;
+  animation: slideIn 0.3s ease forwards;
+  position: relative;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.call-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-1px); }
+.call-card.removing {
+  animation: slideOut 0.35s ease forwards;
+}
+@keyframes slideOut {
+  to { opacity: 0; transform: translateX(30px); height: 0; padding: 0; margin: 0; }
+}
+
+/* Card rappeleur */
+.card-rappeleur { border-left: 3px solid var(--red); background: var(--red-bg); }
+.card-rappeleur:hover { border-color: var(--red); }
+
+.card-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.card-num {
+  font-size: 16px; font-weight: 700; color: var(--navy);
+  letter-spacing: 0.3px;
+}
+.badge {
+  font-size: 11px; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px;
+  white-space: nowrap;
+}
+.badge-red    { background: var(--red);    color: white; }
+.badge-orange { background: var(--orange); color: white; }
+.badge-gray   { background: #e5e7eb;       color: var(--muted); }
+.badge-blue   { background: #dbeafe;       color: #1d4ed8; }
+.badge-green  { background: var(--green-bg); color: #065f46; }
+
+.badge-urgent {
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+.card-meta {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+.card-meta span { display: flex; align-items: center; gap: 5px; }
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  border: none;
+}
+.btn-primary {
+  background: var(--blue); color: white;
+}
+.btn-primary:hover { background: #0a2a4d; transform: scale(1.03); }
+.btn-success {
+  background: var(--green); color: white;
+}
+.btn-success:hover { background: #059669; transform: scale(1.03); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.btn-ghost:hover { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
+.btn-danger {
+  background: transparent;
+  border: 1px solid #fca5a5;
+  color: var(--red);
+}
+.btn-danger:hover { background: var(--red-bg); }
+.btn-call {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+.btn-call:hover { background: #bbf7d0; transform: scale(1.03); }
+
+/* Note dans suivi */
+.card-note {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--navy);
+  margin-bottom: 12px;
+  line-height: 1.5;
+  min-height: 38px;
+}
+.card-note.empty { color: var(--muted); font-style: italic; }
+
+/* Timeline popover */
+.timeline-popover {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; right: 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  z-index: 50;
+}
+.timeline-popover.open { display: block; }
+.timeline-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; }
+.timeline-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+}
+.timeline-item:last-child { border-bottom: none; }
+.timeline-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.timeline-dot.missed  { background: var(--red); }
+.timeline-dot.out     { background: var(--green); }
+
+/* ── MODAL CLOTURE ── */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 300;
+  align-items: center; justify-content: center; padding: 20px;
+  backdrop-filter: blur(3px);
+}
+.overlay.open { display: flex; }
+.modal {
+  background: white;
+  border-radius: 16px;
+  width: min(94vw, 480px);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.3);
+  overflow: hidden;
+  animation: modalIn 0.25s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.93) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-header {
+  background: linear-gradient(140deg, var(--navy), var(--blue));
+  color: white;
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-size: 15px; font-weight: 700; }
+.modal-num   { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.modal-close {
+  background: rgba(255,255,255,0.15); border: none; color: white;
+  width: 28px; height: 28px; border-radius: 50%;
+  cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-body { padding: 20px; }
+.modal-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; }
+.result-btns { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.result-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: white;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+  min-width: 90px;
+}
+.result-btn:hover { border-color: var(--blue); background: #eff6ff; }
+.result-btn.selected.ok      { border-color: var(--green); background: var(--green-bg); color: #065f46; }
+.result-btn.selected.later   { border-color: var(--orange); background: var(--orange-bg); color: #92400e; }
+.result-btn.selected.no-suit { border-color: var(--muted); background: #f9fafb; color: var(--muted); }
+
+.modal-textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  resize: none;
+  height: 80px;
+  font-family: inherit;
+  color: var(--navy);
+  transition: border 0.2s;
+  margin-bottom: 6px;
+}
+.modal-textarea:focus { outline: none; border-color: var(--blue); }
+.char-count { font-size: 11px; color: var(--muted); text-align: right; margin-bottom: 16px; }
+.modal-footer { display: flex; gap: 10px; }
+.btn-confirm {
+  flex: 1;
+  background: var(--green); color: white;
+  padding: 11px;
+  border-radius: 10px; border: none;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-confirm:hover { background: #059669; }
+.btn-cancel-modal {
+  padding: 11px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: white;
+  font-size: 13px; font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+/* ── TOAST ── */
+.toast-container {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  z-index: 999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: var(--navy);
+  color: white;
+  padding: 13px 18px;
+  border-radius: 10px;
+  font-size: 13px; font-weight: 500;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  display: flex; align-items: center; gap: 10px;
+  animation: toastIn 0.3s ease;
+  min-width: 240px;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.toast.success { border-left: 4px solid var(--green); }
+.toast.warning { border-left: 4px solid var(--orange); }
+.toast.info    { border-left: 4px solid var(--blue); }
+.toast-out { animation: toastOut 0.3s ease forwards; }
+@keyframes toastOut {
+  to { opacity: 0; transform: translateX(20px); height: 0; padding: 0; margin: 0; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .main { grid-template-columns: 1fr; }
+  .kpi-bar { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .kpi-bar { grid-template-columns: repeat(2, 1fr); }
+  .header-inner { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <img src="formulaires-dap/assets/logo-dap.png" alt="DAP" class="header-logo" onerror="this.style.display='none'">
+    <div class="header-sep"></div>
+    <div class="header-title">
+      <h1>Suivi des appels Telavox</h1>
+      <p>Gestion des rappels &amp; appels manqués</p>
+    </div>
+    <div class="header-right">
+      <select class="user-select" id="userSelect" onchange="onUserChange()">
+        <option value="Julie Maes">👤 Julie Maes</option>
+        <option value="Maxime Dubois">👤 Maxime Dubois</option>
+        <option value="Lorena Morales">👤 Lorena Morales</option>
+        <option value="Sufyan Khalil">👤 Sufyan Khalil</option>
+        <option value="Matias Garcia">👤 Matias Garcia</option>
+      </select>
+      <button class="mode-badge demo" id="modeBadge" onclick="toggleMode()">● DÉMO</button>
+    </div>
+  </div>
+</header>
+
+<!-- KPI BAR -->
+<div class="kpi-bar">
+  <div class="kpi-card k-rappeleurs has-urgent" onclick="scrollTo('rappeleurs')">
+    <div class="kpi-icon">🔴</div>
+    <div class="kpi-num" id="kpi-rappeleurs">0</div>
+    <div class="kpi-label">Rappeleurs</div>
+  </div>
+  <div class="kpi-card k-attente" onclick="scrollTo('attente')">
+    <div class="kpi-icon">⏳</div>
+    <div class="kpi-num" id="kpi-attente">0</div>
+    <div class="kpi-label">Sans prise en charge</div>
+  </div>
+  <div class="kpi-card k-suivis" onclick="scrollTo('suivis')">
+    <div class="kpi-icon">✋</div>
+    <div class="kpi-num" id="kpi-suivis">0</div>
+    <div class="kpi-label">Mes suivis actifs</div>
+  </div>
+  <div class="kpi-card k-traites" onclick="scrollTo('traites')">
+    <div class="kpi-icon">✅</div>
+    <div class="kpi-num" id="kpi-traites">0</div>
+    <div class="kpi-label">Traités aujourd'hui</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- Colonne gauche -->
+  <div>
+    <!-- Rappeleurs -->
+    <div class="section rappeleurs" id="sec-rappeleurs">
+      <div class="section-header">
+        <div class="section-title">🔴 Rappeleurs — Priorité absolue</div>
+        <div class="section-count" id="cnt-rappeleurs">0</div>
+      </div>
+      <div id="list-rappeleurs"></div>
+    </div>
+
+    <!-- Mes suivis -->
+    <div class="section suivis" id="sec-suivis">
+      <div class="section-header">
+        <div class="section-title">✋ Mes suivis en cours</div>
+        <div class="section-count" id="cnt-suivis">0</div>
+      </div>
+      <div id="list-suivis"></div>
+    </div>
+  </div>
+
+  <!-- Colonne droite -->
+  <div>
+    <div class="section attente" id="sec-attente">
+      <div class="section-header">
+        <div class="section-title">⏳ Sans prise en charge</div>
+        <div class="section-count" id="cnt-attente">0</div>
+      </div>
+      <div id="list-attente"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CLOTURE -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Clôturer le suivi</div>
+        <div class="modal-num" id="modal-num"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-label">Résultat de l'appel</div>
+      <div class="result-btns">
+        <button class="result-btn" data-val="ok" onclick="selectResult(this, 'ok')">✅ Résolu</button>
+        <button class="result-btn" data-val="later" onclick="selectResult(this, 'later')">🔄 À recontacter</button>
+        <button class="result-btn" data-val="no-suit" onclick="selectResult(this, 'no-suit')">❌ Sans suite</button>
+      </div>
+      <div class="modal-label">Note (optionnelle)</div>
+      <textarea class="modal-textarea" id="modal-note" placeholder="Ex : Sinistre traité, client informé…" maxlength="200" oninput="updateCharCount()"></textarea>
+      <div class="char-count"><span id="char-count">0</span>/200</div>
+      <div class="modal-footer">
+        <button class="btn-cancel-modal" onclick="closeModal()">Annuler</button>
+        <button class="btn-confirm" onclick="confirmClose()">Confirmer la clôture →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ── CONFIGURATION LIVE ───────────────────────────────────────────────────────
+// Remplacer SCRIPT_ID par l'ID du déploiement Apps Script après publication
+const SCRIPT_URL = 'https://script.google.com/macros/s/SCRIPT_ID/exec';
+const SECRET     = 'dap_telavox_2024';
+
+// ── ÉTAT GLOBAL ──────────────────────────────────────────────────────────────
+let currentUser  = 'Julie Maes';
+let closingId    = null;
+let selectedResult = null;
+let liveMode     = false;
+let liveData     = null; // cache des données live
+
+// ── DONNÉES DEMO ─────────────────────────────────────────────────────────────
+const DEMO_CALLS = [
+  {
+    id: 'c1', num: '+32 477 12 34 56',
+    appels: 3,
+    history: [
+      { type: 'missed', label: 'Appel manqué', time: 'Lun 09:12' },
+      { type: 'missed', label: 'Appel manqué', time: 'Mar 11:44' },
+      { type: 'missed', label: 'Appel manqué', time: "Auj. 14:33" },
+    ],
+    premierAppel: 'Lun 09:12',
+    dernierAppel: "Auj. 14:33",
+    depuisMin: 87,
+  },
+  {
+    id: 'c2', num: '+32 489 55 66 77',
+    appels: 2,
+    history: [
+      { type: 'missed', label: 'Appel manqué', time: "Auj. 10:01" },
+      { type: 'out',    label: 'Rappelé',       time: "Auj. 11:20" },
+      { type: 'missed', label: 'Appel manqué', time: "Auj. 15:47" },
+    ],
+    premierAppel: "Auj. 10:01",
+    dernierAppel: "Auj. 15:47",
+    depuisMin: 23,
+  },
+  {
+    id: 'c3', num: '+32 468 33 44 55',
+    appels: 1,
+    history: [{ type: 'missed', label: 'Appel manqué', time: "Auj. 08:05" }],
+    premierAppel: "Auj. 08:05",
+    dernierAppel: "Auj. 08:05",
+    depuisMin: 440,
+  },
+  {
+    id: 'c4', num: '+32 491 00 11 22',
+    appels: 1,
+    history: [{ type: 'missed', label: 'Appel manqué', time: "Auj. 10:20" }],
+    premierAppel: "Auj. 10:20",
+    dernierAppel: "Auj. 10:20",
+    depuisMin: 245,
+  },
+  {
+    id: 'c5', num: '+32 472 11 22 33',
+    appels: 1,
+    history: [{ type: 'missed', label: 'Appel manqué', time: "Auj. 12:37" }],
+    premierAppel: "Auj. 12:37",
+    dernierAppel: "Auj. 12:37",
+    depuisMin: 108,
+  },
+  {
+    id: 'c6', num: '+32 484 77 88 99',
+    appels: 1,
+    history: [{ type: 'missed', label: 'Appel manqué', time: "Auj. 14:01" }],
+    premierAppel: "Auj. 14:01",
+    dernierAppel: "Auj. 14:01",
+    depuisMin: 44,
+  },
+];
+
+// PRISES EN CHARGE par défaut (démo)
+const DEFAULT_SUIVIS = {
+  'Julie Maes': {
+    'c7': { num: '+32 473 99 88 77', note: 'Renouvellement RC auto, rappeler pour devis', prisPar: 'Julie Maes', pris: 'Hier 16:00' },
+    'c8': { num: '+32 484 12 00 44', note: 'Sinistre en cours, attend retour compagnie',  prisPar: 'Julie Maes', pris: "Auj. 11:30" },
+  },
+  'Maxime Dubois': {
+    'c9': { num: '+32 477 55 00 11', note: 'Question sur franchise habitation',           prisPar: 'Maxime Dubois', pris: "Auj. 09:15" },
+  },
+  'Lorena Morales': {},
+  'Sufyan Khalil': {},
+  'Matias Garcia': {},
+};
+
+// ── STORAGE ──────────────────────────────────────────────────────────────────
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem('dap_telavox_state') || 'null');
+  } catch { return null; }
+}
+
+function saveState(state) {
+  localStorage.setItem('dap_telavox_state', JSON.stringify(state));
+}
+
+function getState() {
+  let s = loadState();
+  if (!s) {
+    s = {
+      calls: DEMO_CALLS.map(c => ({ ...c })),
+      suivis: JSON.parse(JSON.stringify(DEFAULT_SUIVIS)),
+      traites: 0,
+      dismissed: [],
+    };
+    saveState(s);
+  }
+  return s;
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function fmtDuree(min) {
+  if (min < 60) return `il y a ${min}min`;
+  const h = Math.floor(min / 60), m = min % 60;
+  return m > 0 ? `il y a ${h}h${String(m).padStart(2,'0')}` : `il y a ${h}h`;
+}
+
+function ageBadge(min) {
+  if (min >= 360) return `<span class="badge badge-red badge-urgent">🚨 ${fmtDuree(min)} — Urgent</span>`;
+  if (min >= 120) return `<span class="badge badge-orange">⚠️ ${fmtDuree(min)}</span>`;
+  return `<span class="badge badge-gray">${fmtDuree(min)}</span>`;
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  // Mode live : utiliser liveData si disponible
+  if (liveMode && liveData) {
+    return renderLive(liveData);
+  }
+
+  const s = getState();
+  const dismissed = new Set(s.dismissed || []);
+
+  const activeCalls = s.calls.filter(c => !dismissed.has(c.id));
+  const rappeleurs  = activeCalls.filter(c => c.appels >= 2);
+  const attente     = activeCalls.filter(c => c.appels < 2)
+                                  .sort((a, b) => b.depuisMin - a.depuisMin);
+
+  const mesSuivis   = Object.entries(s.suivis[currentUser] || {});
+
+  // Rappeleurs
+  const listR = document.getElementById('list-rappeleurs');
+  listR.innerHTML = rappeleurs.length === 0
+    ? `<div class="empty-state"><div class="empty-state-icon">🎉</div>Aucun rappeleur — tout est sous contrôle</div>`
+    : rappeleurs.map(c => cardRappeleur(c)).join('');
+
+  // Attente
+  const listA = document.getElementById('list-attente');
+  listA.innerHTML = attente.length === 0
+    ? `<div class="empty-state"><div class="empty-state-icon">✨</div>Tous les appels sont pris en charge</div>`
+    : attente.map(c => cardAttente(c)).join('');
+
+  // Suivis
+  const listS = document.getElementById('list-suivis');
+  listS.innerHTML = mesSuivis.length === 0
+    ? `<div class="empty-state"><div class="empty-state-icon">📭</div>Aucun suivi actif pour vous</div>`
+    : mesSuivis.map(([id, sv]) => cardSuivi(id, sv)).join('');
+
+  // KPIs
+  setKpi('kpi-rappeleurs', rappeleurs.length);
+  setKpi('kpi-attente', attente.length);
+  setKpi('kpi-suivis', mesSuivis.length);
+  setKpi('kpi-traites', s.traites);
+  document.getElementById('cnt-rappeleurs').textContent = rappeleurs.length;
+  document.getElementById('cnt-attente').textContent    = attente.length;
+  document.getElementById('cnt-suivis').textContent     = mesSuivis.length;
+
+  const kpiRapp = document.querySelector('.kpi-card.k-rappeleurs');
+  if (rappeleurs.length > 0) kpiRapp.classList.add('has-urgent');
+  else kpiRapp.classList.remove('has-urgent');
+}
+
+function setKpi(id, val) {
+  const el = document.getElementById(id);
+  const old = parseInt(el.textContent) || 0;
+  el.textContent = val;
+  if (old !== val) {
+    el.classList.add('bump');
+    setTimeout(() => el.classList.remove('bump'), 200);
+  }
+}
+
+function cardRappeleur(c) {
+  const hist = c.history.map(h =>
+    `<div class="timeline-item">
+      <div class="timeline-dot ${h.type}"></div>
+      <span>${h.label}</span>
+      <span style="margin-left:auto;color:var(--muted)">${h.time}</span>
+    </div>`
+  ).join('');
+
+  return `
+  <div class="call-card card-rappeleur" id="card-${c.id}">
+    <div class="card-top">
+      <div class="card-num">${c.num}</div>
+      <span class="badge badge-red">${c.appels} appels</span>
+      ${ageBadge(c.depuisMin)}
+    </div>
+    <div class="card-meta">
+      <span>📅 Premier appel : ${c.premierAppel}</span>
+      <span>🕐 Dernier appel : ${c.dernierAppel}</span>
+    </div>
+    <div class="card-actions">
+      <button class="btn btn-call" onclick="callNum('${c.num}')">📞 Appeler</button>
+      <button class="btn btn-primary" onclick="prendreSuivi('${c.id}')">👤 Je prends</button>
+      <button class="btn btn-ghost" onclick="toggleTimeline('${c.id}')">📋 Historique</button>
+    </div>
+    <div class="timeline-popover" id="timeline-${c.id}">
+      <div class="timeline-title">Historique des appels</div>
+      ${hist}
+    </div>
+  </div>`;
+}
+
+function cardAttente(c) {
+  return `
+  <div class="call-card" id="card-${c.id}">
+    <div class="card-top">
+      <div class="card-num">${c.num}</div>
+      ${ageBadge(c.depuisMin)}
+    </div>
+    <div class="card-meta">
+      <span>🕐 ${c.premierAppel}</span>
+    </div>
+    <div class="card-actions">
+      <button class="btn btn-call" onclick="callNum('${c.num}')">📞 Appeler</button>
+      <button class="btn btn-primary" onclick="prendreSuivi('${c.id}')">👤 Je prends</button>
+    </div>
+  </div>`;
+}
+
+function cardSuivi(id, sv) {
+  const noteHtml = sv.note
+    ? `<div class="card-note">${sv.note}</div>`
+    : `<div class="card-note empty">Aucune note — cliquez sur Modifier pour ajouter</div>`;
+  return `
+  <div class="call-card" id="card-suivi-${id}">
+    <div class="card-top">
+      <div class="card-num">${sv.num}</div>
+      <span class="badge badge-blue">Pris ${sv.pris}</span>
+    </div>
+    ${noteHtml}
+    <div class="card-actions">
+      <button class="btn btn-call"    onclick="callNum('${sv.num}')">📞 Rappeler</button>
+      <button class="btn btn-success" onclick="openModal('${id}', '${sv.num}')">✅ Clôturer</button>
+      <button class="btn btn-ghost"   onclick="editNote('${id}')">✏️ Note</button>
+    </div>
+  </div>`;
+}
+
+// ── RENDER LIVE ──────────────────────────────────────────────────────────────
+function renderLive(data) {
+  const rappeleurs = data.rappeleurs || [];
+  const attente    = data.attente    || [];
+  const mesSuivis  = (data.suivis || []).filter(s => s.prisPar === currentUser);
+
+  const listR = document.getElementById('list-rappeleurs');
+  listR.innerHTML = rappeleurs.length === 0
+    ? `<div class="empty-state"><div class="empty-state-icon">🎉</div>Aucun rappeleur — tout est sous contrôle</div>`
+    : rappeleurs.map(c => cardRappeleurLive(c)).join('');
+
+  const listA = document.getElementById('list-attente');
+  listA.innerHTML = attente.length === 0
+    ? `<div class="empty-state"><div class="empty-state-icon">✨</div>Tous les appels sont pris en charge</div>`
+    : attente.map(c => cardAttenteLive(c)).join('');
+
+  const listS = document.getElementById('list-suivis');
+  listS.innerHTML = mesSuivis.length === 0
+    ? `<div class="empty-state"><div class="empty-state-icon">📭</div>Aucun suivi actif pour vous</div>`
+    : mesSuivis.map(sv => cardSuiviLive(sv)).join('');
+
+  setKpi('kpi-rappeleurs', rappeleurs.length);
+  setKpi('kpi-attente',    attente.length);
+  setKpi('kpi-suivis',     mesSuivis.length);
+  setKpi('kpi-traites',    data.traites || 0);
+  document.getElementById('cnt-rappeleurs').textContent = rappeleurs.length;
+  document.getElementById('cnt-attente').textContent    = attente.length;
+  document.getElementById('cnt-suivis').textContent     = mesSuivis.length;
+
+  const kpiRapp = document.querySelector('.kpi-card.k-rappeleurs');
+  if (rappeleurs.length > 0) kpiRapp.classList.add('has-urgent');
+  else kpiRapp.classList.remove('has-urgent');
+}
+
+function cardRappeleurLive(c) {
+  const hist = (c.history || []).map(h =>
+    `<div class="timeline-item">
+      <div class="timeline-dot missed"></div>
+      <span>Appel manqué · ${h.courtier}</span>
+      <span style="margin-left:auto;color:var(--muted)">${h.time}</span>
+    </div>`
+  ).join('');
+  return `
+  <div class="call-card card-rappeleur" id="card-${c.id}">
+    <div class="card-top">
+      <div class="card-num">${c.numero}</div>
+      <span class="badge badge-red">${c.appels} appels</span>
+      ${ageBadge(c.depuisMin)}
+    </div>
+    <div class="card-meta">
+      <span>📅 Premier appel : ${c.premier}</span>
+      <span>🕐 Dernier appel : ${c.dernier}</span>
+    </div>
+    <div class="card-actions">
+      <button class="btn btn-call"    onclick="callNum('${c.numero}')">📞 Appeler</button>
+      <button class="btn btn-primary" onclick="prendreSuiviLive('${c.id}', '${c.numero}')">👤 Je prends</button>
+      <button class="btn btn-ghost"   onclick="toggleTimeline('${c.id}')">📋 Historique</button>
+    </div>
+    <div class="timeline-popover" id="timeline-${c.id}">
+      <div class="timeline-title">Historique des appels</div>${hist}
+    </div>
+  </div>`;
+}
+
+function cardAttenteLive(c) {
+  return `
+  <div class="call-card" id="card-${c.id}">
+    <div class="card-top">
+      <div class="card-num">${c.numero}</div>
+      ${ageBadge(c.depuisMin)}
+    </div>
+    <div class="card-meta"><span>🕐 ${c.timestamp}</span></div>
+    <div class="card-actions">
+      <button class="btn btn-call"    onclick="callNum('${c.numero}')">📞 Appeler</button>
+      <button class="btn btn-primary" onclick="prendreSuiviLive('${c.id}', '${c.numero}')">👤 Je prends</button>
+    </div>
+  </div>`;
+}
+
+function cardSuiviLive(sv) {
+  const noteHtml = sv.note
+    ? `<div class="card-note">${sv.note}</div>`
+    : `<div class="card-note empty">Aucune note — cliquez sur Modifier pour ajouter</div>`;
+  return `
+  <div class="call-card" id="card-suivi-${sv.callId}">
+    <div class="card-top">
+      <div class="card-num">${sv.numero || '—'}</div>
+      <span class="badge badge-blue">Pris ${sv.pris}</span>
+    </div>
+    ${noteHtml}
+    <div class="card-actions">
+      <button class="btn btn-call"    onclick="callNum('${sv.numero}')">📞 Rappeler</button>
+      <button class="btn btn-success" onclick="openModal('${sv.callId}', '${sv.numero}')">✅ Clôturer</button>
+    </div>
+  </div>`;
+}
+
+async function prendreSuiviLive(callId, numero) {
+  toast(`✋ Prise en charge de ${numero}…`, 'info');
+  await liveAction('prendre', { callId, courtier: currentUser });
+}
+
+// ── ACTIONS ──────────────────────────────────────────────────────────────────
+function prendreSuivi(callId) {
+  const s = getState();
+  const call = s.calls.find(c => c.id === callId);
+  if (!call) return;
+
+  // Retirer de la liste active
+  if (!s.dismissed) s.dismissed = [];
+  s.dismissed.push(callId);
+
+  // Ajouter aux suivis
+  if (!s.suivis[currentUser]) s.suivis[currentUser] = {};
+
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+
+  s.suivis[currentUser]['s_' + callId] = {
+    num: call.num,
+    note: '',
+    prisPar: currentUser,
+    pris: `Auj. ${h}:${m}`,
+  };
+  saveState(s);
+
+  // Animer la card
+  const card = document.getElementById('card-' + callId);
+  if (card) {
+    card.classList.add('removing');
+    setTimeout(() => render(), 380);
+  } else { render(); }
+
+  toast(`✋ Suivi pris en charge — ${call.num}`, 'info');
+}
+
+function callNum(num) {
+  window.location.href = 'tel:' + num.replace(/\s/g, '');
+  toast(`📞 Composition de ${num}…`, 'success');
+}
+
+function toggleTimeline(id) {
+  const pop = document.getElementById('timeline-' + id);
+  if (!pop) return;
+  pop.classList.toggle('open');
+  // Fermer les autres
+  document.querySelectorAll('.timeline-popover.open').forEach(p => {
+    if (p.id !== 'timeline-' + id) p.classList.remove('open');
+  });
+}
+
+// Fermer timeline au clic extérieur
+document.addEventListener('click', e => {
+  if (!e.target.closest('.call-card')) {
+    document.querySelectorAll('.timeline-popover.open').forEach(p => p.classList.remove('open'));
+  }
+});
+
+function editNote(suiviId) {
+  const s = getState();
+  const sv = (s.suivis[currentUser] || {})[suiviId];
+  if (!sv) return;
+  const note = prompt('Modifier la note :', sv.note || '');
+  if (note === null) return;
+  sv.note = note.slice(0, 200);
+  saveState(s);
+  render();
+  toast('✏️ Note mise à jour', 'info');
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────────────
+function openModal(suiviId, num) {
+  closingId = suiviId;
+  selectedResult = null;
+  document.getElementById('modal-num').textContent = num;
+  document.getElementById('modal-note').value = '';
+  document.getElementById('char-count').textContent = '0';
+  document.querySelectorAll('.result-btn').forEach(b => b.classList.remove('selected', 'ok', 'later', 'no-suit'));
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  closingId = null;
+  selectedResult = null;
+}
+
+function selectResult(btn, val) {
+  document.querySelectorAll('.result-btn').forEach(b => b.classList.remove('selected', 'ok', 'later', 'no-suit'));
+  btn.classList.add('selected', val);
+  selectedResult = val;
+}
+
+function updateCharCount() {
+  const v = document.getElementById('modal-note').value.length;
+  document.getElementById('char-count').textContent = v;
+}
+
+function confirmClose() {
+  if (!selectedResult) {
+    toast('⚠️ Choisissez un résultat avant de clôturer', 'warning');
+    return;
+  }
+  const s = getState();
+  const sv = (s.suivis[currentUser] || {})[closingId];
+  const note = document.getElementById('modal-note').value.trim();
+  if (sv && note) sv.note = note;
+
+  delete s.suivis[currentUser][closingId];
+  s.traites = (s.traites || 0) + 1;
+  saveState(s);
+  closeModal();
+
+  const labels = { ok: 'Résolu ✅', later: 'À recontacter 🔄', 'no-suit': 'Sans suite ❌' };
+  toast(`Suivi clôturé — ${labels[selectedResult]}`, 'success');
+
+  if (liveMode) {
+    const note = document.getElementById('modal-note').value.trim();
+    await liveAction('cloturer', { callId: closingId, note, resultat: selectedResult });
+  } else {
+    render();
+  }
+}
+
+// ── USER CHANGE ──────────────────────────────────────────────────────────────
+function onUserChange() {
+  currentUser = document.getElementById('userSelect').value;
+  render();
+}
+
+// ── MODE ─────────────────────────────────────────────────────────────────────
+function toggleMode() {
+  liveMode = !liveMode;
+  const b = document.getElementById('modeBadge');
+  b.textContent = liveMode ? '● LIVE' : '● DÉMO';
+  b.className = 'mode-badge ' + (liveMode ? 'live' : 'demo');
+  if (liveMode) {
+    toast('Mode live activé — chargement…', 'info');
+    loadLiveData();
+  } else {
+    liveData = null;
+    toast('Mode démo activé', 'info');
+    render();
+  }
+}
+
+// ── DONNÉES LIVE (Apps Script) ───────────────────────────────────────────────
+async function loadLiveData() {
+  const b = document.getElementById('modeBadge');
+  b.textContent = '⟳ LIVE';
+  try {
+    const url = `${SCRIPT_URL}?secret=${SECRET}&action=getData`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    liveData = await res.json();
+    if (liveData.error) throw new Error(liveData.error);
+    b.textContent = '● LIVE';
+    render();
+    toast('✅ Données live chargées', 'success');
+  } catch (err) {
+    liveMode = false;
+    liveData = null;
+    b.textContent = '● DÉMO';
+    b.className = 'mode-badge demo';
+    toast('❌ Erreur live — vérifiez le SCRIPT_ID', 'warning');
+    render();
+  }
+}
+
+async function liveAction(action, params = {}) {
+  const url = `${SCRIPT_URL}?secret=${SECRET}&action=${action}&` +
+    Object.entries(params).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+  try {
+    await fetch(url);
+    await loadLiveData(); // Rafraîchir les données après action
+  } catch (err) {
+    toast('❌ Erreur de connexion au serveur', 'warning');
+  }
+}
+
+// ── SCROLL KPI ───────────────────────────────────────────────────────────────
+function scrollTo(section) {
+  const map = { rappeleurs: 'sec-rappeleurs', attente: 'sec-attente', suivis: 'sec-suivis', traites: 'sec-suivis' };
+  const el = document.getElementById(map[section]);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── TOAST ────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = msg;
+  container.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('toast-out');
+    setTimeout(() => t.remove(), 350);
+  }, 3200);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>

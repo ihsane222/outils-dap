@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAP Patrimoine — Fiche d'Information Auto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .logo-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-header h1 {
+            font-size: 24px;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+
+        .logo-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        label .required {
+            color: #e74c3c;
+        }
+
+        .file-upload {
+            border: 2px dashed #d0d5dd;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+        }
+
+        .file-upload:hover {
+            border-color: #2563eb;
+            background: #f8faff;
+        }
+
+        .file-upload.has-file {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .file-upload .text {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .file-upload .file-name {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .file-upload .formats {
+            color: #999;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            background: #fff;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .submit-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status.success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            display: block;
+        }
+
+        .status.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            display: block;
+        }
+
+        .status.loading {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #bfdbfe;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-header">
+            <h1>DAP Patrimoine</h1>
+            <p>Génération automatique de la fiche d'information</p>
+        </div>
+
+        <div class="info-box">
+            Uploadez la carte d'identité du client et la projection de la compagnie.
+            La fiche d'information sera pré-remplie automatiquement et envoyée par email.
+        </div>
+
+        <form id="ficheForm">
+            <div class="form-group">
+                <label>Carte d'identité du client <span class="required">*</span></label>
+                <div class="file-upload" id="dropCI">
+                    <div class="icon">🪪</div>
+                    <div class="text">Cliquez ou glissez le fichier ici</div>
+                    <div class="formats">PDF, JPG ou PNG — recto/verso</div>
+                    <div class="file-name" id="fileNameCI"></div>
+                    <input type="file" id="fileCI" accept=".pdf,.jpg,.jpeg,.png" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Projection / Offre de la compagnie <span class="required">*</span></label>
+                <div class="file-upload" id="dropProjection">
+                    <div class="icon">📊</div>
+                    <div class="text">Cliquez ou glissez le fichier ici</div>
+                    <div class="formats">PDF uniquement</div>
+                    <div class="file-name" id="fileNameProjection"></div>
+                    <input type="file" id="fileProjection" accept=".pdf" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Compagnie d'assurance <span class="required">*</span></label>
+                <select id="compagnie" required>
+                    <option value="">— Sélectionnez une compagnie —</option>
+                    <option value="ag">AG Insurance</option>
+                    <option value="vivium">Vivium</option>
+                    <option value="baloise">Baloise</option>
+                    <option value="ethias">Ethias</option>
+                    <option value="allianz">Allianz</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Email du courtier <span class="required">*</span></label>
+                <input type="email" id="emailCourtier" placeholder="courtier@dap.be" required>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Générer la fiche d'information
+            </button>
+
+            <div class="status" id="status"></div>
+        </form>
+    </div>
+
+    <script>
+        // Configuration — à adapter avec l'URL du webhook n8n
+        const WEBHOOK_URL = 'https://n8n.srv1387885.hstgr.cloud/webhook/fiche-patrimoine';
+
+        // File upload handlers
+        function setupFileUpload(inputId, dropId, fileNameId) {
+            const input = document.getElementById(inputId);
+            const drop = document.getElementById(dropId);
+            const fileName = document.getElementById(fileNameId);
+
+            input.addEventListener('change', () => {
+                if (input.files.length > 0) {
+                    fileName.textContent = input.files[0].name;
+                    drop.classList.add('has-file');
+                } else {
+                    fileName.textContent = '';
+                    drop.classList.remove('has-file');
+                }
+            });
+
+            // Drag & drop
+            drop.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                drop.style.borderColor = '#2563eb';
+                drop.style.background = '#f8faff';
+            });
+
+            drop.addEventListener('dragleave', () => {
+                drop.style.borderColor = input.files.length > 0 ? '#10b981' : '#d0d5dd';
+                drop.style.background = input.files.length > 0 ? '#f0fdf4' : '';
+            });
+
+            drop.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length > 0) {
+                    input.files = e.dataTransfer.files;
+                    input.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
+        setupFileUpload('fileCI', 'dropCI', 'fileNameCI');
+        setupFileUpload('fileProjection', 'dropProjection', 'fileNameProjection');
+
+        // Form submission
+        document.getElementById('ficheForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('submitBtn');
+            const status = document.getElementById('status');
+
+            const fileCI = document.getElementById('fileCI').files[0];
+            const fileProjection = document.getElementById('fileProjection').files[0];
+            const compagnie = document.getElementById('compagnie').value;
+            const email = document.getElementById('emailCourtier').value;
+
+            if (!fileCI || !fileProjection || !compagnie || !email) {
+                status.className = 'status error';
+                status.textContent = 'Veuillez remplir tous les champs.';
+                return;
+            }
+
+            // Show loading
+            btn.disabled = true;
+            status.className = 'status loading';
+            status.innerHTML = '<div class="spinner"></div> Traitement en cours... Extraction des données et génération de la fiche.';
+
+            try {
+                const formData = new FormData();
+                formData.append('carte_identite', fileCI);
+                formData.append('projection', fileProjection);
+                formData.append('compagnie', compagnie);
+                formData.append('email_courtier', email);
+
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    status.className = 'status success';
+                    status.textContent = 'Fiche générée avec succès ! Vous la recevrez par email sous quelques instants.';
+                    document.getElementById('ficheForm').reset();
+                    document.querySelectorAll('.file-upload').forEach(el => el.classList.remove('has-file'));
+                    document.querySelectorAll('.file-name').forEach(el => el.textContent = '');
+                } else {
+                    throw new Error(`Erreur serveur (${response.status})`);
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = `Erreur : ${error.message}. Veuillez réessayer ou contacter le support.`;
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Version papier — RC Professionnelle | DAP</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    color: #1a1a2e;
+    background: #f4f6fa;
+    padding: 20px;
+  }
+
+  .print-header {
+    background: #1a1a2e;
+    color: white;
+    padding: 20px 28px;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .print-header img { height: 48px; background: white; padding: 6px 14px; border-radius: 8px; }
+  .print-header-title { font-size: 18px; font-weight: 700; color: #e8b84b; }
+  .print-header-sub { font-size: 12px; color: #ccc; margin-top: 4px; }
+  .print-date { font-size: 11px; color: #aaa; text-align: right; }
+
+  .print-body {
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 28px;
+  }
+
+  .step-title {
+    background: #1a1a2e;
+    color: #e8b84b;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin: 24px 0 16px;
+  }
+  .step-title:first-of-type { margin-top: 0; }
+
+  .section {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .section-head {
+    background: #f8f9ff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .section-body { padding: 16px; }
+
+  .q-block { margin-bottom: 14px; }
+  .q-block:last-child { margin-bottom: 0; }
+  .q-label {
+    font-weight: 700;
+    font-size: 12.5px;
+    color: #1a1a2e;
+    margin-bottom: 5px;
+    display: block;
+  }
+  .q-label .req { color: #e8b84b; margin-left: 2px; }
+
+  .answer-line { border-bottom: 1px solid #999; min-height: 28px; margin: 4px 0 2px; }
+  .answer-line-sm { border-bottom: 1px solid #999; min-height: 22px; margin: 4px 0 2px; }
+  .answer-area { border-bottom: 1px solid #999; min-height: 52px; margin: 4px 0 2px; }
+
+  .checkbox-option {
+    display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 13px;
+  }
+  .checkbox-square {
+    width: 16px; height: 16px; border: 1.5px solid #333; display: inline-block; flex-shrink: 0; border-radius: 2px;
+  }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  .conditional {
+    background: #f9f9f9;
+    border-left: 3px solid #e8b84b;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 14px;
+    margin: 10px 0;
+  }
+  .conditional .cond-label {
+    font-size: 11px; color: #888; font-style: italic; margin-bottom: 8px; font-weight: 600;
+  }
+  .conditional .q-label { color: #666; }
+
+  .divider { border: none; border-top: 1px dashed #ddd; margin: 16px 0; }
+
+  .print-footer {
+    text-align: center; font-size: 11px; color: #888; margin-top: 24px; padding-top: 14px; border-top: 1px solid #ddd;
+  }
+  .print-footer strong { color: #1a1a2e; }
+
+  .solidarity-box {
+    background: #fff8e8; border: 1px solid #e8b84b; border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; font-size: 12px; color: #7a5a00;
+  }
+
+  .warn-note {
+    font-size: 11px; color: #c0392b; font-style: italic; margin-left: 6px;
+  }
+
+  @media print {
+    body { background: white; padding: 0; font-size: 11px; }
+    .print-header { background: #1a1a2e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 14px 20px; border-radius: 0; }
+    .print-header-title { color: #e8b84b !important; }
+    .step-title { background: #1a1a2e !important; color: #e8b84b !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .section { break-inside: avoid; }
+    .q-block { break-inside: avoid; }
+    .conditional { break-inside: avoid; }
+    .print-body { border: none; border-radius: 0; padding: 16px; }
+    .solidarity-box { background: #fff8e8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-header">
+  <div>
+    <img src="assets/logo-dap.png" alt="DAP">
+  </div>
+  <div style="flex:1; padding: 0 20px;">
+    <div class="print-header-title">Demande d'offre — Responsabilité Civile Professionnelle</div>
+    <div class="print-header-sub">Formulaire à compléter et retourner à votre conseiller DAP — Confidentiel</div>
+  </div>
+  <div class="print-date">
+    Date : ______ / ______ / __________
+  </div>
+</div>
+
+<div class="print-body">
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 1 : ENTREPRISE + ACTIVITÉ -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 1 — Entreprise &amp; Activité</div>
+
+  <div class="section">
+    <div class="section-head">Section 1 — Identification de l'entreprise</div>
+    <div class="section-body">
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Raison sociale <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Numéro BCE <span class="req">*</span> <em style="font-weight:400;font-size:11px;">(BE 0XXX.XXX.XXX)</em></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Forme juridique <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> SRL</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> SA</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> SNC</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> ASBL</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Indépendant personne physique</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Adresse du siège social <span class="req">*</span></span>
+        <div class="answer-area"></div>
+      </div>
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Téléphone <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Email <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Nom et prénom du contact référent <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Année de création <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 2 — Activité professionnelle</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Description précise de l'activité principale <span class="req">*</span></span>
+        <div class="answer-area"></div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Secteur d'activité principal <span class="req">*</span></span>
+        <div class="row-2">
+          <div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> IT / Numérique</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Conseil / Management</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Ingénierie / Technique</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Formation / Coaching</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Architecture / Urbanisme</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Comptabilité / Audit</div>
+          </div>
+          <div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Juridique</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Communication / Marketing</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Santé / Para-médical</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Immobilier</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+          </div>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Code NACE principal <em style="font-weight:400;font-size:11px;">(ex. : 6201)</em></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Activités secondaires à déclarer ? <span class="req">*</span></span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si OUI — Description des activités secondaires (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Décrivez vos activités secondaires</span>
+          <div class="answer-area"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 2 : CA + PRESTATIONS -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 2 — Chiffre d'affaires &amp; Prestations</div>
+
+  <div class="section">
+    <div class="section-head">Section 3 — Chiffre d'affaires et effectif</div>
+    <div class="section-body">
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">CA total HT (dernier exercice, €) <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">CA prévisionnel exercice en cours (€)</span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="row-3">
+        <div class="q-block">
+          <span class="q-label">CA en Belgique (€) <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">CA dans l'UE hors BE (€) <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">CA hors UE (€) <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="q-block">
+          <span class="q-label">Nombre d'ETP (indépendants compris) <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Dont : indépendants / sous-traitants permanents <span class="req">*</span></span>
+          <div class="answer-line"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 4 — Territoire d'activité</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Zone géographique d'activité <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Belgique uniquement</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Belgique + Union européenne</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Monde entier (hors USA et Canada)</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Monde entier (USA et Canada inclus) <span class="warn-note">(surprime applicable)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 5 — Nature des prestations</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Nature principale des prestations <span class="req">*</span></span>
+        <div class="row-2">
+          <div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Conseil / Recommandation</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Développement informatique (code, logiciel)</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Ingénierie / Études techniques</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Formation / Transfert de compétences</div>
+          </div>
+          <div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Audit / Diagnostic</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Design / Création</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Gestion de projet</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Autre</div>
+          </div>
+        </div>
+      </div>
+      <div class="row-3">
+        <div class="q-block">
+          <span class="q-label">Traitement de données personnelles (RGPD) ? <span class="req">*</span></span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Gestion de fonds ou d'actifs de tiers ? <span class="req">*</span></span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Impact sur santé / sécurité physique ? <span class="req">*</span></span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 3 : CONTRATS + SOUS-TRAITANCE -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 3 — Contrats &amp; Sous-traitance</div>
+
+  <div class="section">
+    <div class="section-head">Section 6 — Cadre contractuel</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Missions formalisées par contrats écrits signés ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Toujours</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> En général</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Rarement</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Jamais</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Clauses de limitation de responsabilité dans vos contrats ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui, systématiquement</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Parfois</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Livraison de livrables (rapports, codes, plans...) ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Clients qui imposent des engagements de résultat ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Souvent</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Parfois</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Jamais</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 7 — Sous-traitance</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Faites-vous appel à de la sous-traitance ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si OUI — Informations sur la sous-traitance (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Part dans le CA total (%)</span>
+          <div class="answer-line-sm"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Sous-traitants assurés en RC Pro ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui, systématiquement</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Parfois</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Vous portez-vous garant des erreurs de vos sous-traitants ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Cela dépend du contrat</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════ -->
+  <!-- ÉTAPE 4 : GARANTIES + SINISTRES + AFFILIATIONS + ASSURANCE + PAIEMENT -->
+  <!-- ════════════════════════════════════════════════ -->
+  <div class="step-title">Étape 4 — Garanties &amp; Finalisation</div>
+
+  <div class="section">
+    <div class="section-head">Section 8 — Garanties souhaitées</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Couvertures souhaitées <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> RC Exploitation (dommages matériels/corporels causés à des tiers)</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> RC Professionnelle (erreur, omission, conseil défectueux)</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Cyber-responsabilité (violation de données, cyberattaque)</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Protection juridique professionnelle</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> RC Dirigeant (D&amp;O)</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Capital garanti souhaité par sinistre <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> 250 000 €</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> 500 000 €</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> 1 000 000 €</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> 1 500 000 €</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> 2 500 000 €</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> À définir avec le courtier</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 9 — Antécédents sinistres</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Sinistres RC Pro déclarés (5 dernières années) <span class="req">*</span></span>
+        <div class="answer-line-sm"></div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si au moins 1 sinistre — Détails (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Nature des sinistres</span>
+          <div class="answer-area"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Montant total réglé par l'assureur (€)</span>
+          <div class="answer-area"></div>
+        </div>
+        <div class="q-block">
+          <span class="q-label">Réclamations en cours ou annoncées ?</span>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+          <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Contrat RC Pro résilié par un assureur (3 dernières années) ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si OUI — Motif de la résiliation (si applicable)</div>
+        <div class="q-block">
+          <span class="q-label">Motif de la résiliation</span>
+          <div class="answer-area"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 10 — Affiliations et agréments</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Obligations réglementaires ou affiliations <span class="req">*</span></span>
+        <div class="row-2">
+          <div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> FSMA (services financiers)</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Ordre des Architectes</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Barreau (avocat)</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> ITAA (comptable/conseiller fiscal)</div>
+          </div>
+          <div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Ordre des Médecins</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> IRE (réviseur d'entreprises)</div>
+            <div class="checkbox-option"><span class="checkbox-square"></span> Aucune</div>
+          </div>
+        </div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">Assurance RC Pro imposée par votre ordre ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui, déjà souscrite</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui, pas encore souscrite</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Section 11 — Assurance actuelle</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Actuellement assuré(e) en RC Pro ? <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Non</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Oui</div>
+      </div>
+      <div class="conditional">
+        <div class="cond-label">Si OUI — Informations sur l'assurance actuelle (si applicable)</div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Compagnie actuelle</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Date d'échéance</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="q-block">
+            <span class="q-label">Numéro de contrat</span>
+            <div class="answer-line"></div>
+          </div>
+          <div class="q-block">
+            <span class="q-label">Capital garanti actuel (€)</span>
+            <div class="answer-line"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Paiement</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Fréquence de paiement <span class="req">*</span></span>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Annuel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Semestriel</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> Mensuel</div>
+      </div>
+      <div class="q-block">
+        <span class="q-label">IBAN de l'entreprise <em style="font-weight:400;font-size:11px;">(BE XX XXXX XXXX XXXX)</em></span>
+        <div class="answer-line"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">DAP Solidarity</div>
+    <div class="section-body">
+      <div class="solidarity-box">
+        DAP reverse 10 % de sa commission à une association caritative de votre choix. Chaque assurance souscrite chez DAP devient un geste concret de solidarité. Veuillez cocher l'association que vous souhaitez soutenir :
+      </div>
+      <div class="q-block">
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Un Pas de Côté</strong> — Renforce la résilience locale dans les quartiers ruraux</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Le Pont des Arts</strong> — Apporte de la joie aux enfants hospitalisés grâce à l'art</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Stop Harcèlement</strong> — Lutte contre le harcèlement scolaire dès la maternelle</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Union des Artistes</strong> — Soutient les artistes belges et leurs droits</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>L'Ilot</strong> — Hébergement et accompagnement des personnes sans abri en Wallonie et Bruxelles</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Co-Construire</strong> — Projets collaboratifs pour la cohésion sociale et l'innovation locale</div>
+        <div class="checkbox-option"><span class="checkbox-square"></span> <strong>Dynamo International</strong> — Accompagne les jeunes en milieu ouvert via la prévention et l'écoute</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">Remarques</div>
+    <div class="section-body">
+      <div class="q-block">
+        <span class="q-label">Remarques ou informations complémentaires <em style="font-weight:400;font-size:11px;">(projet en cours, contrat spécifique, export prévu...)</em></span>
+        <div class="answer-area" style="min-height:70px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div style="margin-top:20px;">
+    <div class="q-block">
+      <span class="q-label">Signature du représentant légal :</span>
+      <div style="border-bottom:1px solid #999; min-height:50px; margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <div class="print-footer">
+    <strong>DAP Courtage d'assurances</strong> — Confidentiel — Document réservé à l'usage interne
+  </div>
+
+</div>
+</body>
+</html>

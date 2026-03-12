@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cours PCP — Certification Assurances Belgique</title>
+<style>
+  :root {
+    --navy: #0f2460;
+    --blue: #1d4ed8;
+    --blue-mid: #2563eb;
+    --blue-light: #dbeafe;
+    --blue-xlight: #eff6ff;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --purple: #7c3aed;
+    --purple-light: #ede9fe;
+    --gray: #64748b;
+    --gray-light: #f8fafc;
+    --border: #e2e8f0;
+    --text: #1e293b;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f1f5f9;
+    color: var(--text);
+    line-height: 1.7;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR */
+  aside {
+    width: 270px;
+    min-width: 270px;
+    background: var(--navy);
+    color: white;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-logo {
+    padding: 28px 22px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .sidebar-logo h1 { font-size: 1.05rem; font-weight: 800; line-height: 1.3; }
+  .sidebar-logo p { font-size: 0.75rem; opacity: 0.6; margin-top: 4px; }
+
+  .sidebar-section { padding: 16px 0 8px; }
+  .sidebar-section-title {
+    padding: 6px 22px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.4;
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 22px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .sidebar-link:hover { color: white; background: rgba(255,255,255,0.08); border-left-color: rgba(255,255,255,0.3); }
+  .sidebar-link.active { color: white; background: rgba(255,255,255,0.12); border-left-color: #60a5fa; }
+  .sidebar-link .dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .dot-blue { background: #60a5fa; }
+  .dot-orange { background: #fb923c; }
+  .dot-green { background: #4ade80; }
+  .dot-purple { background: #a78bfa; }
+  .dot-teal { background: #2dd4bf; }
+  .dot-red { background: #f87171; }
+
+  /* MAIN */
+  .content { margin-left: 270px; flex: 1; }
+
+  /* TOP HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #1e40af 60%, #1d4ed8 100%);
+    color: white;
+    padding: 60px 60px 50px;
+  }
+  .hero-tag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6; margin-bottom: 12px; }
+  .hero h1 { font-size: 2.2rem; font-weight: 900; line-height: 1.2; margin-bottom: 12px; }
+  .hero p { opacity: 0.8; font-size: 1rem; max-width: 600px; }
+  .hero-stats {
+    display: flex; gap: 32px; margin-top: 36px; flex-wrap: wrap;
+    padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.15);
+  }
+  .hero-stat .val { font-size: 1.8rem; font-weight: 900; }
+  .hero-stat .lbl { font-size: 0.75rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* CONTENT SECTIONS */
+  .page { max-width: 820px; margin: 0 auto; padding: 50px 48px 80px; }
+
+  /* EXAM GRID */
+  .exam-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 28px 0;
+  }
+  .exam-card {
+    background: white;
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    border-top: 4px solid var(--blue);
+  }
+  .exam-card.m2 { border-top-color: var(--amber); }
+  .exam-card.m3 { border-top-color: var(--purple); }
+  .exam-card.m4 { border-top-color: var(--teal); }
+  .exam-card h4 { font-size: 0.85rem; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .exam-card h4.c-blue { color: var(--blue); }
+  .exam-card h4.c-amber { color: var(--amber); }
+  .exam-card h4.c-purple { color: var(--purple); }
+  .exam-card h4.c-teal { color: var(--teal); }
+  .exam-item { font-size: 0.88rem; padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .exam-item:last-child { border-bottom: none; }
+  .exam-badge { background: #f1f5f9; color: var(--gray); font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+
+  /* MODULE HEADER */
+  .module-banner {
+    border-radius: 18px;
+    padding: 32px 36px;
+    margin: 52px 0 32px;
+    color: white;
+    box-shadow: var(--shadow-lg);
+  }
+  .module-banner.m1 { background: linear-gradient(135deg, #1e3a8a, #2563eb); }
+  .module-banner.m2 { background: linear-gradient(135deg, #92400e, #d97706); }
+  .module-banner.m3 { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+  .module-banner h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 6px; }
+  .module-banner p { opacity: 0.8; font-size: 0.92rem; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 36px 0 18px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid var(--blue-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon { font-size: 1.1rem; }
+
+  .subsection { font-size: 1rem; font-weight: 700; color: #374151; margin: 26px 0 12px; }
+
+  /* CARDS */
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin: 16px 0;
+    box-shadow: var(--shadow);
+  }
+
+  /* ALERT BOXES */
+  .alert {
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .alert-icon { font-size: 1.2rem; flex-shrink: 0; }
+  .alert.warning { background: var(--amber-light); border-left: 4px solid var(--amber); }
+  .alert.info { background: var(--blue-xlight); border-left: 4px solid var(--blue-mid); }
+  .alert.success { background: var(--green-light); border-left: 4px solid var(--green); }
+  .alert.danger { background: var(--red-light); border-left: 4px solid var(--red); }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; margin: 18px 0; border-radius: 12px; box-shadow: var(--shadow); }
+  table { width: 100%; border-collapse: collapse; background: white; font-size: 0.875rem; }
+  thead th {
+    background: var(--navy);
+    color: white;
+    padding: 12px 16px;
+    font-weight: 700;
+    text-align: left;
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+  }
+  tbody td { padding: 11px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #f8fafc; }
+  tbody tr:nth-child(even) td { background: #fafbfc; }
+  tbody tr:nth-child(even):hover td { background: #f1f5f9; }
+  .td-bold { font-weight: 700; }
+  .td-highlight { font-weight: 700; color: var(--blue); }
+  .td-green { font-weight: 700; color: var(--green); }
+  .td-red { font-weight: 700; color: var(--red); }
+  .td-amber { font-weight: 700; color: var(--amber); }
+  .td-purple { font-weight: 700; color: var(--purple); }
+
+  /* DEFINITION LIST */
+  .def-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .def-item { background: white; border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); border-left: 3px solid var(--blue); }
+  .def-item .term { font-weight: 700; font-size: 0.85rem; color: var(--blue); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .def-item .def { font-size: 0.875rem; color: #374151; }
+
+  /* PILL TAGS */
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+  .tag { padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+  .tag-blue { background: var(--blue-light); color: var(--blue); }
+  .tag-green { background: var(--green-light); color: var(--green); }
+  .tag-red { background: var(--red-light); color: var(--red); }
+  .tag-amber { background: var(--amber-light); color: var(--amber); }
+  .tag-purple { background: var(--purple-light); color: var(--purple); }
+  .tag-teal { background: var(--teal-light); color: var(--teal); }
+
+  /* LIST */
+  ul, ol { padding-left: 22px; margin: 12px 0; }
+  li { margin-bottom: 7px; font-size: 0.92rem; }
+  li strong { font-weight: 700; }
+
+  /* FORMULA BOX */
+  .formula {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 18px 22px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    margin: 14px 0;
+    line-height: 1.8;
+  }
+  .formula .hl { color: #4ade80; font-weight: 700; }
+
+  /* KEY POINTS */
+  .keypoints {
+    background: white;
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin: 24px 0;
+    box-shadow: var(--shadow);
+    border: 2px solid var(--blue-light);
+  }
+  .keypoints h4 { font-size: 0.85rem; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
+  .kp-item { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.9rem; }
+  .kp-item:last-child { border-bottom: none; }
+  .kp-item::before { content: "→"; font-weight: 700; color: var(--blue); flex-shrink: 0; }
+
+  /* PILIER CARDS */
+  .piliers { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin: 20px 0; }
+  .pilier {
+    border-radius: 14px;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    color: white;
+  }
+  .pilier .num { font-size: 2rem; font-weight: 900; opacity: 0.9; }
+  .pilier .nom { font-size: 0.8rem; font-weight: 800; margin: 4px 0; }
+  .pilier .qui { font-size: 0.75rem; opacity: 0.8; }
+  .p1 { background: linear-gradient(135deg, #1e40af, #2563eb); }
+  .p2 { background: linear-gradient(135deg, #92400e, #d97706); }
+  .p3 { background: linear-gradient(135deg, #166534, #16a34a); }
+  .p4 { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+
+  /* RENTE TABLE SPECIAL */
+  .rente-table { background: white; border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); margin: 18px 0; }
+  .rente-table table thead th { background: #4c1d95; }
+
+  /* FOOTER */
+  .page-footer {
+    background: var(--navy);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 28px;
+    font-size: 0.82rem;
+    margin-left: 270px;
+  }
+
+  p { margin: 10px 0; font-size: 0.92rem; }
+  strong { font-weight: 700; }
+  code { background: #f1f5f9; border-radius: 4px; padding: 1px 6px; font-family: monospace; font-size: 0.875rem; }
+  hr { border: none; border-top: 2px solid var(--border); margin: 36px 0; }
+
+  @media (max-width: 900px) {
+    aside { display: none; }
+    .content { margin-left: 0; }
+    .page-footer { margin-left: 0; }
+    .page { padding: 30px 20px 60px; }
+    .piliers { grid-template-columns: 1fr 1fr; }
+    .exam-grid { grid-template-columns: 1fr; }
+    .def-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="sidebar-logo">
+    <h1>📘 Cours PCP<br>Assurances</h1>
+    <p>Certification FSMA · Belgique 2026</p>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Structure</div>
+    <a href="#examen" class="sidebar-link"><span class="dot dot-blue"></span>Format de l'examen</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Module 1 — Législation</div>
+    <a href="#loi2014" class="sidebar-link"><span class="dot dot-blue"></span>Loi du 4 avril 2014</a>
+    <a href="#contrat" class="sidebar-link"><span class="dot dot-blue"></span>Contrat d'assurance</a>
+    <a href="#intermediaires" class="sidebar-link"><span class="dot dot-blue"></span>Intermédiaires</a>
+    <a href="#dda" class="sidebar-link"><span class="dot dot-blue"></span>DDA · LBA · RGPD</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Module 2 — Non-Vie</div>
+    <a href="#incendie" class="sidebar-link"><span class="dot dot-orange"></span>Incendie</a>
+    <a href="#rc" class="sidebar-link"><span class="dot dot-orange"></span>Responsabilité Civile</a>
+    <a href="#auto" class="sidebar-link"><span class="dot dot-orange"></span>Automobile</a>
+    <a href="#personnes" class="sidebar-link"><span class="dot dot-orange"></span>Personnes non-vie</a>
+    <a href="#pe" class="sidebar-link"><span class="dot dot-orange"></span>Pertes d'Exploitation</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Module 3 — Vie</div>
+    <a href="#piliers" class="sidebar-link"><span class="dot dot-purple"></span>Les 4 piliers</a>
+    <a href="#branches" class="sidebar-link"><span class="dot dot-purple"></span>Branches 21/23/26/44</a>
+    <a href="#pensions2" class="sidebar-link"><span class="dot dot-purple"></span>Pensions 2e pilier</a>
+    <a href="#regle80" class="sidebar-link"><span class="dot dot-purple"></span>Règle des 80%</a>
+    <a href="#fiscalite" class="sidebar-link"><span class="dot dot-purple"></span>Fiscalité IPP/ELT/EP</a>
+    <a href="#succession" class="sidebar-link"><span class="dot dot-purple"></span>Droits de succession</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Révision</div>
+    <a href="#recap" class="sidebar-link"><span class="dot dot-green"></span>Récap & Chiffres clés</a>
+  </div>
+</aside>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Certification FSMA · Belgique</div>
+  <h1>Cours PCP — Intermédiaires en Assurances</h1>
+  <p>Formation complète couvrant les 3 modules de l'examen Certassur · Sources : Febelfin Academy, EFPME/IFPME, Assuralia, FSMA</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="val">3</div><div class="lbl">Modules</div></div>
+    <div class="hero-stat"><div class="val">9</div><div class="lbl">Examens</div></div>
+    <div class="hero-stat"><div class="val">60%</div><div class="lbl">Seuil de réussite</div></div>
+    <div class="hero-stat"><div class="val">2026</div><div class="lbl">Données à jour</div></div>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ═══════════════════════ STRUCTURE EXAMEN -->
+<div id="examen">
+<div class="section-title"><span class="icon">🏛️</span>Structure de l'examen Certassur</div>
+
+<div class="def-grid">
+  <div class="def-item">
+    <div class="term">PCP</div>
+    <div class="def"><strong>Personne en Contact avec le Public</strong> → Module 1 uniquement (1.1 + 1.2)</div>
+  </div>
+  <div class="def-item">
+    <div class="term">RD</div>
+    <div class="def"><strong>Responsable de Distribution</strong> → Module 1 + modules selon activités (2, 3, 4)</div>
+  </div>
+</div>
+
+<div class="alert info">
+  <span class="alert-icon">ℹ️</span>
+  <div><strong>Format :</strong> 20 questions à choix multiple par examen · Durée 1h · Seuil de réussite : <strong>60% (12/20 minimum)</strong> · Chaque examen est indépendant</div>
+</div>
+
+<div class="exam-grid">
+  <div class="exam-card">
+    <h4 class="c-blue">Module 1 — Base (Obligatoire tous)</h4>
+    <div class="exam-item"><span>1.1 — Marché & Contrat</span><span class="exam-badge">20q · 1h</span></div>
+    <div class="exam-item"><span>1.2 — DDA, RGPD, LBA, AssurMiFID</span><span class="exam-badge">20q · 1h</span></div>
+  </div>
+  <div class="exam-card m2">
+    <h4 class="c-amber">Module 2 — Non-Vie</h4>
+    <div class="exam-item"><span>2.1 — RC & Protection juridique</span><span class="exam-badge">20q · 1h</span></div>
+    <div class="exam-item"><span>2.2 — Auto & Assistance</span><span class="exam-badge">20q · 1h</span></div>
+    <div class="exam-item"><span>2.3 — Incendie & Choses</span><span class="exam-badge">20q · 1h</span></div>
+    <div class="exam-item"><span>2.4 — Accidents & Hospitalisation</span><span class="exam-badge">20q · 1h</span></div>
+  </div>
+  <div class="exam-card m3">
+    <h4 class="c-purple">Module 3 — Assurance Vie</h4>
+    <div class="exam-item"><span>3.1 — Législation vie & Finances</span><span class="exam-badge">20q · 1h</span></div>
+    <div class="exam-item"><span>3.2 — LBA, Pensions, Conduite</span><span class="exam-badge">20q · 1h</span></div>
+  </div>
+  <div class="exam-card m4">
+    <h4 class="c-teal">Module 4 — Vie + Investissement</h4>
+    <div class="exam-item"><span>Assurance vie à composante investissement</span><span class="exam-badge">20q · 1h</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════ MODULE 1 -->
+<div class="module-banner m1">
+  <h2>⚖️ Module 1 — Législation des Assurances</h2>
+  <p>Loi du 4 avril 2014 · Contrat d'assurance · Intermédiaires · FSMA · DDA · LBA · RGPD</p>
+</div>
+
+<div id="loi2014">
+<div class="section-title"><span class="icon">📜</span>1.1 — Loi du 4 avril 2014</div>
+
+<div class="card">
+  <p>La <strong>loi du 4 avril 2014 relative aux assurances</strong> est la loi principale régissant les assurances terrestres en Belgique (9 parties). Elle a remplacé la loi du 25 juin 1992.</p>
+  <div class="tags">
+    <span class="tag tag-red">Caractère impératif</span>
+    <span class="tag tag-blue">Assurances terrestres</span>
+    <span class="tag tag-amber">Exclusions : maritime, aérien, transport marchandises</span>
+  </div>
+</div>
+
+<div class="subsection">Intervenants au contrat</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Intervenant</th><th>Rôle</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">Preneur</td><td>Souscrit le contrat et paie la prime</td></tr>
+    <tr><td class="td-bold">Assuré</td><td>Personne dont le risque est couvert</td></tr>
+    <tr><td class="td-bold">Bénéficiaire</td><td>Personne qui reçoit la prestation</td></tr>
+    <tr><td class="td-bold">Assureur</td><td>Entreprise qui couvre le risque et paie les sinistres</td></tr>
+  </tbody>
+</table></div>
+
+<div class="alert info">
+  <span class="alert-icon">💡</span>
+  <div>Ces trois rôles (preneur / assuré / bénéficiaire) peuvent être tenus par la même personne ou des personnes différentes.</div>
+</div>
+</div>
+
+<div id="contrat">
+<div class="section-title"><span class="icon">📋</span>1.2 — Le Contrat d'assurance</div>
+
+<div class="card">
+  <div class="subsection">Éléments essentiels du contrat</div>
+  <div class="def-grid">
+    <div class="def-item"><div class="term">L'aléa</div><div class="def">Événement incertain ou de date incertaine</div></div>
+    <div class="def-item"><div class="term">La prime</div><div class="def">Contrepartie payée par le preneur</div></div>
+    <div class="def-item"><div class="term">La prestation</div><div class="def">Engagement de l'assureur</div></div>
+    <div class="def-item"><div class="term">Le risque</div><div class="def">Événement couvert par le contrat</div></div>
+  </div>
+</div>
+
+<div class="subsection">Obligations du preneur</div>
+<ul>
+  <li><strong>Déclaration du risque :</strong> répondre sincèrement aux questions posées</li>
+  <li><strong>Paiement de la prime</strong> aux échéances prévues</li>
+  <li><strong>Déclaration du sinistre</strong> dans les délais contractuels</li>
+  <li><strong>Minimiser les dommages</strong> — limiter les conséquences du sinistre</li>
+</ul>
+
+<div class="alert warning">
+  <span class="alert-icon">⚠️</span>
+  <div><strong>Subrogation :</strong> après indemnisation, l'assureur est subrogé dans les droits de l'assuré contre le tiers responsable. Il peut récupérer les montants versés.</div>
+</div>
+</div>
+
+<div id="intermediaires">
+<div class="section-title"><span class="icon">🤝</span>1.3 — Intermédiaires & FSMA</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Type</th><th>Mandant</th><th>Spécificité</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">Courtier</td><td>Le preneur (indépendant)</td><td>Travaille pour l'intérêt du client</td></tr>
+    <tr><td class="td-bold">Agent</td><td>Une ou plusieurs compagnies</td><td>Mandataire de l'assureur</td></tr>
+    <tr><td class="td-bold">Sous-agent</td><td>Un agent ou courtier</td><td>Sous responsabilité du mandant</td></tr>
+  </tbody>
+</table></div>
+
+<div class="keypoints">
+  <h4>✅ Conditions d'inscription FSMA</h4>
+  <div class="kp-item">Connaissances professionnelles (examen Certassur)</div>
+  <div class="kp-item">Honorabilité (casier judiciaire vierge)</div>
+  <div class="kp-item">Assurance RC professionnelle obligatoire</div>
+  <div class="kp-item">Garantie financière (pour les courtiers)</div>
+  <div class="kp-item">Inscription au registre public FSMA</div>
+</div>
+</div>
+
+<div id="dda">
+<div class="section-title"><span class="icon">🛡️</span>1.4 — DDA · LBA · RGPD · AssurMiFID</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Législation</th><th>Objet</th><th>Point clé</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">DDA</td><td>Directive Distribution Assurances</td><td><strong>15h/an</strong> de formation continue obligatoire · Analyse des besoins client</td></tr>
+    <tr><td class="td-bold">LBA</td><td>Anti-blanchiment & financement terrorisme</td><td>KYC obligatoire · PPE = vigilance renforcée · Déclaration à la <strong>CTIF</strong></td></tr>
+    <tr><td class="td-bold">RGPD</td><td>Protection des données personnelles</td><td>Conservation limitée · Droit à l'effacement (sauf obligations légales)</td></tr>
+    <tr><td class="td-bold">AssurMiFID</td><td>Assurances vie à composante investissement</td><td>Test d'adéquation obligatoire pour B23/B44</td></tr>
+    <tr><td class="td-bold">KID/PRIIPS</td><td>Document d'info clé pour l'investisseur</td><td>Obligatoire pour B23, B44 et autres PRIIPS</td></tr>
+  </tbody>
+</table></div>
+</div>
+
+<!-- ═══════════════════════ MODULE 2 -->
+<div class="module-banner m2">
+  <h2>🏠 Module 2 — Assurances Non-Vie (IARD)</h2>
+  <p>Incendie · RC générale/familiale/professionnelle/médicale/produits · Auto · Personnes · Pertes d'exploitation</p>
+</div>
+
+<div id="incendie">
+<div class="section-title"><span class="icon">🔥</span>2.1 — Assurance Incendie</div>
+
+<div class="subsection">Garanties FLEXA (base)</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Lettre</th><th>Garantie</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold td-red">F</td><td>Feu / Incendie</td></tr>
+    <tr><td class="td-bold td-amber">L</td><td>Foudre</td></tr>
+    <tr><td class="td-bold td-blue">E</td><td>Explosion</td></tr>
+    <tr><td class="td-bold td-purple">X</td><td>Chute d'aéronef (X = aircraft)</td></tr>
+  </tbody>
+</table></div>
+
+<div class="subsection">Risques simples vs spéciaux</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Catégorie</th><th>Seuil</th><th>Tarification</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">Risques simples</td><td>≤ <strong>743.680,57 €</strong> (seuil inférieur)</td><td>Barème standardisé</td></tr>
+    <tr><td class="td-bold">Risques spéciaux</td><td>Industrie, commerce important</td><td>Taux de base + surprimes/réductions</td></tr>
+  </tbody>
+</table></div>
+
+<div class="subsection">Méthodes d'évaluation</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Méthode</th><th>Définition</th><th>Usage</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">Valeur à neuf</td><td>Coût de reconstruction à l'identique</td><td>Bâtiments neufs</td></tr>
+    <tr><td class="td-bold">Valeur réelle</td><td>Valeur à neuf <strong>– vétusté</strong></td><td>Biens anciens</td></tr>
+    <tr><td class="td-bold">Valeur vénale</td><td>Prix de vente sur le marché</td><td>Immeubles à démolir</td></tr>
+    <tr><td class="td-bold">Valeur de reconstruction</td><td>Coût avec matériaux équivalents</td><td>Variante valeur à neuf</td></tr>
+  </tbody>
+</table></div>
+
+<div class="alert warning">
+  <span class="alert-icon">⚠️</span>
+  <div><strong>Règle de proportionnalité :</strong> si le bien est sous-assuré (valeur assurée &lt; valeur réelle), l'indemnité est réduite proportionnellement.<br>
+  <code>Indemnité = Dommage × (Valeur assurée / Valeur réelle)</code></div>
+</div>
+
+<div class="alert info">
+  <span class="alert-icon">🏭</span>
+  <div><strong>Formule "Tous Risques Sauf" (risques spéciaux) :</strong> l'assureur couvre TOUT, sauf les exclusions expressément listées. Plus favorable que la liste limitative.</div>
+</div>
+</div>
+
+<div id="rc">
+<div class="section-title"><span class="icon">⚖️</span>2.2 — Responsabilité Civile</div>
+
+<div class="keypoints">
+  <h4>⚖️ 3 Conditions cumulatives de la RC</h4>
+  <div class="kp-item"><strong>Faute</strong> (ou fait générateur légal) — art. 1382 C.civ.</div>
+  <div class="kp-item"><strong>Dommage</strong> — personnel, réel, certain</div>
+  <div class="kp-item"><strong>Lien de causalité</strong> — entre la faute et le dommage</div>
+</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Type RC</th><th>Objet</th><th>Particularité</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">RC Familiale</td><td>Ménage dans la vie privée</td><td>Preneur + conjoint + enfants à charge + personnel domestique</td></tr>
+    <tr><td class="td-bold">RC Exploitation</td><td>Activité professionnelle (pendant prestation)</td><td>Base = déclaration précise de l'activité</td></tr>
+    <tr><td class="td-bold">RC Professionnelle</td><td>Erreurs/omissions intellectuelles</td><td><strong>Claims made</strong> · Obligation légale pour courtiers</td></tr>
+    <tr><td class="td-bold">RC Médicale</td><td>Professions médicales</td><td>Obligation de <strong>moyen</strong> (pas de résultat)</td></tr>
+    <tr><td class="td-bold">RC Produits</td><td>Défaut d'un produit mis en circulation</td><td>Loi 1991 · Responsabilité <strong>sans faute</strong></td></tr>
+  </tbody>
+</table></div>
+
+<div class="alert info">
+  <span class="alert-icon">📌</span>
+  <div><strong>Claims made (RC Pro) :</strong> la garantie joue pour les réclamations introduites <strong>pendant la durée du contrat</strong>, quelle que soit la date de la faute.</div>
+</div>
+</div>
+
+<div id="auto">
+<div class="section-title"><span class="icon">🚗</span>2.3 — Assurance Automobile</div>
+
+<div class="card">
+  <p>La <strong>RC auto est obligatoire</strong> (loi du 21 novembre 1989) pour tout véhicule automoteur terrestre mis en circulation (sauf voies ferrées).</p>
+  <ul style="margin-top:12px;">
+    <li>Pas de franchise opposable aux victimes</li>
+    <li><strong>FCGB</strong> = indemnise les victimes de conducteurs non assurés ou en fuite</li>
+    <li><strong>Convention RDR</strong> = règlement direct par l'assureur de la victime, plafond <strong>8.500 €</strong></li>
+  </ul>
+</div>
+</div>
+
+<div id="personnes">
+<div class="section-title"><span class="icon">🏥</span>2.4 — Assurances de Personnes Non-Vie</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Assurance</th><th>Nature</th><th>Ce qu'elle couvre</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">Accidents corporels</td><td class="td-blue">Forfaitaire</td><td>Capital décès, IP, IT, frais médicaux (montants fixés à l'avance)</td></tr>
+    <tr><td class="td-bold">Hospitalisation</td><td class="td-green">Indemnitaire</td><td>Frais restant après mutuelle (ticket modérateur, suppléments, honoraires)</td></tr>
+    <tr><td class="td-bold">Revenu Garanti</td><td class="td-green">Indemnitaire</td><td>Remplacement du revenu en cas d'incapacité (maladie ou accident)</td></tr>
+  </tbody>
+</table></div>
+
+<div class="alert warning">
+  <span class="alert-icon">⚠️</span>
+  <div><strong>Revenu garanti et indépendants :</strong> l'INAMI verse un forfait très faible aux indépendants en invalidité. Le revenu garanti est donc crucial pour eux.</div>
+</div>
+</div>
+
+<div id="pe">
+<div class="section-title"><span class="icon">📉</span>2.5 — Assurance Pertes d'Exploitation</div>
+
+<div class="card">
+  <p>Indemnise les <strong>dommages immatériels</strong> résultant d'une interruption d'activité suite à un sinistre matériel couvert.</p>
+  <div class="alert danger" style="margin-top:14px;">
+    <span class="alert-icon">📊</span>
+    <div><strong>43 à 60% des entreprises déposent leur bilan</strong> dans les 2 ans après un incendie important sans couverture PE.</div>
+  </div>
+</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Notion</th><th>Définition</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">Marge brute</td><td>CA – Charges variables = ce que la PE indemnise</td></tr>
+    <tr><td class="td-bold">Période d'indemnisation</td><td>Durée max de la garantie (12, 24 ou 36 mois)</td></tr>
+    <tr><td class="td-bold">Délai de franchise</td><td>Période non indemnisée au début du sinistre</td></tr>
+    <tr><td class="td-bold">Frais supplémentaires</td><td>Coûts engagés pour maintenir l'activité (location, sous-traitance)</td></tr>
+  </tbody>
+</table></div>
+
+<div class="formula">
+<span class="hl">Indemnité PE</span> = (CA prévu – CA réalisé) × (Marge brute / CA)
+                + Frais supplémentaires
+                – Économies réalisées
+</div>
+</div>
+
+<!-- ═══════════════════════ MODULE 3 -->
+<div class="module-banner m3">
+  <h2>💼 Module 3 — Assurance Vie & Pensions</h2>
+  <p>Branches 21/23/26/44 · Pensions 2e pilier · Fiscalité ELT/EP · Droits de succession</p>
+</div>
+
+<div id="piliers">
+<div class="section-title"><span class="icon">🏛️</span>3.1 — Les 4 Piliers de Pension</div>
+
+<div class="piliers">
+  <div class="pilier p1"><div class="num">1er</div><div class="nom">Pension légale</div><div class="qui">État · Tous</div></div>
+  <div class="pilier p2"><div class="num">2e</div><div class="nom">Pension complémentaire</div><div class="qui">Employeur · Entreprise</div></div>
+  <div class="pilier p3"><div class="num">3e</div><div class="nom">Épargne individuelle fiscale</div><div class="qui">ELT · Épargne-Pension</div></div>
+  <div class="pilier p4"><div class="num">4e</div><div class="nom">Épargne libre</div><div class="qui">Patrimoine personnel</div></div>
+</div>
+</div>
+
+<div id="branches">
+<div class="section-title"><span class="icon">📈</span>3.2 — Branches d'Assurance Vie</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Branche</th><th>Caractéristique</th><th>Risque porté par</th><th>Taxe prime</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold td-blue">Branche 21</td><td>Taux garanti + participation bénéficiaire</td><td class="td-green">Assureur</td><td>2%</td></tr>
+    <tr><td class="td-bold td-red">Branche 23</td><td>Liée à des fonds d'investissement</td><td class="td-red">Preneur</td><td>2%</td></tr>
+    <tr><td class="td-bold">Branche 26</td><td>Contrat de capitalisation (pas de risque biologique)</td><td class="td-blue">Assureur</td><td>—</td></tr>
+    <tr><td class="td-bold td-purple">Branche 44</td><td>Combinaison B21 + B23</td><td>Partagé</td><td>2%</td></tr>
+  </tbody>
+</table></div>
+
+<div class="keypoints">
+  <h4>📌 Branche 23 — Points clés examen</h4>
+  <div class="kp-item">Aucune garantie de capital, aucun intérêt garanti, pas de participation bénéficiaire</div>
+  <div class="kp-item">L'assureur a une <strong>obligation de moyen</strong> (pas de résultat)</div>
+  <div class="kp-item">Plus-values <strong>non taxées</strong> si durée &gt; 8 ans OU couverture décès ≥ 130% avec triangle d'identité</div>
+  <div class="kp-item">Taxe sur les primes : <strong>2%</strong></div>
+</div>
+</div>
+
+<div id="pensions2">
+<div class="section-title"><span class="icon">🏢</span>3.3 — Pensions Complémentaires (2e Pilier)</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th></th><th>Ass. Groupe</th><th>EIP</th><th>PLCI classique</th><th>PLCI sociale</th><th>CPTI</th><th>PLCS</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">Pour qui ?</td><td>Catégorie travailleurs</td><td>Individuel</td><td>Indépendant</td><td>Indépendant</td><td>Indép. PP sans société</td><td>Salarié</td></tr>
+    <tr><td class="td-bold">Plafond 2026</td><td>Règle 80%</td><td class="td-blue"><strong>3.140 €</strong> (salarié)</td><td class="td-blue"><strong>4.086,34 €</strong></td><td class="td-blue"><strong>4.701,54 €</strong></td><td>Règle 80%</td><td class="td-blue"><strong>2.020 €</strong></td></tr>
+    <tr><td class="td-bold">Taux</td><td>—</td><td>—</td><td class="td-green">8,17% RPNI</td><td class="td-green">9,40% RPNI</td><td>—</td><td class="td-green">3% rev. brut</td></tr>
+    <tr><td class="td-bold">Taxe prime</td><td>4,40%</td><td>4,40%</td><td class="td-green">0%</td><td class="td-green">0%</td><td>4,40%</td><td>4,40%</td></tr>
+    <tr><td class="td-bold">Avantage fiscal</td><td>Charges pro</td><td>Charges pro</td><td>Cot. sociales</td><td>Cot. sociales</td><td>Réd. 30%</td><td>Réd. 30%</td></tr>
+    <tr><td class="td-bold">Taxation terme</td><td>10% / 16,5%</td><td>10% / 16,5%</td><td>Rente fictive</td><td>Rente fictive</td><td>Rente fictive</td><td>Comme Ass.Groupe</td></tr>
+    <tr><td class="td-bold">Solidarité 2026</td><td class="td-amber"><strong>2% fixe</strong></td><td class="td-amber"><strong>2% fixe</strong></td><td>IPP (rente)</td><td>IPP (rente)</td><td>IPP (rente)</td><td class="td-amber"><strong>2% fixe</strong></td></tr>
+  </tbody>
+</table></div>
+
+<div class="alert success">
+  <span class="alert-icon">💡</span>
+  <div><strong>Double avantage PLCI :</strong> (1) Déduction fiscale au taux marginal (jusqu'à 50%) + (2) Réduction des cotisations sociales 3 ans plus tard. <strong>Économie totale possible : &gt; 60% de la prime versée !</strong></div>
+</div>
+
+<div class="alert warning">
+  <span class="alert-icon">⚠️</span>
+  <div><strong>Changement 2026 — Cotisation de solidarité :</strong> jusqu'au 31/12/2025 : 0%, 1% ou 2% selon montant. À partir du 01/01/2026 : <strong>2% fixe</strong> sur tout capital de pension complémentaire.</div>
+</div>
+</div>
+
+<div id="regle80">
+<div class="section-title"><span class="icon">📐</span>3.4 — Règle des 80%</div>
+
+<div class="card">
+  <p>Le capital constitué par tous les contrats du 2e pilier ne peut générer une rente de retraite supérieure à <strong>80% du dernier salaire brut régulier</strong>, compte tenu de la pension légale estimée.</p>
+</div>
+
+<div class="formula">
+<span class="hl">Marge disponible</span> = (80% × Salaire brut) – Pension légale estimée
+<span class="hl">Pension légale estimée</span> = <strong>50%</strong> du salaire (depuis mars 2022)
+</div>
+
+<div class="alert warning">
+  <span class="alert-icon">⚠️</span>
+  <div><strong>Changement mars 2022 :</strong> avant, la pension légale était estimée à 25% du salaire. Depuis mars 2022 : <strong>50%</strong>. Cela réduit significativement la marge de prime déductible pour les hauts salaires.</div>
+</div>
+</div>
+
+<div id="fiscalite">
+<div class="section-title"><span class="icon">💰</span>3.5 — Fiscalité des Assurances Vie</div>
+
+<div class="subsection">Barème IPP (revenus 2025)</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Tranche de revenus</th><th>Taux d'imposition</th></tr></thead>
+  <tbody>
+    <tr><td>0 → 15.820 €</td><td class="td-green"><strong>25%</strong></td></tr>
+    <tr><td>15.820 → 27.920 €</td><td class="td-amber"><strong>40%</strong></td></tr>
+    <tr><td>27.920 → 48.320 €</td><td class="td-amber"><strong>45%</strong></td></tr>
+    <tr><td>&gt; 48.320 €</td><td class="td-red"><strong>50%</strong></td></tr>
+  </tbody>
+</table></div>
+
+<div class="subsection">Épargne à Long Terme (ELT) — 3e pilier</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Paramètre</th><th>Valeur 2026</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">Plafond de prime</td><td class="td-blue"><strong>2.450 €</strong> (gelé jusqu'en 2029)</td></tr>
+    <tr><td class="td-bold">Réduction d'impôt</td><td class="td-green"><strong>30%</strong></td></tr>
+    <tr><td class="td-bold">Taxe sur primes</td><td>2%</td></tr>
+    <tr><td class="td-bold">Taxation à 60 ans</td><td class="td-amber"><strong>10%</strong> sur valeur de rachat théorique</td></tr>
+    <tr><td class="td-bold">Rachat anticipé (fiscalisé)</td><td class="td-red"><strong>33%</strong></td></tr>
+  </tbody>
+</table></div>
+
+<div class="subsection">Épargne-Pension — 3e pilier</div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Option</th><th>Plafond 2026</th><th>Réduction</th><th>Avantage max</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">Classique</td><td class="td-blue"><strong>1.050 €</strong></td><td class="td-green"><strong>30%</strong></td><td><strong>315 €</strong></td></tr>
+    <tr><td class="td-bold">Majorée</td><td class="td-blue"><strong>1.350 €</strong></td><td class="td-amber"><strong>25%</strong></td><td><strong>337,50 €</strong> max</td></tr>
+  </tbody>
+</table></div>
+
+<div class="alert warning">
+  <span class="alert-icon">⚠️</span>
+  <div><strong>Piège classique :</strong> verser 1.100 € avec l'option 1.350 € donne seulement 275 € d'avantage (< 315 € de l'option classique). En dessous de <strong>1.260 € versés</strong>, l'option classique 30% est toujours meilleure.<br><strong>Plafonds gelés jusqu'en 2029</strong> (pas d'indexation).</div>
+</div>
+
+<div class="subsection">Tableau de la rente fictive (PLCI / CPTI au terme)</div>
+<div class="rente-table table-wrap"><table>
+  <thead><tr><th>Âge à la liquidation</th><th>% du capital déclaré</th><th>Durée de déclaration</th></tr></thead>
+  <tbody>
+    <tr><td class="td-bold">60 ans</td><td class="td-purple">3,5%</td><td>13 ans</td></tr>
+    <tr><td class="td-bold">61-62 ans</td><td class="td-purple">4%</td><td>13 ans</td></tr>
+    <tr><td class="td-bold">63-64 ans</td><td class="td-purple">4,5%</td><td>13 ans</td></tr>
+    <tr><td class="td-bold">≥ 65 ans</td><td class="td-purple"><strong>5%</strong></td><td><strong>10 ans</strong></td></tr>
+  </tbody>
+</table></div>
+</div>
+
+<div id="succession">
+<div class="section-title"><span class="icon">🏛️</span>3.6 — Droits de Succession & Assurance Vie</div>
+
+<div class="card">
+  <p>L'assurance vie est soumise aux droits de succession en vertu de l'<strong>article 8 du Code des droits de succession</strong> (prestation reçue à titre gratuit au décès).</p>
+</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Situation</th><th>Taxation</th></tr></thead>
+  <tbody>
+    <tr><td>Bénéficiaire déterminé</td><td>Capital hors succession MAIS droits de succession selon barème</td></tr>
+    <tr><td>Bénéficiaire indéterminé</td><td>Capital dans la succession (créanciers peuvent saisir)</td></tr>
+    <tr><td class="td-bold td-green">Preneur = Bénéficiaire</td><td class="td-green"><strong>Aucun droit de succession !</strong> (reçoit son propre argent)</td></tr>
+  </tbody>
+</table></div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Régime matrimonial</th><th>Taxation sur le capital</th></tr></thead>
+  <tbody>
+    <tr><td>Séparation de biens · Preneur = Bénéficiaire</td><td class="td-green">0%</td></tr>
+    <tr><td>Communauté légale (tous cas)</td><td class="td-amber">50% taxé</td></tr>
+    <tr><td>Séparation de biens · Preneur ≠ Bénéficiaire</td><td class="td-red">100% taxé</td></tr>
+    <tr><td>Concubinage · Preneur ≠ Bénéficiaire</td><td class="td-red">100% taxé (taux très élevés)</td></tr>
+  </tbody>
+</table></div>
+
+<div class="keypoints">
+  <h4>👨‍👩‍👧 Réserves héréditaires (depuis 01/09/2018)</h4>
+  <div class="kp-item">Enfants : <strong>50%</strong> de la succession totale à partager (quel que soit le nombre d'enfants)</div>
+  <div class="kp-item">Conjoint : usufruit sur 50% (réserve abstraite) ou usufruit du logement familial</div>
+  <div class="kp-item">Parents et grands-parents : <strong>plus réservataires</strong> depuis 2018 (créance alimentaire max 25%)</div>
+</div>
+</div>
+
+<!-- ═══════════════════════ RÉCAP -->
+<div id="recap">
+<hr>
+<div class="section-title"><span class="icon">⚡</span>Récapitulatif — Chiffres Clés 2026</div>
+
+<div class="table-wrap"><table>
+  <thead><tr><th>Notion</th><th>Chiffre à retenir</th></tr></thead>
+  <tbody>
+    <tr><td>Seuil risque simple (inférieur)</td><td class="td-blue"><strong>743.680,57 €</strong></td></tr>
+    <tr><td>PLCI classique (taux / plafond)</td><td class="td-blue"><strong>8,17% / 4.086,34 €</strong></td></tr>
+    <tr><td>PLCI sociale (taux / plafond)</td><td class="td-blue"><strong>9,40% / 4.701,54 €</strong></td></tr>
+    <tr><td>EIP salarié plafond</td><td class="td-blue"><strong>3.140 €</strong></td></tr>
+    <tr><td>PLCS (taux / plafond)</td><td class="td-blue"><strong>3% / 2.020 €</strong></td></tr>
+    <tr><td>Rendement garanti assurance groupe</td><td class="td-green"><strong>min 2,5%</strong> (depuis 01/01/2025)</td></tr>
+    <tr><td>Épargne-pension classique</td><td class="td-blue"><strong>1.050 € → 30% → 315 €</strong></td></tr>
+    <tr><td>Épargne-pension majorée</td><td class="td-amber"><strong>1.350 € → 25% → 337,50 €</strong></td></tr>
+    <tr><td>ELT plafond (gelé jusqu'en 2029)</td><td class="td-blue"><strong>2.450 €</strong></td></tr>
+    <tr><td>Taxation ELT à 60 ans</td><td class="td-amber"><strong>10%</strong></td></tr>
+    <tr><td>Taxation Épargne-Pension à 60 ans</td><td class="td-amber"><strong>8%</strong></td></tr>
+    <tr><td>Rachat anticipé (contrat fiscalisé)</td><td class="td-red"><strong>33%</strong></td></tr>
+    <tr><td>Cotisation de solidarité 2026</td><td class="td-red"><strong>2% fixe</strong></td></tr>
+    <tr><td>IPP taux supérieur</td><td class="td-red"><strong>50%</strong> (au-delà de 48.320 €)</td></tr>
+    <tr><td>Réserve héréditaire enfants</td><td class="td-blue"><strong>50%</strong> (depuis 2018)</td></tr>
+    <tr><td>Plafond RDR auto</td><td class="td-blue"><strong>8.500 €</strong></td></tr>
+    <tr><td>Conditions RC</td><td><strong>Faute + Dommage + Lien causal</strong></td></tr>
+    <tr><td>Branche 23 — taxe primes</td><td class="td-blue"><strong>2%</strong></td></tr>
+    <tr><td>B23 exonération si</td><td><strong>Durée &gt; 8 ans OU décès ≥ 130%</strong></td></tr>
+    <tr><td>Formation continue DDA</td><td class="td-green"><strong>15 heures/an</strong></td></tr>
+    <tr><td>Format examen Certassur</td><td><strong>20 questions · Seuil 60% · 1h</strong></td></tr>
+  </tbody>
+</table></div>
+</div>
+
+</div><!-- /page -->
+
+<footer class="page-footer">
+  Sources : Febelfin Academy · EFPME/IFPME · Assuralia · Certassur · FSMA · Données actualisées 2026
+</footer>
+
+</div><!-- /content -->
+</body>
+</html>

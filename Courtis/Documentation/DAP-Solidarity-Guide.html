@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAP Solidarity — Guide de l'outil</title>
+<style>
+  /* ── RESET & BASE ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    color: #1e2640;
+    background: #f5f6fa;
+    line-height: 1.6;
+  }
+
+  /* ── COULEURS ── */
+  :root {
+    --navy:     #1e2640;
+    --blue:     #3b6fd4;
+    --green:    #059669;
+    --gold:     #d97706;
+    --muted:    #6b7280;
+    --border:   #e5e7eb;
+    --bg:       #f9fafb;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: white; font-size: 11px; }
+    .no-print { display: none !important; }
+    .cover {
+      box-shadow: none !important; margin: 0 !important; border-radius: 0 !important;
+      width: 210mm; height: 297mm; overflow: hidden;
+      page-break-after: always; break-after: page;
+    }
+    .page {
+      box-shadow: none !important; margin: 0 !important; border-radius: 0 !important;
+      width: 210mm; height: 297mm; overflow: hidden; min-height: unset;
+      page-break-after: always; break-after: page;
+    }
+    .page:last-child { page-break-after: avoid; break-after: avoid; }
+    @page { size: A4; margin: 0; }
+  }
+
+  /* ── BOUTON IMPRIMER ── */
+  .print-btn {
+    position: fixed; top: 20px; right: 20px; z-index: 100;
+    padding: 10px 20px; background: var(--navy); color: white;
+    border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: background 0.15s;
+  }
+  .print-btn:hover { background: var(--blue); }
+
+  /* ── PAGES ── */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 20px auto;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    width: 210mm;
+    height: 297mm;
+    margin: 20px auto;
+    background: var(--navy);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .cover-top {
+    padding: 60px 60px 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .cover-logo-area {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 60px;
+  }
+  .cover-logo-icon {
+    width: 52px; height: 52px; background: #059669; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+  }
+  .cover-logo-text {
+    font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.6);
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .cover-tag {
+    display: inline-block;
+    background: #059669; color: white;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 5px 14px; border-radius: 20px; margin-bottom: 20px;
+  }
+  .cover-title {
+    font-size: 48px; font-weight: 800; color: white; line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .cover-title span { color: #34d399; }
+  .cover-sub {
+    font-size: 16px; color: rgba(255,255,255,0.55); line-height: 1.5; max-width: 400px;
+  }
+  .cover-bottom {
+    padding: 36px 60px;
+    background: rgba(0,0,0,0.25);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cover-meta { font-size: 12px; color: rgba(255,255,255,0.5); }
+  .cover-meta strong { color: rgba(255,255,255,0.8); display: block; font-size: 13px; margin-bottom: 2px; }
+  .cover-deco {
+    position: absolute; right: -60px; top: 60px;
+    width: 360px; height: 360px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+    border: 60px solid rgba(255,255,255,0.04);
+  }
+  .cover-deco2 {
+    position: absolute; right: 60px; bottom: 120px;
+    width: 120px; height: 120px;
+    background: rgba(52,211,153,0.08);
+    border-radius: 50%;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    background: var(--navy);
+    padding: 24px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .page-header-left { display: flex; align-items: center; gap: 14px; }
+  .section-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #059669; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; flex-shrink: 0;
+  }
+  .section-title-block {}
+  .section-label {
+    font-size: 10px; color: rgba(255,255,255,0.45); text-transform: uppercase;
+    letter-spacing: 1.5px; font-weight: 600;
+  }
+  .section-title {
+    font-size: 18px; font-weight: 700; color: white; line-height: 1.2;
+  }
+  .section-badge {
+    font-size: 11px; font-weight: 600; padding: 4px 12px;
+    border-radius: 20px; background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* ── PAGE BODY ── */
+  .page-body {
+    padding: 32px 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── SCREENSHOT ZONE ── */
+  .screenshot-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+  .screenshot-wrap img {
+    width: 100%;
+    display: block;
+  }
+  .screenshot-placeholder {
+    width: 100%;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #c4c9d4;
+    border: 2px dashed #e5e7eb;
+    border-radius: 10px;
+    background: #fafafa;
+    font-size: 12px;
+    font-style: italic;
+  }
+  .screenshot-placeholder .icon { font-size: 32px; opacity: 0.4; }
+  /* Masquer placeholder si l'image charge */
+  .screenshot-wrap.has-img .screenshot-placeholder { display: none; }
+
+  /* ── NOTES ── */
+  .notes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .notes-grid.cols-1 { grid-template-columns: 1fr; }
+  .note {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .note.accent-green  { background: #f0fdf4; border-color: #a7f3d0; }
+  .note.accent-blue   { background: #eff6ff; border-color: #bfdbfe; }
+  .note.accent-amber  { background: #fffbeb; border-color: #fde68a; }
+  .note.accent-red    { background: #fff1f2; border-color: #fecdd3; }
+  .note.accent-purple { background: #faf5ff; border-color: #e9d5ff; }
+  .note-icon { font-size: 20px; flex-shrink: 0; line-height: 1.4; }
+  .note-content {}
+  .note-title { font-weight: 700; font-size: 12px; margin-bottom: 3px; color: var(--navy); }
+  .note-text  { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+  .note-text strong { color: var(--navy); }
+
+  /* ── PILL ── */
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .pill-green  { background: #d1fae5; color: #065f46; }
+  .pill-amber  { background: #fef3c7; color: #92400e; }
+  .pill-red    { background: #fee2e2; color: #991b1b; }
+  .pill-blue   { background: #dbeafe; color: #1e40af; }
+  .pill-purple { background: #ede9fe; color: #5b21b6; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px; background: var(--border); border: none; margin: 0;
+  }
+
+  /* ── PAGE FOOTER ── */
+  .page-footer {
+    padding: 14px 40px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0;
+  }
+  .page-footer-brand { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .page-footer-brand span { color: var(--green); }
+  .page-footer-num { font-size: 11px; color: #c4c9d4; }
+
+  /* ── STEP INDICATOR ── */
+  .steps {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 16px;
+  }
+  .step-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; color: var(--muted);
+  }
+  .step-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+  }
+  .step-item.active .step-dot { background: #0078d4; color: white; }
+  .step-item.active { color: #0078d4; }
+  .step-arrow { color: #c4c9d4; font-size: 12px; }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    border-left: 4px solid var(--green);
+    background: #f0fdf4;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 12px; color: #065f46;
+  }
+  .highlight-box.blue {
+    border-color: var(--blue);
+    background: #eff6ff;
+    color: #1e3a8a;
+  }
+  .highlight-box strong { display: block; margin-bottom: 4px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Imprimer en PDF</button>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- COUVERTURE                                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-deco"></div>
+  <div class="cover-deco2"></div>
+
+  <div class="cover-top">
+    <div class="cover-logo-area">
+      <div class="cover-logo-icon">❤️</div>
+      <div class="cover-logo-text">DAP Solidarity</div>
+    </div>
+
+    <div class="cover-tag">Guide utilisateur</div>
+    <div class="cover-title">DAP<br><span>Solidarity</span></div>
+    <div class="cover-sub">Outil de gestion & suivi des preneurs DAP Solidarity — à destination des équipes Production & Sinistre.</div>
+  </div>
+
+  <div class="cover-bottom">
+    <div class="cover-meta">
+      <strong>DAP Solidarity — Outil interne</strong>
+      Mars 2026
+    </div>
+    <div class="cover-meta" style="text-align:right">
+      <strong>Version démo</strong>
+      Hébergement Azure prévu
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE 1 — CONNEXION MICROSOFT                            -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="section-num">1</div>
+      <div class="section-title-block">
+        <div class="section-label">Accès à l'outil</div>
+        <div class="section-title">Connexion sécurisée Microsoft</div>
+      </div>
+    </div>
+    <div class="section-badge">Authentification</div>
+  </div>
+
+  <div class="page-body">
+
+    <div class="highlight-box blue">
+      <strong>Pourquoi une connexion Microsoft ?</strong>
+      L'outil est hébergé sur Azure et protégé par le système d'authentification Microsoft (Azure Active Directory). Seuls les collaborateurs disposant d'un compte @dap.be peuvent y accéder — utilisez simplement votre mot de passe Microsoft habituel.
+    </div>
+
+    <!-- Screenshot -->
+    <div class="screenshot-wrap" id="sc1">
+      <img src="public /capture Connexion portail microsft .png" alt="Écran de connexion Microsoft"
+           onerror="this.style.display='none'" onload="this.parentElement.classList.add('has-img')">
+      <div class="screenshot-placeholder">
+        <div class="icon">🔐</div>
+        <span>Capture : écran de connexion Microsoft</span>
+      </div>
+    </div>
+
+    <!-- Étapes -->
+    <div class="steps">
+      <div class="step-item active">
+        <div class="step-dot">1</div>
+        Saisir son e-mail @dap.be
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item active">
+        <div class="step-dot">2</div>
+        Entrer son mot de passe Microsoft
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-item active">
+        <div class="step-dot">3</div>
+        Accès immédiat à l'outil
+      </div>
+    </div>
+
+    <div class="notes-grid">
+      <div class="note accent-green">
+        <div class="note-icon">✅</div>
+        <div class="note-content">
+          <div class="note-title">Connexion unique (SSO)</div>
+          <div class="note-text">Si vous êtes déjà connecté à Microsoft 365, l'accès est automatique — aucune nouvelle saisie requise.</div>
+        </div>
+      </div>
+      <div class="note accent-blue">
+        <div class="note-icon">🔒</div>
+        <div class="note-content">
+          <div class="note-title">Accès restreint</div>
+          <div class="note-text">Seuls les collaborateurs de l'organisation peuvent accéder à l'outil. Toute tentative externe est bloquée.</div>
+        </div>
+      </div>
+      <div class="note accent-amber">
+        <div class="note-icon">👤</div>
+        <div class="note-content">
+          <div class="note-title">Identifiant affiché</div>
+          <div class="note-text">Votre nom apparaît dans le bandeau supérieur après connexion, avec un bouton "Se déconnecter".</div>
+        </div>
+      </div>
+      <div class="note">
+        <div class="note-icon">💻</div>
+        <div class="note-content">
+          <div class="note-title">Aucune installation</div>
+          <div class="note-text">L'outil s'ouvre directement dans le navigateur — Chrome, Edge ou Firefox. Aucun logiciel à installer.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-brand">DAP <span>Solidarity</span> — Outil interne DAP</div>
+    <div class="page-footer-num">1 / 5</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE 2 — RECHERCHE & AJOUT                              -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="section-num">2</div>
+      <div class="section-title-block">
+        <div class="section-label">Onglet Recherche</div>
+        <div class="section-title">Rechercher & ajouter un preneur</div>
+      </div>
+    </div>
+    <div class="section-badge">Recherche rapide</div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Screenshot -->
+    <div class="screenshot-wrap" id="sc2">
+      <img src="public /capture recherche .png" alt="Menu de recherche"
+           onerror="this.style.display='none'" onload="this.parentElement.classList.add('has-img')">
+      <div class="screenshot-placeholder">
+        <div class="icon">🔍</div>
+        <span>Capture : écran de recherche</span>
+      </div>
+    </div>
+
+    <div class="notes-grid">
+      <div class="note accent-blue">
+        <div class="note-icon">🔍</div>
+        <div class="note-content">
+          <div class="note-title">Recherche multi-critères</div>
+          <div class="note-text">Tapez le <strong>nom du preneur</strong>, son <strong>numéro de contrat</strong> ou son <strong>adresse e-mail</strong>. La recherche est insensible à la casse et aux accents.</div>
+        </div>
+      </div>
+      <div class="note accent-green">
+        <div class="note-icon">❤️</div>
+        <div class="note-content">
+          <div class="note-title">Ajouter un nouveau donneur</div>
+          <div class="note-text">Le panneau vert à droite ouvre le formulaire d'ajout. Renseignez toutes les infos du preneur et son association partenaire.</div>
+        </div>
+      </div>
+      <div class="note">
+        <div class="note-icon">⚡</div>
+        <div class="note-content">
+          <div class="note-title">Résultat instantané</div>
+          <div class="note-text">La fiche s'affiche dès la validation — appuyez sur <strong>Entrée</strong> ou cliquez "Rechercher". La touche ✕ efface la recherche.</div>
+        </div>
+      </div>
+      <div class="note accent-amber">
+        <div class="note-icon">🔗</div>
+        <div class="note-content">
+          <div class="note-title">Connexion Google Sheets</div>
+          <div class="note-text">En production, l'outil se connecte au Google Sheet DAP Solidarity via une URL Apps Script. Les données sont en temps réel.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-brand">DAP <span>Solidarity</span> — Outil interne DAP</div>
+    <div class="page-footer-num">2 / 5</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE 3 — FICHE PRENEUR                                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="section-num">3</div>
+      <div class="section-title-block">
+        <div class="section-label">Résultat de recherche</div>
+        <div class="section-title">Fiche preneur & association</div>
+      </div>
+    </div>
+    <div class="section-badge">Gestion individuelle</div>
+  </div>
+
+  <div class="page-body">
+
+    <div class="highlight-box">
+      <strong>À quoi ça sert ?</strong>
+      Une fois un preneur trouvé, sa fiche complète s'affiche : contrat, primes, état de paiement et — point central — l'association qu'il a choisie pour le reversement de 10% de sa prime. Si aucune association n'est renseignée, l'outil le signale clairement.
+    </div>
+
+    <!-- Screenshot -->
+    <div class="screenshot-wrap" id="sc3">
+      <img src="public /Capture Fiche client .png" alt="Fiche preneur ouverte"
+           onerror="this.style.display='none'" onload="this.parentElement.classList.add('has-img')">
+      <div class="screenshot-placeholder">
+        <div class="icon">📋</div>
+        <span>Capture : fiche preneur avec association</span>
+      </div>
+    </div>
+
+    <div class="notes-grid">
+      <div class="note accent-red">
+        <div class="note-icon">⚠️</div>
+        <div class="note-content">
+          <div class="note-title">Client sans association détectée</div>
+          <div class="note-text">Si le client n'a pas encore choisi d'association, un encart orange s'affiche avec la liste des 7 associations partenaires à sélectionner.</div>
+        </div>
+      </div>
+      <div class="note accent-green">
+        <div class="note-icon">💚</div>
+        <div class="note-content">
+          <div class="note-title">Enregistrement du choix</div>
+          <div class="note-text">Le gestionnaire peut sélectionner une association depuis la fiche et l'enregistrer directement — la mise à jour est immédiate dans Google Sheets.</div>
+        </div>
+      </div>
+      <div class="note accent-purple">
+        <div class="note-icon">📊</div>
+        <div class="note-content">
+          <div class="note-title">Toutes les infos contrat</div>
+          <div class="note-text">Numéro de contrat, produit, date de souscription, primes HT & TTC, fractionnement, état & date de paiement.</div>
+        </div>
+      </div>
+      <div class="note accent-blue">
+        <div class="note-icon">📋</div>
+        <div class="note-content">
+          <div class="note-title">Copie de l'e-mail</div>
+          <div class="note-text">Un bouton permet de copier l'adresse e-mail du preneur en un clic, pour faciliter les relances.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-brand">DAP <span>Solidarity</span> — Outil interne DAP</div>
+    <div class="page-footer-num">3 / 5</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE 4 — DASHBOARD                                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="section-num">4</div>
+      <div class="section-title-block">
+        <div class="section-label">Onglet Dashboard</div>
+        <div class="section-title">Vue d'ensemble & suivi</div>
+      </div>
+    </div>
+    <div class="section-badge">Pilotage</div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Screenshot -->
+    <div class="screenshot-wrap" id="sc4">
+      <img src="public /Capture dashboard .png" alt="Dashboard"
+           onerror="this.style.display='none'" onload="this.parentElement.classList.add('has-img')">
+      <div class="screenshot-placeholder">
+        <div class="icon">📊</div>
+        <span>Capture : tableau de bord</span>
+      </div>
+    </div>
+
+    <div class="notes-grid">
+      <div class="note accent-blue">
+        <div class="note-icon">📈</div>
+        <div class="note-content">
+          <div class="note-title">4 indicateurs clés</div>
+          <div class="note-text">Nombre de preneurs actifs · Total des primes · Reversement estimé (10%) · Preneurs sans association à traiter.</div>
+        </div>
+      </div>
+      <div class="note accent-amber">
+        <div class="note-icon">⚠️</div>
+        <div class="note-content">
+          <div class="note-title">Filtre "Sans association"</div>
+          <div class="note-text">Un clic sur ce bouton isole immédiatement tous les preneurs sans choix d'association — pour faciliter les relances.</div>
+        </div>
+      </div>
+      <div class="note accent-green">
+        <div class="note-icon">👁️</div>
+        <div class="note-content">
+          <div class="note-title">Accès rapide à la fiche</div>
+          <div class="note-text">Chaque ligne du tableau dispose d'un bouton <strong>"Voir →"</strong> qui bascule directement vers la fiche du preneur en onglet Recherche.</div>
+        </div>
+      </div>
+      <div class="note">
+        <div class="note-icon">📋</div>
+        <div class="note-content">
+          <div class="note-title">Tableau complet</div>
+          <div class="note-text">Tous les preneurs sont listés avec : contrat, association choisie (ou non), état de paiement.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-brand">DAP <span>Solidarity</span> — Outil interne DAP</div>
+    <div class="page-footer-num">4 / 5</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- PAGE 5 — CLASSEMENT                                     -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="section-num">5</div>
+      <div class="section-title-block">
+        <div class="section-label">Onglet Classement</div>
+        <div class="section-title">Top des plus grosses participations</div>
+      </div>
+    </div>
+    <div class="section-badge">Valorisation</div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Screenshot -->
+    <div class="screenshot-wrap" id="sc5">
+      <img src="public /Capture classemnt .png" alt="Classement"
+           onerror="this.style.display='none'" onload="this.parentElement.classList.add('has-img')">
+      <div class="screenshot-placeholder">
+        <div class="icon">🏆</div>
+        <span>Capture : classement des preneurs</span>
+      </div>
+    </div>
+
+    <div class="notes-grid">
+      <div class="note accent-amber">
+        <div class="note-icon">🥇</div>
+        <div class="note-content">
+          <div class="note-title">Podium visuel</div>
+          <div class="note-text">Les 3 premiers preneurs (par prime TTC) sont mis en avant avec un podium 🥇 🥈 🥉 et leur reversement estimé calculé automatiquement.</div>
+        </div>
+      </div>
+      <div class="note accent-green">
+        <div class="note-icon">📊</div>
+        <div class="note-content">
+          <div class="note-title">Barre de progression</div>
+          <div class="note-text">Chaque preneur du classement dispose d'une barre visuelle proportionnelle à sa prime, pour comparer les participations d'un coup d'œil.</div>
+        </div>
+      </div>
+      <div class="note accent-blue">
+        <div class="note-icon">💰</div>
+        <div class="note-content">
+          <div class="note-title">Reversement calculé</div>
+          <div class="note-text">Le montant reversé à l'association (10% de la prime TTC) est affiché pour chaque preneur — en vert si association choisie, en attente sinon.</div>
+        </div>
+      </div>
+      <div class="note">
+        <div class="note-icon">👁️</div>
+        <div class="note-content">
+          <div class="note-title">Accès direct à la fiche</div>
+          <div class="note-text">Un bouton "Voir →" sur chaque ligne permet d'accéder immédiatement à la fiche complète du preneur.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: auto;">
+      <strong>Déploiement Azure — si l'outil est validé</strong>
+      Si la démo est validée, l'outil pourrait être hébergé sur Azure Static Web Apps avec authentification Microsoft réelle. Les données seraient alors synchronisées en temps réel avec le Google Sheet DAP Solidarity via Google Apps Script.
+    </div>
+
+  </div>
+
+  <div class="page-footer">
+    <div class="page-footer-brand">DAP <span>Solidarity</span> — Outil interne DAP</div>
+    <div class="page-footer-num">5 / 5</div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtre Leads Transversaux — DAP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2b6cb0;
+            --accent: #ed8936;
+            --accent-hover: #dd6b20;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --success: #48bb78;
+            --warning: #ecc94b;
+            --danger: #fc8181;
+            --info: #63b3ed;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .header h1 span { color: var(--accent); }
+        .header p { font-size: 1rem; opacity: 0.85; max-width: 650px; margin: 0 auto; }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 1.5rem; }
+
+        .intro-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .intro-card h2 { font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem; }
+        .intro-card p { font-size: 0.9rem; color: var(--text-light); }
+        .intro-card ul { font-size: 0.88rem; color: var(--text); margin: 0.5rem 0 0 1.2rem; }
+        .intro-card ul li { margin-bottom: 0.2rem; }
+
+        .step-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-card.hidden { display: none; }
+
+        .step-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+
+        .step-number {
+            width: 32px; height: 32px;
+            background: var(--primary); color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+        }
+
+        .step-question { font-size: 1.05rem; font-weight: 600; color: var(--primary); }
+
+        .options { display: flex; flex-direction: column; gap: 0.6rem; }
+
+        .option-btn {
+            display: flex; align-items: center; gap: 0.8rem;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid var(--border); border-radius: 10px;
+            background: white; cursor: pointer;
+            transition: all 0.2s;
+            text-align: left; font-family: inherit; font-size: 0.92rem; color: var(--text);
+        }
+
+        .option-btn:hover { border-color: var(--primary-light); background: #f0f5ff; }
+        .option-btn.selected { border-color: var(--primary); background: #ebf4ff; }
+
+        .option-icon { font-size: 1.3rem; flex-shrink: 0; }
+        .option-content { flex: 1; }
+        .option-label { font-weight: 600; display: block; }
+        .option-desc { font-size: 0.82rem; color: var(--text-light); margin-top: 0.1rem; }
+
+        /* Result cards */
+        .result-card {
+            border-radius: 12px;
+            padding: 1.8rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+        .result-card.hidden { display: none; }
+
+        .result-transversal {
+            background: linear-gradient(135deg, #ebf4ff 0%, #e9d8fd 100%);
+            border: 2px solid var(--primary-light);
+        }
+
+        .result-autonome {
+            background: linear-gradient(135deg, #f0fff4 0%, #fefcbf 100%);
+            border: 2px solid var(--success);
+        }
+
+        .result-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+        .result-icon { font-size: 2rem; }
+        .result-title { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+
+        .result-body { font-size: 0.93rem; color: var(--text); }
+        .result-body h3 { font-size: 1rem; margin: 1rem 0 0.4rem; color: var(--primary); }
+        .result-body ul { margin: 0.3rem 0 0 1.2rem; }
+        .result-body ul li { margin-bottom: 0.3rem; }
+
+        .result-body .contact-box,
+        .result-body .tips-box {
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            margin-top: 0.8rem;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .result-body .contact-box strong { color: var(--primary); }
+
+        /* Transmission form */
+        .transmission-form {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.2rem;
+            border: 2px solid var(--primary-light);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .transmission-form h3 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group { margin-bottom: 1rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(43,108,176,0.1);
+        }
+
+        .form-group textarea { resize: vertical; min-height: 80px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+
+        .contact-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #ebf4ff;
+            border: 1px solid var(--primary-light);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .contact-badge .name { font-weight: 700; color: var(--primary); }
+        .contact-badge .email { color: var(--text-light); font-size: 0.82rem; }
+
+        /* File upload zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafbfc;
+            position: relative;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.drag-over {
+            border-color: var(--primary-light);
+            background: #f0f5ff;
+        }
+
+        .upload-zone input[type="file"] {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-zone .upload-icon { font-size: 2rem; margin-bottom: 0.3rem; }
+        .upload-zone .upload-text { font-size: 0.9rem; color: var(--text-light); }
+        .upload-zone .upload-hint { font-size: 0.78rem; color: var(--text-light); margin-top: 0.2rem; }
+
+        .file-list { margin-top: 0.8rem; }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.8rem;
+            background: #f0f5ff;
+            border-radius: 6px;
+            margin-bottom: 0.4rem;
+            font-size: 0.85rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .file-item .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-item .file-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .file-item .file-size { color: var(--text-light); font-size: 0.78rem; white-space: nowrap; }
+
+        .file-item .file-remove {
+            background: none; border: none; cursor: pointer;
+            color: var(--danger); font-size: 1.1rem;
+            padding: 0 0.3rem;
+            flex-shrink: 0;
+        }
+
+        .file-item .file-remove:hover { color: #e53e3e; }
+
+        /* Send button */
+        .btn-send {
+            width: 100%;
+            padding: 0.85rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-send:hover { background: var(--primary-light); }
+        .btn-send:disabled { background: var(--border); cursor: not-allowed; }
+
+        .btn-send.sending {
+            background: var(--text-light);
+            pointer-events: none;
+        }
+
+        .btn-reset {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-reset:hover { background: var(--accent-hover); }
+
+        /* Success state */
+        .send-success {
+            background: #f0fff4;
+            border: 1px solid #c6f6d5;
+            color: #276749;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .send-success .icon { font-size: 2.5rem; margin-bottom: 0.3rem; }
+
+        /* Progress bar */
+        .progress-bar { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; }
+
+        .progress-dot {
+            height: 4px; flex: 1; border-radius: 2px;
+            background: var(--border); transition: background 0.3s;
+        }
+
+        .progress-dot.active { background: var(--primary); }
+        .progress-dot.done { background: var(--success); }
+
+        .summary { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+
+        .summary-chip {
+            background: #ebf4ff; color: var(--primary);
+            padding: 0.25rem 0.7rem; border-radius: 12px;
+            font-size: 0.78rem; font-weight: 600;
+        }
+
+        .summary-arrow {
+            color: var(--text-light); font-size: 0.78rem;
+            display: flex; align-items: center;
+        }
+
+        /* Prérequis / Checklist */
+        .prerequis-section {
+            background: #fffbeb;
+            border: 2px solid #f6ad55;
+            border-radius: 10px;
+            padding: 1.2rem 1.4rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .prerequis-section h4 {
+            font-size: 0.95rem;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .prerequis-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.55rem 0.7rem;
+            border-radius: 8px;
+            margin-bottom: 0.4rem;
+            transition: background 0.2s;
+        }
+
+        .prerequis-item:hover { background: rgba(255,255,255,0.6); }
+
+        .prerequis-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .prerequis-item label {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .prerequis-item .badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .badge-required {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .badge-optional {
+            background: #e9d8fd;
+            color: #6b46c1;
+        }
+
+        .prerequis-item.checked label {
+            text-decoration: line-through;
+            color: var(--text-light);
+        }
+
+        .prerequis-warning {
+            font-size: 0.78rem;
+            color: #c05621;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Bouton escalade (autonome → transversal) */
+        .escalade-section {
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px dashed var(--border);
+        }
+
+        .btn-escalade {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.2rem;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary-light);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-escalade:hover {
+            background: #ebf4ff;
+            border-color: var(--primary);
+        }
+
+        .escalade-note {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.82rem;
+            color: #c53030;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .escalade-note span { flex-shrink: 0; }
+
+        @media (max-width: 600px) {
+            .step-card { padding: 1.2rem; }
+            .result-card { padding: 1.2rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .transmission-form { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Filtre <span>Leads</span> Transversaux</h1>
+    <p>Avant de transférer un dossier, vérifiez s'il relève vraiment d'un service transversal — ou si vous pouvez le traiter vous-même</p>
+</div>
+
+<div class="container">
+
+    <div class="intro-card" id="introCard">
+        <h2>Comment ça marche ?</h2>
+        <p>Répondez à quelques questions sur le dossier que vous souhaitez transférer. L'outil vous indiquera :</p>
+        <ul>
+            <li><strong>Si le dossier doit effectivement passer au service transversal</strong> → formulaire de transmission direct</li>
+            <li><strong>Si vous pouvez le traiter vous-même</strong> → avec des pistes concrètes pour y arriver</li>
+        </ul>
+    </div>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="summary" id="summary"></div>
+
+    <div id="stepsContainer"></div>
+
+    <div class="result-card hidden" id="resultCard">
+        <div class="result-header">
+            <span class="result-icon" id="resultIcon"></span>
+            <span class="result-title" id="resultTitle"></span>
+        </div>
+        <div class="result-body" id="resultBody"></div>
+        <div id="transmissionFormContainer"></div>
+        <button class="btn-reset" onclick="resetWizard()">Nouveau dossier</button>
+    </div>
+
+</div>
+
+<script>
+// ============================================================
+// CONTACTS PAR SERVICE
+// ============================================================
+const CONTACTS = {
+    corporate: { name: "Thomas", email: "ife@dap.be", service: "Corporate" },
+    vie:       { name: "Romain", email: "ife@dap.be", service: "Vie / Patrimoine" },
+    nonmarchand: { name: "Sophie", email: "ife@dap.be", service: "Non-Marchand" },
+    flotte:    { name: "Kevin",  email: "ife@dap.be",  service: "Flotte" }
+};
+
+// Questions spécifiques par service (affichées dans le formulaire de transmission)
+const SERVICE_FIELDS = {
+    corporate: [
+        { id: "activite", label: "Activité de l'entreprise", type: "text", placeholder: "Ex : construction métallique, transport, horeca…", required: true },
+        { id: "ca", label: "Chiffre d'affaires estimé", type: "text", placeholder: "Ex : 3,2M€", required: true },
+        { id: "effectif", label: "Nombre de travailleurs", type: "text", placeholder: "Ex : 45", required: false },
+        { id: "garanties", label: "Garanties souhaitées", type: "textarea", placeholder: "RC exploitation, incendie, pertes d'exploitation, RC professionnelle…", required: true }
+    ],
+    vie: [
+        { id: "type_produit", label: "Type de produit concerné", type: "select", options: ["Succession / Planification patrimoniale", "EIP / PLCI", "Branche 21", "Branche 23", "Assurance décès", "Autre"], required: true },
+        { id: "montant", label: "Montant ou prime estimé(e)", type: "text", placeholder: "Ex : 50.000€ ou prime annuelle de 2.500€", required: false },
+        { id: "situation", label: "Situation familiale et patrimoniale", type: "textarea", placeholder: "Décrivez brièvement la situation du client (marié/cohabitant, enfants, patrimoine existant…)", required: true }
+    ],
+    nonmarchand: [
+        { id: "type_structure", label: "Type de structure", type: "select", options: ["ASBL", "Administration publique", "Ecole / Université", "Hôpital / Maison de repos", "Autre"], required: true },
+        { id: "effectif", label: "Effectif (personnel + bénévoles)", type: "text", placeholder: "Ex : 120 salariés + 30 bénévoles", required: true },
+        { id: "garanties", label: "Garanties nécessaires", type: "textarea", placeholder: "RC, incendie, accidents du travail, auto mission, hospitalisation…", required: true }
+    ],
+    flotte: [
+        { id: "nb_vehicules", label: "Nombre de véhicules", type: "text", placeholder: "Ex : 23", required: true },
+        { id: "types_vehicules", label: "Types de véhicules", type: "textarea", placeholder: "Ex : 10 VL, 8 utilitaires, 5 camions > 3,5T", required: true },
+        { id: "sinistralite", label: "Sinistralité (3 dernières années)", type: "textarea", placeholder: "Nombre de sinistres, montants, types…", required: false }
+    ]
+};
+
+const WEBHOOK_TRANSMISSION = 'https://n8n.srv1387885.hstgr.cloud/webhook/filtre-leads-transmission';
+
+// ============================================================
+// ARBRE DE DÉCISION
+// ============================================================
+
+const TREE = {
+    start: {
+        question: "Quel type de dossier souhaitez-vous transférer ?",
+        options: [
+            { label: "Corporate / Entreprise", icon: "🏢", desc: "Dossier entreprise, RC exploitation, incendie industriel…", next: "corporate_check" },
+            { label: "Vie / Patrimoine", icon: "💰", desc: "Épargne, investissement, pension, succession…", next: "vie_check" },
+            { label: "Non-Marchand", icon: "🤝", desc: "ASBL, écoles, administrations publiques, hôpitaux…", next: "nonmarchand_check" },
+            { label: "Flotte véhicules", icon: "🚗", desc: "Parc automobile, flotte entreprise (>= 5 véhicules)…", next: "flotte_check" },
+            { label: "Autre / Je ne sais pas", icon: "❓", desc: "Je ne sais pas dans quelle catégorie classer ce dossier", next: "autre_triage" }
+        ]
+    },
+
+    // ─── CORPORATE ───
+    corporate_check: {
+        question: "Avez-vous d'abord cherché une solution avec les outils classiques ?",
+        options: [
+            { label: "Oui, j'ai vérifié dans Brio et contacté les compagnies", icon: "✅", next: "corporate_complexity" },
+            {
+                label: "Non, pas encore", icon: "⏳",
+                result: {
+                    type: "autonome", title: "Essayez d'abord en autonomie",
+                    body: `<p>Avant de transférer au service Corporate, vérifiez ces pistes :</p>
+                        <div class="tips-box"><h3>Checklist à parcourir</h3><ul>
+                            <li>Chercher le client et son historique dans <strong>Brio</strong></li>
+                            <li>Consulter les conditions de la compagnie actuelle (tarif, garanties)</li>
+                            <li>Contacter l'inspecteur de la compagnie pour un avis technique</li>
+                            <li>Vérifier s'il existe un produit standard adapté</li>
+                            <li>Demander l'avis d'un collègue expérimenté de votre bureau</li>
+                        </ul></div>
+                        <p style="margin-top:0.8rem;">Si après ces vérifications le dossier reste complexe, relancez le filtre.</p>`
+                }
+            }
+        ]
+    },
+    corporate_complexity: {
+        question: "Quelle est la complexité du dossier ?",
+        options: [
+            {
+                label: "CA > 2,5M€ ou activité industrielle/spéciale", icon: "🏭",
+                result: { type: "transversal", service: "corporate", title: "Transfert Corporate justifié",
+                    body: `<p>Ce type de dossier nécessite l'expertise du service Corporate.</p>` }
+            },
+            {
+                label: "PME classique, pas d'activité particulière", icon: "🏪",
+                result: { type: "autonome", title: "Vous pouvez traiter ce dossier",
+                    body: `<p>Pour une PME classique, les compagnies partenaires offrent des solutions adaptées.</p>
+                        <div class="tips-box"><h3>Pistes de traitement</h3><ul>
+                            <li>Utilisez les <strong>packs PME/Commerçant</strong> des compagnies partenaires</li>
+                            <li>Comparez via les tarificateurs habituels (RC exploitation + incendie)</li>
+                            <li>Contactez l'inspecteur de la compagnie pour valider l'activité</li>
+                            <li>Demandez conseil à un collègue qui gère un dossier similaire</li>
+                        </ul></div>` }
+            },
+            { label: "Je ne suis pas sûr(e) de la complexité", icon: "🤔", next: "corporate_doute" }
+        ]
+    },
+    corporate_doute: {
+        question: "Le client a-t-il des spécificités particulières ?",
+        options: [
+            {
+                label: "Oui : multisite, activité réglementée, sinistralité élevée, international…", icon: "⚠️",
+                result: { type: "transversal", service: "corporate", title: "Transfert Corporate recommandé",
+                    body: `<p>Les spécificités identifiées justifient un accompagnement Corporate.</p>` }
+            },
+            {
+                label: "Non, pas de spécificité particulière", icon: "👌",
+                result: { type: "autonome", title: "Vous pouvez traiter ce dossier",
+                    body: `<p>Sans spécificité majeure, ce dossier peut être géré avec les outils classiques.</p>
+                        <div class="tips-box"><h3>Conseil</h3><ul>
+                            <li>Traitez-le comme un dossier standard via les compagnies partenaires</li>
+                            <li>N'hésitez pas à appeler l'inspecteur si vous avez un doute technique</li>
+                        </ul></div>` }
+            }
+        ]
+    },
+
+    // ─── VIE / PATRIMOINE ───
+    vie_check: {
+        question: "Avez-vous déjà consulté les informations produit de la compagnie ?",
+        options: [
+            { label: "Oui, et le dossier dépasse mon niveau de compétence", icon: "✅", next: "vie_type" },
+            {
+                label: "Non, pas encore", icon: "⏳",
+                result: { type: "autonome", title: "Consultez d'abord la documentation",
+                    body: `<p>Avant de transférer au service Patrimoine, explorez ces ressources :</p>
+                        <div class="tips-box"><h3>Checklist</h3><ul>
+                            <li>Consultez les <strong>fiches produit</strong> (AG, Vivium, Baloise, Ethias, Allianz)</li>
+                            <li>Vérifiez les <strong>simulateurs en ligne</strong> des compagnies</li>
+                            <li>Relisez les <strong>guides internes</strong> DAP sur les produits Vie</li>
+                            <li>Demandez à un collègue ayant de l'expérience Vie/Patrimoine</li>
+                        </ul></div>` }
+            }
+        ]
+    },
+    vie_type: {
+        question: "De quel type de dossier s'agit-il ?",
+        options: [
+            {
+                label: "Succession / Planification patrimoniale complexe", icon: "📋",
+                result: { type: "transversal", service: "vie", title: "Transfert Patrimoine justifié",
+                    body: `<p>La planification successorale et patrimoniale complexe nécessite l'expertise du service dédié.</p>` }
+            },
+            {
+                label: "Épargne / Investissement branche 21 ou 23 classique", icon: "🏦",
+                result: { type: "autonome", title: "Vous pouvez traiter ce dossier",
+                    body: `<p>Les produits d'épargne et investissement classiques font partie de la palette de base du gestionnaire.</p>
+                        <div class="tips-box"><h3>Pistes</h3><ul>
+                            <li>Utilisez les <strong>simulateurs des compagnies</strong></li>
+                            <li>Vérifiez les <strong>avantages fiscaux</strong> applicables (épargne pension, PLCI, EIP…)</li>
+                            <li>Contactez l'inspecteur Vie de la compagnie pour un cas précis</li>
+                        </ul></div>` }
+            },
+            { label: "Pension complémentaire dirigeant (EIP / PLCI)", icon: "👔", next: "vie_pension" }
+        ]
+    },
+    vie_pension: {
+        question: "Connaissez-vous la règle des 80% et avez-vous accès aux éléments fiscaux ?",
+        options: [
+            {
+                label: "Non, je ne maîtrise pas la règle des 80%", icon: "❌",
+                result: { type: "transversal", service: "vie", title: "Transfert Patrimoine recommandé",
+                    body: `<p>La règle des 80% et les aspects fiscaux de l'EIP/PLCI demandent une expertise spécifique.</p>
+                        <p style="margin-top:0.5rem;"><strong>Conseil :</strong> Profitez-en pour demander une explication de la règle des 80% — c'est une compétence très utile à acquérir !</p>` }
+            },
+            {
+                label: "Oui, je connais la règle et j'ai les éléments", icon: "✅",
+                result: { type: "autonome", title: "Vous avez les compétences pour ce dossier",
+                    body: `<p>Si vous maîtrisez la règle des 80% et avez les éléments fiscaux, vous pouvez faire la simulation.</p>
+                        <div class="tips-box"><h3>Rappel</h3><ul>
+                            <li>Utilisez le <strong>simulateur EIP/PLCI</strong> de la compagnie</li>
+                            <li>Vérifiez les plafonds légaux en vigueur</li>
+                            <li>En cas de doute ponctuel, un appel rapide à la compagnie suffit souvent</li>
+                        </ul></div>` }
+            }
+        ]
+    },
+
+    // ─── NON-MARCHAND ───
+    nonmarchand_check: {
+        question: "Avez-vous vérifié si un produit standard couvre le besoin ?",
+        options: [
+            { label: "Oui, aucun produit standard ne convient", icon: "✅", next: "nonmarchand_type" },
+            {
+                label: "Non, je n'ai pas encore vérifié", icon: "⏳",
+                result: { type: "autonome", title: "Vérifiez d'abord les produits standards",
+                    body: `<p>Beaucoup de structures non-marchandes peuvent être couvertes par des produits classiques.</p>
+                        <div class="tips-box"><h3>Checklist</h3><ul>
+                            <li>Vérifiez les <strong>packs ASBL</strong> des compagnies partenaires</li>
+                            <li>Consultez les conditions pour <strong>administrations publiques</strong></li>
+                            <li>Demandez à un collègue s'il a déjà traité un dossier similaire</li>
+                            <li>Appelez l'inspecteur pour vérifier l'acceptation du risque</li>
+                        </ul></div>` }
+            }
+        ]
+    },
+    nonmarchand_type: {
+        question: "De quel type de structure s'agit-il ?",
+        options: [
+            {
+                label: "Grande ASBL, hôpital, école, administration (> 50 personnes)", icon: "🏛️",
+                result: { type: "transversal", service: "nonmarchand", title: "Transfert Non-Marchand justifié",
+                    body: `<p>Les grandes structures non-marchandes nécessitent souvent des solutions sur mesure.</p>` }
+            },
+            {
+                label: "Petite ASBL, comité de quartier, petit club sportif", icon: "⚽",
+                result: { type: "autonome", title: "Vous pouvez traiter ce dossier",
+                    body: `<p>Les petites structures non-marchandes sont souvent couvrables avec les produits standards.</p>
+                        <div class="tips-box"><h3>Pistes</h3><ul>
+                            <li>Utilisez les <strong>packs ASBL</strong> des compagnies (Ethias, AG, Baloise…)</li>
+                            <li>Les polices RC association + incendie local couvrent la majorité des cas</li>
+                            <li>Vérifiez si la commune ne propose pas déjà une couverture</li>
+                        </ul></div>` }
+            }
+        ]
+    },
+
+    // ─── FLOTTE ───
+    flotte_check: {
+        question: "Combien de véhicules compte la flotte ?",
+        options: [
+            {
+                label: "Moins de 5 véhicules", icon: "🚙",
+                result: { type: "autonome", title: "Ce n'est pas un dossier Flotte",
+                    body: `<p>En dessous de 5 véhicules, il ne s'agit pas d'une flotte au sens technique.</p>
+                        <div class="tips-box"><h3>Traitement</h3><ul>
+                            <li>Traitez chaque véhicule individuellement avec les tarificateurs auto classiques</li>
+                            <li>Négociez une <strong>remise commerciale</strong> groupée avec la compagnie</li>
+                            <li>Regroupez les échéances pour faciliter la gestion</li>
+                        </ul></div>` }
+            },
+            { label: "5 à 15 véhicules", icon: "🚐", next: "flotte_medium" },
+            {
+                label: "Plus de 15 véhicules", icon: "🚛",
+                result: { type: "transversal", service: "flotte", title: "Transfert Flotte justifié",
+                    body: `<p>Une flotte de cette taille nécessite une gestion spécialisée et des conditions négociées.</p>` }
+            }
+        ]
+    },
+    flotte_medium: {
+        question: "Avez-vous déjà contacté la compagnie pour une offre flotte ?",
+        options: [
+            {
+                label: "Oui, mais la compagnie ne propose pas de solution adaptée", icon: "❌",
+                result: { type: "transversal", service: "flotte", title: "Transfert Flotte recommandé",
+                    body: `<p>Si les compagnies classiques ne couvrent pas le besoin, le service Flotte a accès à des solutions dédiées.</p>` }
+            },
+            {
+                label: "Non, pas encore", icon: "⏳",
+                result: { type: "autonome", title: "Contactez d'abord les compagnies",
+                    body: `<p>Pour 5 à 15 véhicules, plusieurs compagnies proposent des contrats flotte directement.</p>
+                        <div class="tips-box"><h3>Actions à entreprendre</h3><ul>
+                            <li>Contactez les inspecteurs de <strong>2-3 compagnies partenaires</strong></li>
+                            <li>Demandez une <strong>offre flotte</strong> avec la liste complète des véhicules</li>
+                            <li>Comparez les conditions (franchise, bonus-malus flotte, assistance)</li>
+                            <li>Si aucune offre ne convient, relancez le filtre</li>
+                        </ul></div>` }
+            }
+        ]
+    },
+
+    // ─── AUTRE ───
+    autre_triage: {
+        question: "Pouvez-vous préciser la nature du dossier ?",
+        options: [
+            {
+                label: "Dossier technique complexe (risque spécial, exclusion, litige)", icon: "⚖️",
+                result: { type: "transversal", service: null, title: "Contactez votre responsable de bureau",
+                    body: `<p>Pour un dossier atypique, commencez par en discuter avec votre responsable de bureau qui pourra vous orienter.</p>
+                        <div class="contact-box"><h3>Marche à suivre</h3><ul>
+                            <li>Résumez le problème et ce que vous avez déjà tenté</li>
+                            <li>Votre responsable déterminera le bon interlocuteur</li>
+                            <li>Si le service transversal est confirmé, préparez un dossier complet</li>
+                        </ul></div>` }
+            },
+            {
+                label: "Question de procédure ou d'outil interne", icon: "📖",
+                result: { type: "autonome", title: "Ce n'est pas un dossier transversal",
+                    body: `<p>Les questions de procédure ne relèvent pas des services transversaux.</p>
+                        <div class="tips-box"><h3>Ressources</h3><ul>
+                            <li>Consultez la <strong>documentation interne</strong></li>
+                            <li>Posez la question dans le <strong>groupe Teams</strong></li>
+                            <li>Contactez le <strong>helpdesk IT</strong></li>
+                            <li>Parlez-en à votre <strong>responsable de bureau</strong></li>
+                        </ul></div>` }
+            },
+            {
+                label: "Client professionnel nécessitant un produit sur mesure", icon: "🎯",
+                result: { type: "transversal", service: null, title: "Transfert justifié — identifiez la cellule",
+                    body: `<p>Un produit sur mesure nécessite l'intervention d'un service spécialisé.</p>
+                        <div class="contact-box"><h3>Quelle cellule contacter ?</h3><ul>
+                            <li><strong>Corporate (Thomas)</strong> — RC, incendie, pertes d'exploitation</li>
+                            <li><strong>Patrimoine (Romain)</strong> — épargne, investissement, pension</li>
+                            <li><strong>Non-Marchand (Sophie)</strong> — ASBL, administration, école, hôpital</li>
+                            <li><strong>Flotte (Kevin)</strong> — parc de véhicules</li>
+                        </ul><p style="margin-top:0.5rem;">Identifiez la bonne cellule et relancez le filtre pour transmettre.</p></div>` }
+            }
+        ]
+    }
+};
+
+// ============================================================
+// STATE
+// ============================================================
+
+let currentNode = 'start';
+let history = [];
+let uploadedFiles = [];
+let currentResult = null;
+let escaladeMode = false; // true si l'utilisateur passe d'autonome → transversal
+
+// ============================================================
+// WIZARD LOGIC
+// ============================================================
+
+function init() {
+    renderStep(TREE.start, 'start');
+    updateProgress();
+}
+
+function renderStep(node, nodeId) {
+    const container = document.getElementById('stepsContainer');
+    container.innerHTML = '';
+    renderSummary();
+
+    const stepNum = history.length + 1;
+    const card = document.createElement('div');
+    card.className = 'step-card';
+
+    let html = `<div class="step-header">
+            <div class="step-number">${stepNum}</div>
+            <div class="step-question">${node.question}</div>
+        </div><div class="options">`;
+
+    node.options.forEach((opt, idx) => {
+        html += `<button class="option-btn" onclick="selectOption('${nodeId}', ${idx})">
+                <span class="option-icon">${opt.icon}</span>
+                <div class="option-content">
+                    <span class="option-label">${opt.label}</span>
+                    ${opt.desc ? '<span class="option-desc">' + opt.desc + '</span>' : ''}
+                </div>
+            </button>`;
+    });
+
+    html += '</div>';
+    card.innerHTML = html;
+    container.appendChild(card);
+}
+
+function selectOption(nodeId, optionIndex) {
+    const node = TREE[nodeId];
+    const option = node.options[optionIndex];
+    history.push({ nodeId, choiceLabel: option.label, choiceIcon: option.icon });
+
+    if (option.result) {
+        currentResult = option.result;
+        showResult(option.result);
+    } else if (option.next) {
+        currentNode = option.next;
+        renderStep(TREE[option.next], option.next);
+        updateProgress();
+    }
+}
+
+function showResult(result) {
+    const container = document.getElementById('stepsContainer');
+    container.innerHTML = '';
+    renderSummary();
+
+    const resultCard = document.getElementById('resultCard');
+    resultCard.classList.remove('hidden', 'result-transversal', 'result-autonome');
+    resultCard.classList.add(result.type === 'transversal' ? 'result-transversal' : 'result-autonome');
+
+    document.getElementById('resultIcon').textContent = result.type === 'transversal' ? '📨' : '💪';
+    document.getElementById('resultTitle').textContent = result.title;
+    document.getElementById('resultBody').innerHTML = result.body;
+
+    const formContainer = document.getElementById('transmissionFormContainer');
+
+    if (result.type === 'transversal' && result.service && CONTACTS[result.service]) {
+        escaladeMode = false;
+        formContainer.innerHTML = buildTransmissionForm(result.service);
+        setupUploadZone();
+        setupChecklistValidation();
+    } else if (result.type === 'autonome') {
+        // Déterminer le service depuis le parcours (1er choix = branche service)
+        const serviceKey = getServiceFromHistory();
+        if (serviceKey && CONTACTS[serviceKey]) {
+            formContainer.innerHTML = `
+                <div class="escalade-section">
+                    <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:0.6rem;">
+                        Vous avez parcouru les pistes ci-dessus et ça ne suffit toujours pas ?
+                    </p>
+                    <button class="btn-escalade" onclick="showEscaladeForm('${serviceKey}')">
+                        🆘 J'ai quand même besoin d'aide — transmettre à ${CONTACTS[serviceKey].name}
+                    </button>
+                </div>
+                <div id="escaladeFormZone"></div>`;
+        } else {
+            formContainer.innerHTML = '';
+        }
+    } else {
+        formContainer.innerHTML = '';
+    }
+
+    updateProgress(true);
+    // Scroll vers le formulaire si présent, sinon vers le résultat
+    setTimeout(() => {
+        const form = document.getElementById('transmissionForm');
+        if (form) {
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, 100);
+}
+
+// ============================================================
+// TRANSMISSION FORM
+// ============================================================
+
+// Déterminer le service depuis le parcours utilisateur
+function getServiceFromHistory() {
+    if (history.length === 0) return null;
+    const first = history[0].choiceLabel;
+    if (first.includes('Corporate')) return 'corporate';
+    if (first.includes('Vie')) return 'vie';
+    if (first.includes('Non-Marchand')) return 'nonmarchand';
+    if (first.includes('Flotte')) return 'flotte';
+    return null;
+}
+
+// Afficher le formulaire d'escalade (autonome → transversal)
+function showEscaladeForm(serviceKey) {
+    escaladeMode = true;
+    const zone = document.getElementById('escaladeFormZone');
+    zone.innerHTML = buildTransmissionForm(serviceKey);
+    setupUploadZone();
+    setupChecklistValidation();
+    setTimeout(() => {
+        document.getElementById('transmissionForm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+}
+
+// Validation de la checklist prérequis
+function setupChecklistValidation() {
+    const checks = document.querySelectorAll('.prerequis-item input[type="checkbox"]');
+    checks.forEach(cb => {
+        cb.addEventListener('change', () => {
+            // Toggle style barré
+            cb.closest('.prerequis-item').classList.toggle('checked', cb.checked);
+            updateSendButton();
+        });
+    });
+    updateSendButton();
+}
+
+function updateSendButton() {
+    const btn = document.getElementById('btnSend');
+    if (!btn) return;
+    const check1 = document.getElementById('check_recherche');
+    const check2 = document.getElementById('check_collegue');
+    const allMandatoryChecked = check1?.checked && check2?.checked;
+    btn.disabled = !allMandatoryChecked;
+
+    const warning = document.getElementById('prerequisWarning');
+    if (warning) warning.style.display = allMandatoryChecked ? 'none' : 'flex';
+}
+
+function buildTransmissionForm(serviceKey) {
+    const contact = CONTACTS[serviceKey];
+    const fields = SERVICE_FIELDS[serviceKey] || [];
+    uploadedFiles = [];
+
+    let html = `<div class="transmission-form" id="transmissionForm">
+        <h3>${escaladeMode ? '🆘 Demande d\'aide — ' : '📨 '}Transmettre le dossier à ${contact.name}</h3>`;
+
+    // Note d'escalade si passage autonome → transversal
+    if (escaladeMode) {
+        html += `<div class="escalade-note">
+            <span>⚠️</span>
+            <div>L'outil a estimé que ce dossier pouvait être traité en autonomie.
+            Si vous transmettez quand même, le point de contact verra que vous avez d'abord tenté de résoudre le problème —
+            <strong>c'est une bonne démarche</strong>.</div>
+        </div>`;
+    }
+
+    // Checklist prérequis
+    html += `<div class="prerequis-section">
+        <h4>✅ Avant de transmettre</h4>
+        <div class="prerequis-item">
+            <input type="checkbox" id="check_recherche">
+            <label for="check_recherche">J'ai cherché par moi-même (Brio, documentation, tarificateurs, fiches produit…)</label>
+            <span class="badge badge-required">Obligatoire</span>
+        </div>
+        <div class="prerequis-item">
+            <input type="checkbox" id="check_collegue">
+            <label for="check_collegue">J'ai demandé l'avis d'un collègue du bureau</label>
+            <span class="badge badge-required">Obligatoire</span>
+        </div>
+        <div class="prerequis-item">
+            <input type="checkbox" id="check_inspecteur">
+            <label for="check_inspecteur">J'ai contacté l'inspecteur / la compagnie</label>
+            <span class="badge badge-optional">Optionnel</span>
+        </div>
+        <p class="prerequis-warning" id="prerequisWarning">⚠️ Cochez les prérequis obligatoires pour pouvoir envoyer</p>
+    </div>`;
+
+    html += `<div class="contact-badge">
+            <span>👤</span>
+            <span class="name">${contact.name}</span>
+            <span>—</span>
+            <span class="email">${contact.email}</span>
+            <span>—</span>
+            <span>${contact.service}</span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="tf_gestionnaire">Votre nom *</label>
+                <input type="text" id="tf_gestionnaire" placeholder="Ex : Sophie M." required>
+            </div>
+            <div class="form-group">
+                <label for="tf_email_gest">Votre email *</label>
+                <input type="email" id="tf_email_gest" placeholder="Ex : sophie@dap.be" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="tf_bureau">Votre bureau *</label>
+                <input type="text" id="tf_bureau" placeholder="Ex : Uccle, Namur…" required>
+            </div>
+            <div class="form-group">
+                <label for="tf_telephone">Votre téléphone</label>
+                <input type="tel" id="tf_telephone" placeholder="Ex : 02 123 45 67">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="tf_client">Nom du client *</label>
+                <input type="text" id="tf_client" placeholder="Ex : Dupont SA" required>
+            </div>
+            <div class="form-group">
+                <label for="tf_ref_brio">Référence Brio</label>
+                <input type="text" id="tf_ref_brio" placeholder="Si disponible">
+            </div>
+        </div>`;
+
+    // Dynamic fields for this service
+    fields.forEach(f => {
+        html += '<div class="form-group">';
+        html += `<label for="tf_${f.id}">${f.label}${f.required ? ' *' : ''}</label>`;
+
+        if (f.type === 'textarea') {
+            html += `<textarea id="tf_${f.id}" placeholder="${f.placeholder || ''}" ${f.required ? 'required' : ''}></textarea>`;
+        } else if (f.type === 'select') {
+            html += `<select id="tf_${f.id}" ${f.required ? 'required' : ''}>
+                <option value="">Choisir…</option>
+                ${f.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+            </select>`;
+        } else {
+            html += `<input type="${f.type}" id="tf_${f.id}" placeholder="${f.placeholder || ''}" ${f.required ? 'required' : ''}>`;
+        }
+
+        html += '</div>';
+    });
+
+    // Description / résumé libre
+    html += `<div class="form-group">
+            <label for="tf_resume">Résumé de la demande / contexte *</label>
+            <textarea id="tf_resume" placeholder="Décrivez la situation, ce que vous avez déjà tenté, et pourquoi vous transférez ce dossier…" required style="min-height:100px;"></textarea>
+        </div>`;
+
+    // File upload
+    html += `<div class="form-group">
+            <label>Documents à joindre (PDF, images)</label>
+            <div class="upload-zone" id="uploadZone">
+                <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" style="display:none;">
+                <div class="upload-icon">📎</div>
+                <div class="upload-text">Glissez vos fichiers ici ou cliquez pour parcourir</div>
+                <div class="upload-hint">PDF, images, Word, Excel — max 10 Mo par fichier</div>
+            </div>
+            <div class="file-list" id="fileList"></div>
+        </div>`;
+
+    // Send button
+    html += `<button class="btn-send" id="btnSend" onclick="sendTransmission('${serviceKey}')">
+            Envoyer le dossier à ${contact.name}
+        </button>
+
+        <div class="send-success hidden" id="sendSuccess">
+            <div class="icon">✅</div>
+            <p><strong>Dossier transmis avec succès !</strong></p>
+            <p style="margin-top:0.3rem;">${contact.name} recevra votre dossier par email avec tous les documents joints.</p>
+        </div>
+    </div>`;
+
+    return html;
+}
+
+function setupUploadZone() {
+    const zone = document.getElementById('uploadZone');
+    const input = document.getElementById('fileInput');
+    if (!zone || !input) return;
+
+    // Click sur la zone ouvre le sélecteur de fichiers
+    zone.addEventListener('click', () => input.click());
+
+    // Drag & drop
+    zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        handleFiles(e.dataTransfer.files);
+    });
+
+    // Sélection fichiers
+    input.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+        input.value = ''; // reset pour pouvoir re-sélectionner le même fichier
+    });
+}
+
+function handleFiles(fileList) {
+    const maxSize = 10 * 1024 * 1024; // 10 Mo
+
+    for (const file of fileList) {
+        if (file.size > maxSize) {
+            alert(`Le fichier "${file.name}" dépasse 10 Mo et ne sera pas ajouté.`);
+            continue;
+        }
+        if (uploadedFiles.find(f => f.name === file.name)) continue; // skip duplicates
+        uploadedFiles.push(file);
+    }
+
+    renderFileList();
+}
+
+function renderFileList() {
+    const list = document.getElementById('fileList');
+    if (!list) return;
+
+    if (uploadedFiles.length === 0) {
+        list.innerHTML = '';
+        return;
+    }
+
+    list.innerHTML = uploadedFiles.map((f, i) => {
+        const size = f.size < 1024 ? f.size + ' o'
+            : f.size < 1024 * 1024 ? (f.size / 1024).toFixed(0) + ' Ko'
+            : (f.size / (1024 * 1024)).toFixed(1) + ' Mo';
+        const icon = f.name.endsWith('.pdf') ? '📄' : f.name.match(/\.(jpg|jpeg|png|gif)$/i) ? '🖼️' : '📎';
+
+        return `<div class="file-item">
+            <div class="file-info">
+                <span>${icon}</span>
+                <span class="file-name">${f.name}</span>
+                <span class="file-size">(${size})</span>
+            </div>
+            <button class="file-remove" onclick="removeFile(${i})" title="Retirer">✕</button>
+        </div>`;
+    }).join('');
+}
+
+function removeFile(index) {
+    uploadedFiles.splice(index, 1);
+    renderFileList();
+}
+
+// Convertir un fichier en base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]); // retirer le prefix data:...;base64,
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+async function sendTransmission(serviceKey) {
+    const contact = CONTACTS[serviceKey];
+    const fields = SERVICE_FIELDS[serviceKey] || [];
+    const btn = document.getElementById('btnSend');
+
+    // Validate required fields
+    const gestionnaire = document.getElementById('tf_gestionnaire')?.value.trim();
+    const email_gest = document.getElementById('tf_email_gest')?.value.trim();
+    const bureau = document.getElementById('tf_bureau')?.value.trim();
+    const client = document.getElementById('tf_client')?.value.trim();
+    const resume = document.getElementById('tf_resume')?.value.trim();
+
+    if (!gestionnaire || !email_gest || !bureau || !client || !resume) {
+        alert('Veuillez remplir tous les champs obligatoires (*).');
+        return;
+    }
+
+    for (const f of fields) {
+        if (f.required) {
+            const val = document.getElementById('tf_' + f.id)?.value.trim();
+            if (!val) {
+                alert('Veuillez remplir le champ "' + f.label + '".');
+                return;
+            }
+        }
+    }
+
+    btn.classList.add('sending');
+    btn.innerHTML = '⏳ Envoi en cours…';
+
+    try {
+        // Convertir les fichiers en base64
+        const fichiers = [];
+        for (const file of uploadedFiles) {
+            const base64 = await fileToBase64(file);
+            fichiers.push({
+                name: file.name,
+                type: file.type || 'application/octet-stream',
+                size: file.size,
+                data: base64
+            });
+        }
+
+        const payload = {
+            date: new Date().toISOString(),
+            service: serviceKey,
+            contact_name: contact.name,
+            contact_email: contact.email,
+            gestionnaire,
+            email_gestionnaire: email_gest,
+            telephone: document.getElementById('tf_telephone')?.value.trim() || '',
+            bureau,
+            client,
+            ref_brio: document.getElementById('tf_ref_brio')?.value.trim() || '',
+            resume,
+            parcours: history.map(h => h.choiceLabel).join(' → '),
+            escalade: escaladeMode,
+            checklist: {
+                recherche_perso: document.getElementById('check_recherche')?.checked || false,
+                avis_collegue: document.getElementById('check_collegue')?.checked || false,
+                contact_inspecteur: document.getElementById('check_inspecteur')?.checked || false
+            },
+            champs_specifiques: {},
+            fichiers
+        };
+
+        fields.forEach(f => {
+            payload.champs_specifiques[f.id] = document.getElementById('tf_' + f.id)?.value.trim() || '';
+        });
+
+        await fetch(WEBHOOK_TRANSMISSION, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        btn.style.display = 'none';
+        document.getElementById('sendSuccess').classList.remove('hidden');
+
+    } catch (err) {
+        btn.classList.remove('sending');
+        btn.innerHTML = 'Envoyer le dossier à ' + contact.name;
+        alert('Erreur lors de l\'envoi. Veuillez réessayer ou contacter directement ' + contact.name + ' à ' + contact.email);
+    }
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+
+function renderSummary() {
+    const summary = document.getElementById('summary');
+    if (history.length === 0) { summary.innerHTML = ''; return; }
+    summary.innerHTML = history.map((h, i) => {
+        let html = `<span class="summary-chip">${h.choiceIcon} ${h.choiceLabel}</span>`;
+        if (i < history.length - 1) html += '<span class="summary-arrow">→</span>';
+        return html;
+    }).join('');
+}
+
+function updateProgress(done = false) {
+    const maxSteps = 4;
+    const bar = document.getElementById('progressBar');
+    const total = Math.max(maxSteps, history.length + 1);
+    let html = '';
+    for (let i = 0; i < total; i++) {
+        if (done) html += '<div class="progress-dot done"></div>';
+        else if (i < history.length) html += '<div class="progress-dot done"></div>';
+        else if (i === history.length) html += '<div class="progress-dot active"></div>';
+        else html += '<div class="progress-dot"></div>';
+    }
+    bar.innerHTML = html;
+}
+
+function resetWizard() {
+    currentNode = 'start';
+    history = [];
+    uploadedFiles = [];
+    currentResult = null;
+    escaladeMode = false;
+    document.getElementById('resultCard').classList.add('hidden');
+    document.getElementById('transmissionFormContainer').innerHTML = '';
+    document.getElementById('summary').innerHTML = '';
+    renderStep(TREE.start, 'start');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Start
+init();
+</script>
+
+</body>
+</html>

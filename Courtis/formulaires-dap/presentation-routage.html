@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAP — Formulaires de demande d'offre en ligne</title>
+<style>
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: #f4f6f9;
+    color: #1a1a2e;
+    line-height: 1.6;
+  }
+
+  :root {
+    --navy:   #1a1a2e;
+    --blue:   #0f3460;
+    --gold:   #e8b84b;
+    --gold-l: #fdf3d7;
+    --green:  #10b981;
+    --border: #e2e8f0;
+    --grey:   #f4f6f9;
+    --text-s: #6b7280;
+  }
+
+  .page {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 28px 80px;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    background: linear-gradient(140deg, #1a1a2e 0%, #0f3460 60%, #16213e 100%);
+    color: white;
+    padding: 72px 48px 60px;
+    margin-bottom: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 420px; height: 420px;
+    background: rgba(232,184,75,0.07);
+    border-radius: 50%;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 30%;
+    width: 280px; height: 280px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 50%;
+  }
+  .cover-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,184,75,0.15);
+    border: 1px solid rgba(232,184,75,0.35);
+    color: var(--gold);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+  .cover h1 {
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1.12;
+    margin-bottom: 18px;
+    position: relative; z-index: 1;
+    max-width: 620px;
+  }
+  .cover h1 em { color: var(--gold); font-style: normal; }
+  .cover-desc {
+    font-size: 16px;
+    color: rgba(255,255,255,0.6);
+    max-width: 540px;
+    line-height: 1.7;
+    position: relative; z-index: 1;
+    margin-bottom: 44px;
+  }
+  .cover-pills {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative; z-index: 1;
+  }
+  .cover-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.85);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 10px;
+  }
+  .cover-pill-icon { font-size: 18px; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 64px; }
+  .section-header { margin-bottom: 32px; }
+  .section-num-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+  .section-badge {
+    width: 34px; height: 34px;
+    background: var(--navy);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800;
+    flex-shrink: 0;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-s);
+  }
+  .section-title {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  .section-sub {
+    font-size: 15px;
+    color: var(--text-s);
+  }
+
+  /* ── PROBLEM / SOLUTION ── */
+  .prob-sol {
+    display: grid;
+    grid-template-columns: 1fr 60px 1fr;
+    gap: 0;
+    align-items: start;
+    margin-bottom: 28px;
+  }
+  .prob-col {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(26,26,46,0.05);
+  }
+  .prob-col-header {
+    padding: 16px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .prob-col-header.red   { background: #fef2f2; color: #b91c1c; border-bottom: 2px solid #fecaca; }
+  .prob-col-header.green { background: #dcfce7; color: #15803d; border-bottom: 2px solid #86efac; }
+  .prob-col-body { padding: 20px; }
+  .prob-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .prob-item:last-child { margin-bottom: 0; }
+  .prob-item-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+  .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--gold);
+    padding-top: 60px;
+  }
+
+  /* ── FORM CARDS ── */
+  .forms-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+  .form-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(26,26,46,0.05);
+  }
+  .form-card-top {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .form-card-top.auto  { border-top: 4px solid #3b82f6; }
+  .form-card-top.hab   { border-top: 4px solid #f59e0b; }
+  .form-card-top.copro { border-top: 4px solid #8b5cf6; }
+  .form-card-top.rc    { border-top: 4px solid #ef4444; }
+  .form-card-icon { font-size: 26px; margin-bottom: 10px; }
+  .form-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .form-card p  { font-size: 13px; color: var(--text-s); line-height: 1.55; }
+  .form-card-footer {
+    padding: 12px 20px;
+    font-size: 12px;
+    color: var(--text-s);
+    display: flex;
+    justify-content: space-between;
+    background: #fafafa;
+  }
+
+  /* ── FLOW HORIZONTAL ── */
+  .flow-h {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 36px 32px;
+    box-shadow: 0 2px 10px rgba(26,26,46,0.05);
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .flow-node {
+    flex: 1;
+    text-align: center;
+  }
+  .flow-box {
+    display: inline-block;
+    padding: 16px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    min-width: 110px;
+    max-width: 140px;
+  }
+  .flow-box small { display: block; font-weight: 400; font-size: 11px; opacity: 0.75; margin-top: 4px; }
+  .flow-box.navy  { background: var(--navy); color: white; }
+  .flow-box.gold  { background: var(--gold); color: var(--navy); }
+  .flow-box.green { background: #dcfce7; color: #15803d; border: 2px solid #86efac; }
+  .flow-box.blue  { background: #dbeafe; color: #1d4ed8; border: 2px solid #93c5fd; }
+  .flow-box.grey  { background: #f3f4f6; color: var(--navy); border: 2px solid var(--border); }
+  .flow-box.purple{ background: #f3e8ff; color: #7c3aed; border: 2px solid #d8b4fe; }
+  .flow-arrow     { font-size: 24px; color: #cbd5e1; padding: 0 4px; flex-shrink: 0; }
+
+  /* ── STEP LIST ── */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: flex;
+    gap: 22px;
+    position: relative;
+    padding-bottom: 8px;
+  }
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 18px; top: 42px; bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .step-left { flex-shrink: 0; }
+  .step-n {
+    width: 38px; height: 38px;
+    background: var(--navy); color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800;
+    position: relative; z-index: 1;
+  }
+  .step-body {
+    flex: 1;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 6px rgba(26,26,46,0.04);
+  }
+  .step-tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    padding: 3px 10px; border-radius: 100px;
+    margin-bottom: 8px;
+  }
+  .step-tag.client { background: #f3e8ff; color: #7c3aed; }
+  .step-tag.auto   { background: #dcfce7; color: #15803d; }
+  .step-tag.gest   { background: #dbeafe; color: #1d4ed8; }
+  .step-body h4 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .step-body p  { font-size: 14px; color: var(--text-s); line-height: 1.65; }
+
+  /* ── EMAIL MOCKUP ── */
+  .email-mockup {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 24px rgba(26,26,46,0.10);
+    margin-bottom: 28px;
+  }
+  .email-chrome {
+    background: #f3f4f6;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .email-chrome span { font-size: 13px; color: var(--text-s); margin-left: 8px; }
+  .email-hdr {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    padding: 24px 30px;
+  }
+  .email-hdr-tag { font-size: 11px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .email-hdr-title { color: white; font-size: 19px; font-weight: 700; }
+  .email-gold-bar {
+    background: var(--gold);
+    padding: 9px 30px;
+    font-size: 13px; font-weight: 700; color: var(--navy);
+  }
+  .email-body { padding: 24px 30px; }
+  .email-section-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--text-s); margin-bottom: 12px;
+  }
+  .info-row { display: flex; gap: 14px; margin-bottom: 8px; font-size: 14px; }
+  .info-key { color: var(--text-s); min-width: 90px; }
+  .info-val { font-weight: 600; color: var(--navy); }
+  .email-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #dcfce7; color: #15803d;
+    font-size: 12px; font-weight: 700;
+    padding: 6px 14px; border-radius: 100px;
+    margin-top: 14px;
+  }
+  .email-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  .data-row {
+    display: flex; gap: 14px; padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6; font-size: 13px;
+  }
+  .data-row:last-child { border-bottom: none; }
+  .data-key { color: var(--text-s); min-width: 150px; }
+  .data-val { color: var(--navy); }
+  .email-cta { text-align: center; padding: 16px 30px 28px; }
+  .email-btn {
+    display: inline-block; background: var(--navy); color: white;
+    text-decoration: none; padding: 12px 30px;
+    border-radius: 8px; font-size: 14px; font-weight: 600;
+  }
+
+  /* ── ROUTING SCHEMA ── */
+  .routing-schema {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    padding: 40px 36px;
+    box-shadow: 0 2px 10px rgba(26,26,46,0.05);
+    margin-bottom: 28px;
+  }
+  .routing-top { text-align: center; margin-bottom: 6px; }
+  .routing-center { display: inline-block; background: var(--navy); color: white; padding: 14px 24px; border-radius: 14px; font-size: 14px; font-weight: 700; }
+  .routing-mid {
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .routing-mid-line { width: 2px; height: 100%; background: var(--border); }
+  .routing-branches {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  .routing-branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    max-width: 190px;
+  }
+  .r-line-v { width: 2px; height: 28px; background: var(--border); }
+  .r-box {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 11px;
+    padding: 13px 10px;
+    text-align: center;
+    background: #fafafa;
+  }
+  .r-box.active { border-color: var(--gold); background: var(--gold-l); }
+  .r-box.dashed { border-style: dashed; opacity: 0.6; }
+  .r-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .r-code { font-size: 11px; color: var(--text-s); margin-top: 2px; font-family: monospace; }
+  .r-arrow { font-size: 18px; color: #cbd5e1; padding: 4px 0; }
+  .r-inbox {
+    display: flex; align-items: center; gap: 6px;
+    background: #dcfce7; border: 2px solid #86efac;
+    border-radius: 8px; padding: 7px 12px;
+    font-size: 12px; font-weight: 700; color: #15803d;
+    text-align: center;
+  }
+  .r-inbox.grey { background: #f3f4f6; border-color: var(--border); color: var(--text-s); }
+  .routing-sheet {
+    margin-top: 24px;
+    text-align: center;
+  }
+  .routing-sheet-box {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: #dcfce7; border: 2px solid #86efac;
+    border-radius: 12px; padding: 12px 24px;
+    font-size: 14px; font-weight: 700; color: #15803d;
+  }
+
+  /* ── URL BOX ── */
+  .url-box {
+    background: #f8f9fa;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: 'SFMono-Regular', 'Consolas', monospace;
+    font-size: 13px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .url-base { color: var(--text-s); }
+  .url-hl { background: var(--gold); color: var(--navy); font-weight: 700; padding: 2px 8px; border-radius: 5px; }
+
+  /* ── DIR TABLE ── */
+  .dir-wrap {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(26,26,46,0.05);
+    margin-bottom: 16px;
+  }
+  .dir-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .dir-table th {
+    background: var(--navy); color: white;
+    padding: 12px 18px; text-align: left;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;
+  }
+  .dir-table td { padding: 12px 18px; border-bottom: 1px solid var(--border); }
+  .dir-table tr:last-child td { border-bottom: none; }
+  .dir-table tr:nth-child(even) td { background: #fafafa; }
+  .code-pill {
+    display: inline-block;
+    background: var(--gold-l); border: 1px solid #f0d080;
+    color: #92610a; font-family: monospace; font-size: 12px; font-weight: 700;
+    padding: 3px 10px; border-radius: 100px;
+  }
+  .code-pill.grey { background: #f3f4f6; border-color: var(--border); color: var(--text-s); }
+
+  /* ── SUMMARY CARDS ── */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .sum-card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 22px 18px;
+    text-align: center;
+    box-shadow: 0 1px 6px rgba(26,26,46,0.04);
+  }
+  .sum-icon { font-size: 30px; margin-bottom: 12px; }
+  .sum-card h4 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .sum-card p  { font-size: 13px; color: var(--text-s); line-height: 1.55; }
+
+  /* ── INFO BOX ── */
+  .info-box {
+    border-radius: 12px; padding: 16px 20px;
+    display: flex; gap: 12px; align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .info-box.green { background: #dcfce7; border: 1px solid #86efac; }
+  .info-box.blue  { background: #dbeafe; border: 1px solid #93c5fd; }
+  .info-box.gold  { background: var(--gold-l); border: 1px solid #f0d080; }
+  .info-box-icon  { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .info-box p     { font-size: 14px; line-height: 1.65; }
+  .info-box.green p { color: #166534; }
+  .info-box.blue  p { color: #1d4ed8; }
+  .info-box.gold  p { color: #92610a; }
+
+  /* ── STACK TABLE ── */
+  .stack-table { width: 100%; border-collapse: collapse; font-size: 14px; background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
+  .stack-table th { background: var(--navy); color: white; padding: 12px 20px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stack-table td { padding: 14px 20px; border-bottom: 1px solid var(--border); }
+  .stack-table tr:last-child td { border-bottom: none; }
+  .stack-table tr:nth-child(even) td { background: #fafafa; }
+  .free-pill {
+    display: inline-block;
+    background: #dcfce7; color: #15803d;
+    font-size: 12px; font-weight: 700;
+    padding: 3px 10px; border-radius: 100px;
+  }
+
+  @media print {
+    body { background: white; }
+    .page { padding: 0; max-width: 100%; }
+    .cover { page-break-after: always; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ══ COVER ══════════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="page">
+    <div style="margin-bottom: 28px; position: relative; z-index: 1;">
+      <img src="assets/logo-dap.png" alt="DAP" style="height: 52px; background: white; padding: 8px 16px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.25);">
+    </div>
+    <div class="cover-eyebrow">✦ Proposition — DAP Courtage</div>
+    <h1>Formulaires de demande d'offre<br><em>en ligne pour DAP</em></h1>
+    <p class="cover-desc">Remplacer les formulaires Microsoft Forms par 4 formulaires web professionnels, connectés directement à Google Sheets — chaque demande arrive automatiquement chez le bon gestionnaire.</p>
+    <div class="cover-pills">
+      <div class="cover-pill"><span class="cover-pill-icon">🚗</span> Assurance Auto</div>
+      <div class="cover-pill"><span class="cover-pill-icon">🏠</span> Habitation / Incendie</div>
+      <div class="cover-pill"><span class="cover-pill-icon">🏢</span> Copropriété</div>
+      <div class="cover-pill"><span class="cover-pill-icon">💼</span> RC Professionnelle</div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ══ SECTION 1 — PROBLÈME / SOLUTION ══════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num-row">
+      <div class="section-badge">1</div>
+      <span class="section-label">Contexte</span>
+    </div>
+    <h2 class="section-title">Aujourd'hui vs demain</h2>
+    <p class="section-sub">Ce qui change concrètement pour DAP et pour les clients.</p>
+  </div>
+
+  <div class="prob-sol">
+    <div class="prob-col">
+      <div class="prob-col-header red">❌ Aujourd'hui — Par email</div>
+      <div class="prob-col-body">
+        <div class="prob-item"><span class="prob-item-icon">📧</span> Le gestionnaire envoie un email au client listant tous les documents et informations à fournir</div>
+        <div class="prob-item"><span class="prob-item-icon">⏳</span> Le client répond quand il peut, souvent de façon incomplète</div>
+        <div class="prob-item"><span class="prob-item-icon">🔄</span> Allers-retours par email pour récupérer les informations manquantes</div>
+        <div class="prob-item"><span class="prob-item-icon">✋</span> Le gestionnaire doit trier, relire et recopier les informations manuellement</div>
+        <div class="prob-item"><span class="prob-item-icon">📂</span> Aucun stockage centralisé — chaque dossier est dans une boîte mail différente</div>
+        <div class="prob-item"><span class="prob-item-icon">📵</span> Pas de traçabilité ni de vision globale pour la direction</div>
+      </div>
+    </div>
+    <div class="arrow-col">➜</div>
+    <div class="prob-col">
+      <div class="prob-col-header green">✅ Demain — Formulaires DAP</div>
+      <div class="prob-col-body">
+        <div class="prob-item"><span class="prob-item-icon">🎨</span> Le client remplit un formulaire guidé, étape par étape — rien n'est oublié</div>
+        <div class="prob-item"><span class="prob-item-icon">✅</span> Validation en temps réel : impossible de soumettre un formulaire incomplet</div>
+        <div class="prob-item"><span class="prob-item-icon">⚡</span> Le gestionnaire reçoit toutes les données structurées dès la soumission — zéro relance</div>
+        <div class="prob-item"><span class="prob-item-icon">📊</span> Toutes les demandes sont stockées automatiquement dans Google Sheets</div>
+        <div class="prob-item"><span class="prob-item-icon">🔗</span> Lien personnalisé par gestionnaire — chaque demande arrive au bon endroit</div>
+        <div class="prob-item"><span class="prob-item-icon">📈</span> Vision globale pour la direction : toutes les demandes, tous les bureaux, en un coup d'œil</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 2 — LES 4 FORMULAIRES ══════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num-row">
+      <div class="section-badge">2</div>
+      <span class="section-label">La solution</span>
+    </div>
+    <h2 class="section-title">4 formulaires web professionnels</h2>
+    <p class="section-sub">Un formulaire dédié par type d'assurance, avec design aux couleurs DAP, navigation par étapes et validation en temps réel.</p>
+  </div>
+
+  <div class="forms-grid">
+    <div class="form-card">
+      <div class="form-card-top auto">
+        <div class="form-card-icon">🚗</div>
+        <h3>Assurance Auto</h3>
+        <p>RC, Mini omnium ou Omnium complète. Conducteur habituel + occasionnel, véhicule, antécédents, assurance actuelle.</p>
+      </div>
+      <div class="form-card-footer">
+        <span>4 étapes · ~53 questions</span>
+        <span>⏱ 8–12 min</span>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-top hab">
+        <div class="form-card-icon">🏠</div>
+        <h3>Assurance Habitation / Incendie</h3>
+        <p>Propriétaires occupants, locataires, PNO. Maison, appartement, villa. Équipements, annexes, piscine.</p>
+      </div>
+      <div class="form-card-footer">
+        <span>4 étapes · ~57 questions</span>
+        <span>⏱ 10–15 min</span>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-top copro">
+        <div class="form-card-icon">🏢</div>
+        <h3>Assurance Copropriété</h3>
+        <p>Pour syndics et conseils de copropriété. Parties communes, RC immeuble, ascenseur, couvertures souhaitées.</p>
+      </div>
+      <div class="form-card-footer">
+        <span>3 étapes · ~48 questions</span>
+        <span>⏱ 10–15 min</span>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div class="form-card-top rc">
+        <div class="form-card-icon">💼</div>
+        <h3>RC Professionnelle</h3>
+        <p>Pour indépendants et sociétés. Conseil, IT, ingénierie, formation, médical. Activité, CA, garanties souhaitées.</p>
+      </div>
+      <div class="form-card-footer">
+        <span>4 étapes · ~55 questions</span>
+        <span>⏱ 10–15 min</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box blue">
+    <div class="info-box-icon">💡</div>
+    <p><strong>Page d'accueil unique :</strong> Un lien DAP unique présente les 4 formulaires sur une page d'accueil professionnelle. Le client choisit son type d'assurance et est redirigé vers le bon formulaire.</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 3 — PARCOURS CLIENT ══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num-row">
+      <div class="section-badge">3</div>
+      <span class="section-label">Expérience client</span>
+    </div>
+    <h2 class="section-title">Ce que vit le client</h2>
+    <p class="section-sub">Du clic sur le lien jusqu'à la réception de l'offre.</p>
+  </div>
+
+  <div class="flow-h">
+    <div class="flow-node">
+      <div class="flow-box navy">🔗 Reçoit le lien<small>du gestionnaire</small></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box blue">📋 Remplit le formulaire<small>en 8–15 min</small></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box gold">✅ Soumet<small>en un clic</small></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box green">📨 Reçoit un accusé<small>de réception</small></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box purple">📞 Rappelé par DAP<small>sous 24h</small></div>
+    </div>
+  </div>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-left"><div class="step-n">1</div></div>
+      <div class="step-body">
+        <span class="step-tag client">Client</span>
+        <h4>Il reçoit le lien de son gestionnaire</h4>
+        <p>Le gestionnaire envoie son lien par email, WhatsApp ou SMS. Le client clique et arrive directement sur le bon formulaire, avec le design professionnel DAP.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-n">2</div></div>
+      <div class="step-body">
+        <span class="step-tag client">Client</span>
+        <h4>Il remplit le formulaire étape par étape</h4>
+        <p>Le formulaire est découpé en 3 à 4 étapes courtes avec une barre de progression. À chaque étape, seules les questions pertinentes s'affichent. Les champs obligatoires sont vérifiés avant de passer à la suite.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-n">3</div></div>
+      <div class="step-body">
+        <span class="step-tag client">Client</span>
+        <h4>Il soumet en un clic et reçoit une confirmation</h4>
+        <p>Après soumission, un écran de confirmation s'affiche. Le client reçoit un email d'accusé de réception automatique indiquant qu'un conseiller DAP le contactera sous 24h.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-left"><div class="step-n">4</div></div>
+      <div class="step-body">
+        <span class="step-tag gest">Gestionnaire</span>
+        <h4>Le gestionnaire reçoit les données et rappelle le client</h4>
+        <p>Simultanément, le gestionnaire reçoit un email structuré avec toutes les données du client. Il peut rappeler avec tous les éléments en main, sans avoir à demander des informations déjà saisies.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ SECTION 4 — CE QUE REÇOIT LE GESTIONNAIRE ════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num-row">
+      <div class="section-badge">4</div>
+      <span class="section-label">Pour le gestionnaire</span>
+    </div>
+    <h2 class="section-title">Un email structuré, immédiatement exploitable</h2>
+    <p class="section-sub">Dès que le client soumet, le gestionnaire reçoit ceci dans sa boîte :</p>
+  </div>
+
+  <div class="email-mockup">
+    <div class="email-chrome">
+      <div class="dot" style="background:#ef4444;"></div>
+      <div class="dot" style="background:#f59e0b;"></div>
+      <div class="dot" style="background:#10b981;"></div>
+      <span>📬 ife@dap.be — Boîte de réception</span>
+    </div>
+    <div class="email-hdr">
+      <div class="email-hdr-tag">Formulaires DAP</div>
+      <div class="email-hdr-title">Nouvelle demande reçue</div>
+    </div>
+    <div class="email-gold-bar">📋 Assurance Auto</div>
+    <div class="email-body">
+      <div class="email-section-label">Client</div>
+      <div class="info-row"><span class="info-key">Nom</span><span class="info-val">Thomas Beaumont</span></div>
+      <div class="info-row"><span class="info-key">E-mail</span><span class="info-val" style="color:#0f3460;">t.beaumont@gmail.com</span></div>
+      <div class="info-row"><span class="info-key">Téléphone</span><span class="info-val">0476 12 34 56</span></div>
+      <div class="email-badge">✓ Assigné à Ihsane Fettache — Bureau de Bruxelles</div>
+      <hr class="email-divider">
+      <div class="email-section-label">Détail de la demande</div>
+      <div class="data-row"><span class="data-key">Véhicule</span><span class="data-val">Volkswagen Golf — 2021</span></div>
+      <div class="data-row"><span class="data-key">Couverture souhaitée</span><span class="data-val">Omnium complète</span></div>
+      <div class="data-row"><span class="data-key">Assurance actuelle</span><span class="data-val">AG Insurance — expire 01/06/2025</span></div>
+      <div class="data-row"><span class="data-key">Sinistres (3 ans)</span><span class="data-val">Aucun</span></div>
+      <div class="data-row"><span class="data-key">Paiement préféré</span><span class="data-val">Mensuel par domiciliation</span></div>
+    </div>
+    <div class="email-cta">
+      <span class="email-btn">Ouvrir Google Sheets →</span>
+    </div>
+  </div>
+
+  <div class="info-box green">
+    <div class="info-box-icon">✅</div>
+    <p><strong>Zéro manipulation manuelle.</strong> L'email arrive dans la boîte du gestionnaire dans les secondes suivant la soumission. Toutes les données sont déjà là, structurées, prêtes à traiter.</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 5 — ROUTAGE PAR GESTIONNAIRE ════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num-row">
+      <div class="section-badge">5</div>
+      <span class="section-label">Pour toute la structure DAP</span>
+    </div>
+    <h2 class="section-title">Un lien personnalisé par gestionnaire</h2>
+    <p class="section-sub">Chaque gestionnaire dispose de son propre lien. Le client ne voit aucune différence — le routage est entièrement automatique et invisible.</p>
+  </div>
+
+  <div class="routing-schema">
+    <p style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-s); margin-bottom: 20px; text-align: center;">Schéma de routage automatique</p>
+
+    <div class="routing-top">
+      <div class="routing-center">🌐 Formulaire DAP en ligne</div>
+    </div>
+    <div style="display:flex; justify-content:center;">
+      <div style="width:2px; height:28px; background:var(--border);"></div>
+    </div>
+    <div class="routing-branches">
+
+      <div class="routing-branch">
+        <div class="r-box active">
+          <div class="r-name">Ihsane Fettache</div>
+          <div class="r-code">lien ?ag=ife</div>
+        </div>
+        <div class="r-arrow">↓</div>
+        <div class="r-inbox">📬 ife@dap.be</div>
+      </div>
+
+      <div class="routing-branch">
+        <div class="r-box">
+          <div class="r-name">Paul Lambert</div>
+          <div class="r-code">lien ?ag=pla</div>
+        </div>
+        <div class="r-arrow">↓</div>
+        <div class="r-inbox">📬 pla@dap.be</div>
+      </div>
+
+      <div class="routing-branch">
+        <div class="r-box">
+          <div class="r-name">Marie Martin</div>
+          <div class="r-code">lien ?ag=mma</div>
+        </div>
+        <div class="r-arrow">↓</div>
+        <div class="r-inbox">📬 mma@dap.be</div>
+      </div>
+
+      <div class="routing-branch">
+        <div class="r-box dashed">
+          <div class="r-name" style="color:var(--text-s);">Nouveau client</div>
+          <div class="r-code">lien sans code</div>
+        </div>
+        <div class="r-arrow">↓</div>
+        <div class="r-inbox grey">📬 formulaires@dap.be</div>
+      </div>
+
+    </div>
+
+    <div class="routing-sheet">
+      <div class="routing-sheet-box">
+        <span style="font-size:20px;">📊</span>
+        Google Sheet central DAP — toutes les demandes consolidées
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box gold">
+    <div class="info-box-icon">🔗</div>
+    <p>
+      <strong>Comment ça fonctionne :</strong> chaque gestionnaire a un code court (initiale du prénom + 2 lettres du nom).
+      Ce code est ajouté à la fin de son lien : <code style="background:rgba(0,0,0,0.06); padding:2px 8px; border-radius:4px;">form-auto.html?ag=ife</code>
+      — invisible pour le client, automatiquement transmis au moment de la soumission.
+    </p>
+  </div>
+
+  <!-- Annuaire exemple -->
+  <p style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-s); margin-bottom: 12px;">Exemple d'annuaire gestionnaires (configurable) :</p>
+  <div class="dir-wrap">
+    <table class="dir-table">
+      <thead>
+        <tr><th>Code</th><th>Gestionnaire</th><th>Bureau</th><th>Email DAP</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="code-pill">ife</span></td>
+          <td><strong>Ihsane Fettache</strong></td>
+          <td>Bruxelles</td>
+          <td>ife@dap.be</td>
+        </tr>
+        <tr>
+          <td><span class="code-pill">pla</span></td>
+          <td>Paul Lambert</td>
+          <td>Liège</td>
+          <td>pla@dap.be</td>
+        </tr>
+        <tr>
+          <td><span class="code-pill">mma</span></td>
+          <td>Marie Martin</td>
+          <td>Bruxelles</td>
+          <td>mma@dap.be</td>
+        </tr>
+        <tr>
+          <td><span class="code-pill grey">general</span></td>
+          <td style="color:var(--text-s); font-style:italic;">Client sans courtier attitré</td>
+          <td style="color:var(--text-s);">—</td>
+          <td style="color:var(--text-s);">formulaires@dap.be</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size: 13px; color: var(--text-s);">Ajouter un gestionnaire = ajouter une ligne. Aucune compétence technique requise.</p>
+</div>
+
+<!-- ══ SECTION 6 — STACK TECHNIQUE ══════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num-row">
+      <div class="section-badge">6</div>
+      <span class="section-label">Technique & coûts</span>
+    </div>
+    <h2 class="section-title">100% gratuit avec l'infrastructure existante</h2>
+    <p class="section-sub">Aucun abonnement supplémentaire. Aucune dépendance externe.</p>
+  </div>
+
+  <table class="stack-table" style="margin-bottom: 24px;">
+    <thead>
+      <tr><th>Couche</th><th>Technologie</th><th>Coût</th><th>Note</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Formulaires</strong></td>
+        <td>HTML / CSS / JavaScript</td>
+        <td><span class="free-pill">Gratuit</span></td>
+        <td>Aucune dépendance, fonctionne hors-ligne</td>
+      </tr>
+      <tr>
+        <td><strong>Hébergement</strong></td>
+        <td>GitHub Pages</td>
+        <td><span class="free-pill">Gratuit</span></td>
+        <td>URL publique stable, certificat SSL inclus</td>
+      </tr>
+      <tr>
+        <td><strong>Stockage données</strong></td>
+        <td>Google Sheets</td>
+        <td><span class="free-pill">Gratuit</span></td>
+        <td>1 onglet par type de formulaire</td>
+      </tr>
+      <tr>
+        <td><strong>Backend / emails</strong></td>
+        <td>Google Apps Script</td>
+        <td><span class="free-pill">Gratuit</span></td>
+        <td>Intégré à Google Workspace DAP</td>
+      </tr>
+      <tr>
+        <td><strong>QR codes</strong></td>
+        <td>Générateur en ligne</td>
+        <td><span class="free-pill">Gratuit</span></td>
+        <td>Génération en 10 secondes</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box green">
+    <div class="info-box-icon">✅</div>
+    <p><strong>Déjà opérationnel :</strong> les 4 formulaires sont construits et testés. La mise en place pour toute la structure DAP (configuration des gestionnaires, déploiement, formation) se fait en une demi-journée.</p>
+  </div>
+</div>
+
+<!-- ══ SECTION 7 — RÉSUMÉ ════════════════════════════════════ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num-row">
+      <div class="section-badge">7</div>
+      <span class="section-label">Synthèse</span>
+    </div>
+    <h2 class="section-title">Ce que ça apporte à DAP</h2>
+  </div>
+
+  <div class="summary-grid">
+    <div class="sum-card">
+      <div class="sum-icon">🎨</div>
+      <h4>Image professionnelle</h4>
+      <p>Design aux couleurs DAP, logo visible, expérience soignée — cohérente avec le positionnement premium de DAP.</p>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">⚡</div>
+      <h4>Réactivité immédiate</h4>
+      <p>Le gestionnaire reçoit la demande structurée dans les secondes suivant la soumission. Zéro délai, zéro perte.</p>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">🎯</div>
+      <h4>Zéro friction client</h4>
+      <p>Le client ne choisit pas de gestionnaire. Il remplit un formulaire simple. Tout le reste est automatique.</p>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">📊</div>
+      <h4>Vision globale</h4>
+      <p>La direction voit toutes les demandes dans un seul Google Sheet, classées par type et par gestionnaire.</p>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">📈</div>
+      <h4>Scalable</h4>
+      <p>Fonctionne pour 10 gestionnaires comme pour 200. Ajouter un gestionnaire = ajouter une ligne.</p>
+    </div>
+    <div class="sum-card">
+      <div class="sum-icon">💶</div>
+      <h4>Coût zéro</h4>
+      <p>Aucun abonnement. Basé sur Google Sheets et GitHub Pages — déjà disponibles chez DAP.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<!-- ══ FOOTER ══════════════════════════════════════════════════ -->
+<div style="background: var(--navy); margin-top: 0; padding: 32px 48px; display: flex; align-items: center; justify-content: space-between;">
+  <img src="assets/logo-dap.png" alt="DAP" style="height: 40px; background: white; padding: 6px 14px; border-radius: 8px; opacity: 0.95;">
+  <div style="color: rgba(255,255,255,0.45); font-size: 12px; text-align: right; line-height: 1.7;">
+    DAP Courtage d'assurances<br>
+    info@dap.be
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide Courtier — DAP</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Variables ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #2A4B62;
+  --navy-dark: #1e3a4f;
+  --blue: #37A1D7;
+  --blue-light: #e8f4fb;
+  --black: #242425;
+  --gray: #7A7A7A;
+  --gray-light: #F9F9F9;
+  --border: #DEDEDE;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --white: #ffffff;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(42,75,98,0.08), 0 4px 12px rgba(42,75,98,0.04);
+  --shadow-lg: 0 4px 16px rgba(42,75,98,0.12);
+  --transition: 0.2s ease;
+}
+
+body {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--gray-light);
+  color: var(--black);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+/* ── Header ── */
+.header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  color: var(--white);
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(42,75,98,0.15);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-logo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.header-logo span {
+  color: var(--blue);
+}
+
+.header-subtitle {
+  font-size: 13px;
+  opacity: 0.7;
+  border-left: 1px solid rgba(255,255,255,0.3);
+  padding-left: 16px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.search-global {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  padding: 8px 16px 8px 40px;
+  color: var(--white);
+  font-size: 13px;
+  font-family: 'Montserrat', sans-serif;
+  width: 280px;
+  outline: none;
+  transition: var(--transition);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 12px center;
+}
+
+.search-global::placeholder { color: rgba(255,255,255,0.5); }
+.search-global:focus {
+  background-color: rgba(255,255,255,0.18);
+  border-color: var(--blue);
+}
+
+/* ── Tab Bar ── */
+.tab-bar {
+  background: var(--white);
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  overflow-x: auto;
+  position: sticky;
+  top: 64px;
+  z-index: 99;
+}
+
+.tab {
+  padding: 14px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.tab:hover { color: var(--navy); }
+.tab.active {
+  color: var(--navy);
+  border-bottom-color: var(--blue);
+  font-weight: 600;
+}
+
+/* ── Main ── */
+.main { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
+.view { display: none; animation: fadeIn 0.3s ease; }
+.view.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── View Header ── */
+.view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.view-title {
+  font-size: 20px;
+  color: var(--navy);
+}
+
+.view-description {
+  color: var(--gray);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.filter-input {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-family: 'Montserrat', sans-serif;
+  width: 260px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.filter-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(55,161,215,0.12); }
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.legend-dot.green { background: var(--green); }
+.legend-dot.yellow { background: var(--amber); }
+.legend-dot.red { background: var(--red); }
+.legend-dot.none { background: var(--border); }
+
+/* ── Matrice (Vue 1) ── */
+.matrix-container {
+  overflow-x: auto;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.matrix-table thead th {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 12px 6px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+}
+
+.matrix-table thead th:first-child {
+  text-align: left;
+  padding-left: 16px;
+  min-width: 160px;
+  font-size: 12px;
+}
+
+.matrix-table thead th .th-text {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  display: inline-block;
+  max-height: 120px;
+}
+
+.matrix-table tbody tr {
+  transition: var(--transition);
+}
+
+.matrix-table tbody tr:nth-child(even) { background: var(--gray-light); }
+.matrix-table tbody tr:hover { background: var(--blue-light); }
+
+.matrix-table tbody td {
+  padding: 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.matrix-table tbody td:first-child {
+  text-align: left;
+  padding-left: 16px;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--navy);
+}
+
+.matrix-cell {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  font-size: 14px;
+}
+
+.matrix-cell:hover {
+  transform: scale(1.2);
+  box-shadow: var(--shadow-lg);
+}
+
+.matrix-cell.green { background: var(--green); }
+.matrix-cell.yellow { background: var(--amber); }
+.matrix-cell.red { background: var(--red); }
+.matrix-cell.none { background: var(--border); }
+
+/* ── Tooltip ── */
+.matrix-cell-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.cell-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--navy);
+  color: var(--white);
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.cell-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--navy);
+}
+
+.matrix-cell-wrapper:hover .cell-tooltip { display: block; }
+
+/* ── Cards Grid ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.card:hover { box-shadow: var(--shadow-lg); }
+
+.card-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  color: var(--white);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card-body { padding: 20px; }
+
+.card-section {
+  margin-bottom: 16px;
+}
+
+.card-section:last-child { margin-bottom: 0; }
+
+.card-section-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+/* ── Badges ── */
+.badges { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-green { background: var(--green-bg); color: var(--green); }
+.badge-yellow { background: var(--amber-bg); color: var(--amber); }
+.badge-red { background: var(--red-bg); color: var(--red); }
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.badge-green .badge-dot { background: var(--green); }
+.badge-yellow .badge-dot { background: var(--amber); }
+.badge-red .badge-dot { background: var(--red); }
+
+/* ── Contact Info ── */
+.contact-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.contact-item:last-child { border-bottom: none; }
+
+.contact-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--black);
+}
+
+.contact-role {
+  font-size: 11px;
+  color: var(--gray);
+}
+
+.contact-details {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+.contact-details a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+.contact-details a:hover { text-decoration: underline; }
+
+/* ── Limits Box ── */
+.limits-box {
+  background: var(--amber-bg);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  font-size: 12px;
+}
+
+.limits-box strong { color: var(--amber); }
+
+/* ── Data Tables ── */
+.data-table-container {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.data-table thead th {
+  background: var(--navy);
+  color: var(--white);
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 12px 16px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-table tbody tr { transition: var(--transition); }
+.data-table tbody tr:nth-child(even) { background: var(--gray-light); }
+.data-table tbody tr:hover { background: var(--blue-light); }
+
+.data-table tbody td {
+  padding: 10px 16px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.data-table a {
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.data-table a:hover { text-decoration: underline; }
+
+/* ── Info Cards (Vue 3) ── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.info-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.info-card-header {
+  background: var(--blue-light);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+}
+
+.info-card-header h3 {
+  font-size: 14px;
+  color: var(--navy);
+}
+
+.info-card-body {
+  padding: 16px 20px;
+}
+
+.info-card-body ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-card-body li {
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px dashed var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.info-card-body li:last-child { border-bottom: none; }
+
+.info-card-body li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+
+/* ── Refused Activity Pills ── */
+.refused-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.refused-pill {
+  background: var(--red-bg);
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+
+/* ── Method Badge ── */
+.method-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--blue-light);
+  color: var(--navy);
+}
+
+/* ── Document Type Badge ── */
+.doc-type {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.doc-type-questionnaire { background: #ede9fe; color: #7c3aed; }
+.doc-type-conditions { background: var(--blue-light); color: var(--navy); }
+.doc-type-guide { background: var(--green-bg); color: var(--green); }
+.doc-type-formulaire { background: var(--amber-bg); color: var(--amber); }
+
+/* ── Empty State ── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray);
+}
+
+.empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-state p { font-size: 14px; }
+
+/* ── Highlight ── */
+.highlight-flash {
+  animation: flash 1.5s ease;
+}
+
+@keyframes flash {
+  0%, 100% { box-shadow: var(--shadow); }
+  25% { box-shadow: 0 0 0 4px var(--blue), var(--shadow-lg); }
+  75% { box-shadow: 0 0 0 4px var(--blue), var(--shadow-lg); }
+}
+
+/* ── No results ── */
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: var(--gray);
+  font-size: 14px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .header { padding: 0 16px; }
+  .header-subtitle { display: none; }
+  .search-global { width: 180px; }
+  .tab-bar { padding: 0 16px; }
+  .tab { padding: 12px 14px; font-size: 12px; }
+  .main { padding: 16px; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .info-grid { grid-template-columns: 1fr; }
+  .view-header { flex-direction: column; align-items: flex-start; }
+  .filter-input { width: 100%; }
+}
+
+/* ── Print ── */
+@media print {
+  .header, .tab-bar, .search-global, .filter-input { display: none !important; }
+  .main { padding: 0; }
+  .view { display: block !important; page-break-after: always; }
+  .view.active { animation: none; }
+  .card, .data-table-container, .matrix-container, .info-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  .matrix-cell:hover { transform: none; }
+  body { background: white; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <div class="header-left">
+    <div class="header-logo">Guide <span>Courtier</span></div>
+    <div class="header-subtitle">Outil interne DAP</div>
+  </div>
+  <div class="header-right">
+    <input type="search" class="search-global" id="globalSearch" placeholder="Rechercher partout...">
+  </div>
+</header>
+
+<!-- ── Tab Bar ── -->
+<nav class="tab-bar" id="tabBar">
+  <a class="tab active" data-view="matrix" href="#matrix">Vue g&eacute;n&eacute;rale</a>
+  <a class="tab" data-view="fiches" href="#fiches">Fiches compagnie</a>
+  <a class="tab" data-view="infos" href="#infos">Infos pour offre</a>
+  <a class="tab" data-view="processus" href="#processus">Processus</a>
+  <a class="tab" data-view="documents" href="#documents">Documents</a>
+  <a class="tab" data-view="refus" href="#refus">Activit&eacute;s refus&eacute;es</a>
+</nav>
+
+<!-- ── Main Content ── -->
+<main class="main">
+  <section id="view-matrix" class="view active"></section>
+  <section id="view-fiches" class="view"></section>
+  <section id="view-infos" class="view"></section>
+  <section id="view-processus" class="view"></section>
+  <section id="view-documents" class="view"></section>
+  <section id="view-refus" class="view"></section>
+</main>
+
+<script src="data.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  const DATA = window.DAP_DATA;
+  const VIEWS = ['matrix','fiches','infos','processus','documents','refus'];
+
+  const appetiteLabels = {
+    green: 'Appétence forte',
+    yellow: 'Sélectif',
+    red: 'Refus systématique',
+    none: 'Non proposé'
+  };
+
+  // ── Utils ──
+  function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function matchesFilter(text, query) {
+    return text.toLowerCase().includes(query.toLowerCase());
+  }
+
+  function getAppetite(company, product) {
+    const sheet = company.productSheets?.[product];
+    return sheet ? sheet.appetite : 'none';
+  }
+
+  // ── Router ──
+  function navigate() {
+    const hash = location.hash.slice(1) || 'matrix';
+    const view = VIEWS.includes(hash) ? hash : 'matrix';
+    VIEWS.forEach(v => {
+      document.getElementById('view-' + v).classList.toggle('active', v === view);
+    });
+    document.querySelectorAll('.tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.view === view);
+    });
+    document.getElementById('globalSearch').value = '';
+    renderView(view);
+  }
+
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', e => {
+      e.preventDefault();
+      location.hash = tab.dataset.view;
+    });
+  });
+
+  window.addEventListener('hashchange', navigate);
+
+  // ── Render Dispatcher ──
+  function renderView(view, filter) {
+    filter = filter || '';
+    switch(view) {
+      case 'matrix': renderMatrix(filter); break;
+      case 'fiches': renderFiches(filter); break;
+      case 'infos': renderInfos(filter); break;
+      case 'processus': renderProcessus(filter); break;
+      case 'documents': renderDocuments(filter); break;
+      case 'refus': renderRefus(filter); break;
+    }
+  }
+
+  // ── Global Search ──
+  document.getElementById('globalSearch').addEventListener('input', function() {
+    const hash = location.hash.slice(1) || 'matrix';
+    const view = VIEWS.includes(hash) ? hash : 'matrix';
+    renderView(view, this.value);
+  });
+
+  // ── Vue 1: Matrice ──
+  function renderMatrix(filter) {
+    const el = document.getElementById('view-matrix');
+    const companies = DATA.companies.filter(c => matchesFilter(c.name, filter));
+
+    let html = `
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Vue g&eacute;n&eacute;rale</h2>
+          <p class="view-description">Matrice compagnies &times; produits &mdash; cliquez une cellule pour voir la fiche</p>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot green"></div> App&eacute;tence forte</div>
+          <div class="legend-item"><div class="legend-dot yellow"></div> S&eacute;lectif</div>
+          <div class="legend-item"><div class="legend-dot red"></div> Refus syst&eacute;matique</div>
+          <div class="legend-item"><div class="legend-dot none"></div> Non propos&eacute;</div>
+        </div>
+      </div>`;
+
+    if (companies.length === 0) {
+      html += '<div class="no-results">Aucune compagnie trouv&eacute;e.</div>';
+      el.innerHTML = html;
+      return;
+    }
+
+    html += '<div class="matrix-container"><table class="matrix-table"><thead><tr>';
+    html += '<th>Compagnie</th>';
+    DATA.products.forEach(p => {
+      html += `<th><span class="th-text">${esc(p)}</span></th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    companies.forEach(company => {
+      html += '<tr>';
+      html += `<td>${esc(company.name)}</td>`;
+      DATA.products.forEach(product => {
+        const appetite = getAppetite(company, product);
+        const label = appetiteLabels[appetite];
+        html += `<td>
+          <div class="matrix-cell-wrapper">
+            <div class="matrix-cell ${appetite}" data-company="${company.id}" data-product="${esc(product)}"
+                 onclick="window.goToFiche('${company.id}')"></div>
+            <div class="cell-tooltip">${esc(company.name)} &mdash; ${esc(product)}<br>${label}</div>
+          </div>
+        </td>`;
+      });
+      html += '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+    el.innerHTML = html;
+  }
+
+  // ── Navigation matrice → fiche ──
+  window.goToFiche = function(companyId) {
+    location.hash = 'fiches';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const card = document.getElementById('card-' + companyId);
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.classList.add('highlight-flash');
+          setTimeout(() => card.classList.remove('highlight-flash'), 1500);
+        }
+      });
+    });
+  };
+
+  // ── Vue 2: Fiches ──
+  function renderFiches(filter) {
+    const el = document.getElementById('view-fiches');
+    const companies = DATA.companies.filter(c => {
+      if (!filter) return true;
+      const q = filter.toLowerCase();
+      if (c.name.toLowerCase().includes(q)) return true;
+      // Chercher aussi dans les contacts
+      if (c.contacts.some(ct => ct.name.toLowerCase().includes(q) || ct.role.toLowerCase().includes(q))) return true;
+      return false;
+    });
+
+    let html = `
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Fiches compagnie</h2>
+          <p class="view-description">Contacts, produits, limites par compagnie</p>
+        </div>
+      </div>`;
+
+    if (companies.length === 0) {
+      html += '<div class="no-results">Aucune compagnie trouv&eacute;e.</div>';
+      el.innerHTML = html;
+      return;
+    }
+
+    html += '<div class="cards-grid">';
+    companies.forEach(company => {
+      html += `<div class="card" id="card-${company.id}">`;
+
+      // Header
+      html += `<div class="card-header"><h3>${esc(company.name)}</h3></div>`;
+      html += '<div class="card-body">';
+
+      // Produits (badges)
+      html += '<div class="card-section"><div class="card-section-title">Produits</div><div class="badges">';
+      DATA.products.forEach(product => {
+        const appetite = getAppetite(company, product);
+        if (appetite !== 'none') {
+          html += `<span class="badge badge-${appetite}"><span class="badge-dot"></span>${esc(product)}</span>`;
+        }
+      });
+      html += '</div></div>';
+
+      // Contacts
+      html += '<div class="card-section"><div class="card-section-title">Contacts</div>';
+      company.contacts.forEach(ct => {
+        html += `<div class="contact-item">
+          <span class="contact-name">${esc(ct.name)}</span>
+          <span class="contact-role">${esc(ct.role)}</span>
+          <div class="contact-details">
+            <a href="mailto:${esc(ct.email)}">${esc(ct.email)}</a>
+            <span>${esc(ct.phone)}</span>
+          </div>
+        </div>`;
+      });
+      html += '</div>';
+
+      // Inspecteur
+      if (company.inspector && company.inspector.name) {
+        const insp = company.inspector;
+        html += `<div class="card-section"><div class="card-section-title">Inspecteur</div>
+          <div class="contact-item">
+            <span class="contact-name">${esc(insp.name)}</span>
+            <span class="contact-role">Zone : ${esc(insp.zone)}</span>
+            <div class="contact-details">
+              <a href="mailto:${esc(insp.email)}">${esc(insp.email)}</a>
+              <span>${esc(insp.phone)}</span>
+            </div>
+          </div>
+        </div>`;
+      }
+
+      // Limites
+      if (company.limits && (company.limits.minPremium || company.limits.minCA || company.limits.notes)) {
+        html += '<div class="card-section"><div class="card-section-title">Limites & Capacit&eacute;s</div><div class="limits-box">';
+        if (company.limits.minPremium) html += `<div><strong>Prime min. :</strong> ${esc(company.limits.minPremium)}</div>`;
+        if (company.limits.minCA) html += `<div><strong>CA min. :</strong> ${esc(company.limits.minCA)}</div>`;
+        if (company.limits.notes) html += `<div>${esc(company.limits.notes)}</div>`;
+        html += '</div></div>';
+      }
+
+      html += '</div></div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  // ── Vue 3: Infos requises ──
+  function renderInfos(filter) {
+    const el = document.getElementById('view-infos');
+    const products = Object.entries(DATA.requiredInfo).filter(([name]) => matchesFilter(name, filter));
+
+    let html = `
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Informations n&eacute;cessaires pour une offre</h2>
+          <p class="view-description">Par type de produit, les informations &agrave; fournir pour demander une offre</p>
+        </div>
+      </div>`;
+
+    if (products.length === 0) {
+      html += '<div class="no-results">Aucun produit trouv&eacute;.</div>';
+      el.innerHTML = html;
+      return;
+    }
+
+    html += '<div class="info-grid">';
+    products.forEach(([product, infos]) => {
+      html += `<div class="info-card">
+        <div class="info-card-header"><h3>${esc(product)}</h3></div>
+        <div class="info-card-body"><ul>`;
+      infos.forEach(info => {
+        html += `<li>${esc(info)}</li>`;
+      });
+      html += '</ul></div></div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  }
+
+  // ── Vue 4: Processus ──
+  function renderProcessus(filter) {
+    const el = document.getElementById('view-processus');
+    const rows = [];
+    DATA.companies.forEach(company => {
+      Object.entries(company.productSheets || {}).forEach(([product, sheet]) => {
+        if (sheet.process) {
+          const searchText = [company.name, product, sheet.process.method, sheet.process.notes].join(' ');
+          if (matchesFilter(searchText, filter)) {
+            rows.push({ company, product, process: sheet.process });
+          }
+        }
+      });
+    });
+
+    let html = `
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Processus de demande d'offre</h2>
+          <p class="view-description">Comment soumettre une demande par compagnie et produit</p>
+        </div>
+      </div>`;
+
+    if (rows.length === 0) {
+      html += '<div class="no-results">Aucun r&eacute;sultat.</div>';
+      el.innerHTML = html;
+      return;
+    }
+
+    html += `<div class="data-table-container"><table class="data-table">
+      <thead><tr>
+        <th>Compagnie</th><th>Produit</th><th>M&eacute;thode</th><th>D&eacute;tail</th><th>Notes</th>
+      </tr></thead><tbody>`;
+
+    rows.forEach(({ company, product, process }) => {
+      let detail = '';
+      if (process.portalUrl) detail += `<a href="${esc(process.portalUrl)}" target="_blank">Acc&eacute;der au portail</a>`;
+      if (process.email) detail += (detail ? '<br>' : '') + `<a href="mailto:${esc(process.email)}">${esc(process.email)}</a>`;
+
+      html += `<tr>
+        <td><strong>${esc(company.name)}</strong></td>
+        <td>${esc(product)}</td>
+        <td><span class="method-badge">${esc(process.method)}</span></td>
+        <td>${detail || '—'}</td>
+        <td>${process.notes ? esc(process.notes) : '—'}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    el.innerHTML = html;
+  }
+
+  // ── Vue 5: Documents ──
+  function renderDocuments(filter) {
+    const el = document.getElementById('view-documents');
+    const rows = [];
+    DATA.companies.forEach(company => {
+      Object.entries(company.productSheets || {}).forEach(([product, sheet]) => {
+        (sheet.documents || []).forEach(doc => {
+          const searchText = [company.name, product, doc.name, doc.type].join(' ');
+          if (matchesFilter(searchText, filter)) {
+            rows.push({ company, product, doc });
+          }
+        });
+      });
+    });
+
+    let html = `
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Documents & Questionnaires</h2>
+          <p class="view-description">Tous les documents class&eacute;s par compagnie et produit</p>
+        </div>
+      </div>`;
+
+    if (rows.length === 0) {
+      html += '<div class="no-results">Aucun document trouv&eacute;.</div>';
+      el.innerHTML = html;
+      return;
+    }
+
+    html += `<div class="data-table-container"><table class="data-table">
+      <thead><tr>
+        <th>Compagnie</th><th>Produit</th><th>Document</th><th>Type</th><th>Lien</th>
+      </tr></thead><tbody>`;
+
+    rows.forEach(({ company, product, doc }) => {
+      html += `<tr>
+        <td><strong>${esc(company.name)}</strong></td>
+        <td>${esc(product)}</td>
+        <td>${esc(doc.name)}</td>
+        <td><span class="doc-type doc-type-${doc.type}">${esc(doc.type)}</span></td>
+        <td><a href="${esc(doc.url)}" target="_blank">Ouvrir</a></td>
+      </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    el.innerHTML = html;
+  }
+
+  // ── Vue 6: Activités refusées ──
+  function renderRefus(filter) {
+    const el = document.getElementById('view-refus');
+    const rows = [];
+    DATA.companies.forEach(company => {
+      Object.entries(company.productSheets || {}).forEach(([product, sheet]) => {
+        if (sheet.refusedActivities && sheet.refusedActivities.length > 0) {
+          const searchText = [company.name, product, ...sheet.refusedActivities].join(' ');
+          if (matchesFilter(searchText, filter)) {
+            rows.push({ company, product, activities: sheet.refusedActivities });
+          }
+        }
+      });
+    });
+
+    let html = `
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Activit&eacute;s refus&eacute;es</h2>
+          <p class="view-description">Activit&eacute;s syst&eacute;matiquement refus&eacute;es par compagnie et produit</p>
+        </div>
+      </div>`;
+
+    if (rows.length === 0) {
+      html += '<div class="no-results">Aucun refus trouv&eacute;.</div>';
+      el.innerHTML = html;
+      return;
+    }
+
+    html += `<div class="data-table-container"><table class="data-table">
+      <thead><tr>
+        <th>Compagnie</th><th>Produit</th><th>Activit&eacute;s refus&eacute;es</th>
+      </tr></thead><tbody>`;
+
+    rows.forEach(({ company, product, activities }) => {
+      html += `<tr>
+        <td><strong>${esc(company.name)}</strong></td>
+        <td>${esc(product)}</td>
+        <td><div class="refused-pills">`;
+      activities.forEach(a => {
+        html += `<span class="refused-pill">${esc(a)}</span>`;
+      });
+      html += '</div></td></tr>';
+    });
+
+    html += '</tbody></table></div>';
+    el.innerHTML = html;
+  }
+
+  // ── Init ──
+  navigate();
+
+})();
+</script>
+
+</body>
+</html>

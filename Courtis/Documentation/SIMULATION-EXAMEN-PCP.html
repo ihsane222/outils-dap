@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulation Examen — Certification PCP Assurances · Certassur</title>
+<style>
+  :root {
+    --blue-dark:#1a2f5e;--blue:#2563eb;--blue-light:#dbeafe;
+    --green:#16a34a;--green-light:#dcfce7;
+    --orange:#ea580c;--orange-light:#ffedd5;
+    --red:#dc2626;--red-light:#fee2e2;
+    --gray:#6b7280;
+    --shadow:0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg:0 10px 15px -3px rgba(0,0,0,0.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;line-height:1.6;}
+
+  .screen{display:none !important;min-height:100vh;}
+  .screen.active{display:block !important;}
+  #home.screen.active{display:flex !important;}
+
+  /* HOME */
+  #home{background:linear-gradient(160deg,var(--blue-dark) 0%,#1e40af 50%,#0f172a 100%);flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;min-height:100vh;}
+  .home-logo{font-size:3.5rem;margin-bottom:20px;}
+  .home-title{font-size:2.2rem;font-weight:900;color:white;margin-bottom:10px;}
+  .home-sub{font-size:1.05rem;color:rgba(255,255,255,0.75);margin-bottom:48px;max-width:600px;}
+  .exam-cards{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-bottom:48px;}
+  .exam-card{background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);border-radius:20px;padding:32px 28px;width:280px;text-align:left;transition:all 0.25s;cursor:pointer;}
+  .exam-card:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.35);transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.3);}
+  .card-icon{font-size:2.2rem;margin-bottom:16px;}
+  .card-mod{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.5);margin-bottom:6px;}
+  .card-title{font-size:1.1rem;font-weight:800;color:white;margin-bottom:10px;}
+  .card-desc{font-size:0.85rem;color:rgba(255,255,255,0.65);line-height:1.5;margin-bottom:20px;}
+  .card-meta{display:flex;gap:12px;flex-wrap:wrap;}
+  .chip{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);font-size:0.75rem;font-weight:600;padding:4px 12px;border-radius:20px;}
+  .chip-big{background:rgba(74,222,128,0.2);color:#4ade80;border:1px solid rgba(74,222,128,0.3);}
+  .btn-start{width:100%;background:white;color:var(--blue-dark);font-weight:800;font-size:0.9rem;padding:12px;border-radius:12px;border:none;cursor:pointer;margin-top:16px;transition:all 0.2s;}
+  .btn-start:hover{background:#e0e7ff;}
+  .home-info{color:rgba(255,255,255,0.45);font-size:0.82rem;max-width:500px;}
+  .home-stats{display:flex;gap:40px;margin-bottom:40px;flex-wrap:wrap;justify-content:center;}
+  .home-stat{text-align:center;}
+  .hs-val{font-size:2.5rem;font-weight:900;color:white;}
+  .hs-lbl{font-size:0.75rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.06em;}
+
+  /* EXAM */
+  .exam-top{background:white;border-bottom:2px solid #e2e8f0;padding:0 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);height:68px;gap:20px;}
+  .exam-top-title{font-size:0.95rem;font-weight:700;color:var(--blue-dark);flex:1;}
+  .progress-wrap{flex:2;display:flex;align-items:center;gap:12px;}
+  .progress-bar-bg{flex:1;height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;}
+  .progress-bar-fill{height:100%;background:var(--blue);border-radius:4px;transition:width 0.3s;width:0%;}
+  .progress-label{font-size:0.8rem;font-weight:700;color:var(--gray);white-space:nowrap;}
+  .timer-wrap{display:flex;align-items:center;gap:8px;font-size:1.1rem;font-weight:800;color:var(--blue-dark);}
+  .timer-warn{color:var(--red) !important;animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+  .exam-body{max-width:860px;margin:0 auto;padding:36px 24px 80px;}
+  .q-card{background:white;border-radius:16px;padding:28px 32px;margin-bottom:20px;box-shadow:var(--shadow);border-left:5px solid #e2e8f0;transition:border-color 0.2s;}
+  .q-card.answered{border-left-color:var(--blue);}
+  .q-card.correct{border-left-color:var(--green);background:#f0fdf4;}
+  .q-card.wrong{border-left-color:var(--red);background:#fff5f5;}
+  .q-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:#f1f5f9;color:var(--gray);font-weight:800;font-size:0.85rem;margin-bottom:14px;}
+  .q-card.answered .q-num{background:var(--blue-light);color:var(--blue);}
+  .q-card.correct .q-num{background:var(--green-light);color:var(--green);}
+  .q-card.wrong .q-num{background:var(--red-light);color:var(--red);}
+  .q-text{font-size:1rem;font-weight:600;color:#1e293b;margin-bottom:20px;line-height:1.55;}
+  .q-options{display:flex;flex-direction:column;gap:10px;}
+  .q-option{display:flex;align-items:flex-start;gap:14px;padding:13px 16px;border-radius:10px;border:2px solid #e2e8f0;background:#fafafa;cursor:pointer;transition:all 0.15s;font-size:0.95rem;}
+  .q-option:hover:not(.disabled){border-color:#93c5fd;background:#eff6ff;}
+  .q-option input[type="radio"]{display:none;}
+  .opt-letter{width:26px;height:26px;border-radius:50%;background:#e2e8f0;color:#64748b;font-weight:700;font-size:0.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.15s;}
+  .q-option.selected{border-color:var(--blue);background:#eff6ff;}
+  .q-option.selected .opt-letter{background:var(--blue);color:white;}
+  .q-option.correct-opt{border-color:var(--green) !important;background:var(--green-light) !important;}
+  .q-option.correct-opt .opt-letter{background:var(--green) !important;color:white !important;}
+  .q-option.wrong-opt{border-color:var(--red) !important;background:var(--red-light) !important;}
+  .q-option.wrong-opt .opt-letter{background:var(--red) !important;color:white !important;}
+  .q-option.disabled{cursor:default;pointer-events:none;}
+  .q-feedback{display:none;margin-top:14px;padding:14px 16px;border-radius:10px;font-size:0.88rem;line-height:1.5;}
+  .q-feedback.show{display:block;}
+  .q-feedback.ok{background:var(--green-light);border:1px solid #86efac;color:#166534;}
+  .q-feedback.ko{background:var(--red-light);border:1px solid #fca5a5;color:#991b1b;}
+  .q-feedback strong{font-weight:800;}
+  .submit-zone{text-align:center;margin-top:40px;}
+  .submit-counter{font-size:0.9rem;color:var(--gray);margin-bottom:16px;}
+  .submit-counter span{font-weight:800;color:var(--blue-dark);}
+  .btn-submit{background:linear-gradient(135deg,var(--blue-dark),var(--blue));color:white;font-size:1.05rem;font-weight:800;padding:16px 48px;border-radius:14px;border:none;cursor:pointer;box-shadow:0 8px 20px rgba(37,99,235,0.35);transition:all 0.2s;}
+  .btn-submit:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(37,99,235,0.45);}
+
+  /* RESULTS */
+  .results-hero{padding:60px 32px 40px;text-align:center;background:white;border-bottom:2px solid #e2e8f0;}
+  .results-mod{font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray);margin-bottom:10px;}
+  .results-title{font-size:2rem;font-weight:900;color:var(--blue-dark);margin-bottom:6px;}
+  .score-ring{width:140px;height:140px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:28px auto;font-size:2.5rem;font-weight:900;}
+  .score-ring.pass{background:var(--green-light);color:var(--green);border:5px solid var(--green);}
+  .score-ring.fail{background:var(--red-light);color:var(--red);border:5px solid var(--red);}
+  .score-ring .score-sub{font-size:0.8rem;font-weight:600;}
+  .verdict{display:inline-block;padding:8px 28px;border-radius:30px;font-weight:800;font-size:1rem;margin-bottom:16px;}
+  .verdict.pass{background:var(--green-light);color:var(--green);}
+  .verdict.fail{background:var(--red-light);color:var(--red);}
+  .results-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin:24px 0;}
+  .stat-box{text-align:center;}
+  .stat-val{font-size:1.8rem;font-weight:900;color:var(--blue-dark);}
+  .stat-lbl{font-size:0.75rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.05em;}
+  .btn-retry{background:var(--blue);color:white;padding:12px 36px;border-radius:12px;border:none;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s;margin:8px;}
+  .btn-retry:hover{background:#1d4ed8;}
+  .btn-home{background:#f1f5f9;color:var(--blue-dark);padding:12px 36px;border-radius:12px;border:2px solid #e2e8f0;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s;margin:8px;}
+  .btn-home:hover{background:#e2e8f0;}
+  .results-review{max-width:860px;margin:0 auto;padding:36px 24px 80px;}
+  .results-review h2{font-size:1.2rem;font-weight:800;color:var(--blue-dark);margin-bottom:24px;}
+  .history-box{background:#f8fafc;border:2px solid #e2e8f0;border-radius:14px;padding:20px;margin:24px auto;max-width:500px;}
+  .history-box h3{font-size:0.9rem;font-weight:700;color:var(--blue-dark);margin-bottom:12px;}
+  .history-row{display:flex;justify-content:space-between;font-size:0.85rem;padding:6px 0;border-bottom:1px solid #f1f5f9;}
+  .history-row:last-child{border-bottom:none;}
+  .history-score{font-weight:800;}
+  .history-pass{color:var(--green);}
+  .history-fail{color:var(--red);}
+</style>
+</head>
+<body>
+
+<div id="home" class="screen active">
+  <div class="home-logo">📋</div>
+  <div class="home-title">Simulation d'Examen PCP</div>
+  <div class="home-sub">Banque de 120 questions · Tirage aléatoire de 20 à chaque session · Format officiel Certassur · Chaque examen est différent !</div>
+  <div class="home-stats">
+    <div class="home-stat"><div class="hs-val">120</div><div class="hs-lbl">Questions en banque</div></div>
+    <div class="home-stat"><div class="hs-val">20</div><div class="hs-lbl">Tirées par examen</div></div>
+    <div class="home-stat"><div class="hs-val">60%</div><div class="hs-lbl">Seuil réussite</div></div>
+    <div class="home-stat"><div class="hs-val">∞</div><div class="hs-lbl">Passages possibles</div></div>
+  </div>
+  <div class="exam-cards">
+    <div class="exam-card" onclick="startExam(1)">
+      <div class="card-icon">⚖️</div>
+      <div class="card-mod">Examen 1</div>
+      <div class="card-title">Module 1.1 — Marché & Contrat</div>
+      <div class="card-desc">Loi 4 avril 2014, BNB/FSMA, contrat, parties, sinistre, subrogation, sous-assurance, prescription…</div>
+      <div class="card-meta"><span class="chip">60 en banque</span><span class="chip">60 min</span><span class="chip chip-big">20 au sort</span></div>
+      <button class="btn-start">▶ Lancer l'examen</button>
+    </div>
+    <div class="exam-card" onclick="startExam(2)">
+      <div class="card-icon">🔒</div>
+      <div class="card-mod">Examen 2</div>
+      <div class="card-title">Module 1.2 — Règles & Conduite</div>
+      <div class="card-desc">DDA, AssurMiFID, LBA/CTIF, RGPD, IPID, FSMA, protection consommateur, conflits d'intérêts…</div>
+      <div class="card-meta"><span class="chip">60 en banque</span><span class="chip">60 min</span><span class="chip chip-big">20 au sort</span></div>
+      <button class="btn-start">▶ Lancer l'examen</button>
+    </div>
+  </div>
+  <div id="homeHistory"></div>
+  <div class="home-info">Les 20 questions sont tirées aléatoirement à chaque lancement. Basé sur les socles de compétences officiels Certassur/FSMA.</div>
+</div>
+
+<div id="exam" class="screen">
+  <div class="exam-top">
+    <div class="exam-top-title" id="examTopTitle"></div>
+    <div class="progress-wrap"><div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div><div class="progress-label" id="progressLabel">0/20</div></div>
+    <div class="timer-wrap"><span>⏱</span><span id="timerDisplay">60:00</span></div>
+  </div>
+  <div class="exam-body" id="examBody"></div>
+</div>
+
+<div id="results" class="screen">
+  <div class="results-hero">
+    <div class="results-mod" id="resultsMod"></div>
+    <div class="results-title" id="resultsTitle"></div>
+    <div class="score-ring" id="scoreRing"><span id="scoreFraction"></span><span class="score-sub" id="scorePct"></span></div>
+    <div class="verdict" id="verdict"></div>
+    <div class="results-stats">
+      <div class="stat-box"><div class="stat-val" id="statCorrect"></div><div class="stat-lbl">Correctes ✓</div></div>
+      <div class="stat-box"><div class="stat-val" id="statWrong"></div><div class="stat-lbl">Incorrectes ✗</div></div>
+      <div class="stat-box"><div class="stat-val" id="statTime"></div><div class="stat-lbl">Temps utilisé</div></div>
+    </div>
+    <div><button class="btn-retry" onclick="retryExam()">↺ Nouvel examen (autres questions)</button><button class="btn-home" onclick="goHome()">⌂ Accueil</button></div>
+  </div>
+  <div class="results-review"><h2>📖 Corrections détaillées</h2><div id="reviewCards"></div></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// BANQUE MODULE 1.1 — 60 QUESTIONS
+// ═══════════════════════════════════════════════════════
+const B1=[
+{q:"Quel organisme assure le contrôle <b>prudentiel</b> des entreprises d'assurances en Belgique ?",o:["La FSMA","La BNB (Banque Nationale de Belgique)","Le SPF Économie","L'EIOPA"],a:1,j:"La BNB contrôle la solvabilité des compagnies. La FSMA contrôle la conduite des marchés et les intermédiaires."},
+{q:"La FSMA est compétente pour :",o:["Contrôler la solvabilité des compagnies","Contrôler la conduite des marchés, les intermédiaires et les produits","Uniquement les marchés boursiers","Les fraudes fiscales liées aux contrats"],a:1,j:"La FSMA surveille la conduite des marchés, les intermédiaires (registre), les produits et la protection des consommateurs."},
+{q:"Le principe de la <b>licence unique européenne</b> permet à un assureur de :",o:["Exercer dans un seul État membre","Opérer dans toute l'UE avec l'agrément de son pays d'origine","Obtenir un agrément séparé dans chaque pays","Passer un examen européen"],a:1,j:"Licence unique (passeport européen) : une seule autorisation du pays d'origine suffit pour toute l'UE (Home Country Control)."},
+{q:"Le <b>Home Country Control</b> signifie que :",o:["Le pays d'accueil contrôle la compagnie étrangère","Le pays du siège de la compagnie est responsable du contrôle prudentiel","L'EIOPA contrôle toutes les compagnies européennes","La BNB contrôle les assureurs étrangers en Belgique"],a:1,j:"C'est l'autorité du pays d'origine qui contrôle, même quand la compagnie opère dans d'autres États."},
+{q:"Les 3 formes de distribution d'assurances sont :",o:["Courtage, agences propres, vente en ligne","Réseau non exclusif (courtiers), réseau exclusif (agents), vente directe","Courtage, bancassurance, réassurance","Individuelle, collective, réassurance"],a:1,j:"(1) Courtiers (non exclusif), (2) Agents (exclusif), (3) Vente directe (online, bancassurance, agences propres)."},
+{q:"La loi du 4 avril 2014 <b>ne s'applique pas</b> à :",o:["L'assurance incendie habitation","L'assurance vie branche 21","L'assurance maritime sur corps de navire et marchandises","L'assurance RC familiale"],a:2,j:"La loi exclut les assurances maritimes (corps, marchandises), fluviales, aériennes et de transport international."},
+{q:"Les dispositions de la loi du 4 avril 2014 sont de nature :",o:["Supplétive — on peut y déroger","Impérative — on ne peut pas y déroger au détriment du preneur","Facultative","Administrative"],a:1,j:"Impératif : protège le preneur et l'assuré. Toute clause dérogatoire à leur détriment est nulle."},
+{q:"La loi du 4 avril 2014 a remplacé :",o:["La loi du 21/11/1989 sur la RC auto","La loi du 25/06/1992 sur le contrat d'assurance terrestre","Le Code civil de 1804","La directive Solvency II"],a:1,j:"La loi de 2014 a remplacé et modernisé la loi du 25 juin 1992 sur le contrat d'assurance terrestre."},
+{q:"Le contrat d'assurance est un contrat :",o:["Unilatéral, gratuit et certain","Synallagmatique, onéreux et aléatoire","Unilatéral, onéreux et aléatoire","Synallagmatique, gratuit et aléatoire"],a:1,j:"Synallagmatique (obligations réciproques), onéreux (prime), aléatoire (sinistre incertain)."},
+{q:"Le <b>preneur</b> d'assurance est :",o:["La personne dont le risque est couvert","La personne qui souscrit et paie la prime","La personne qui reçoit la prestation","L'entreprise d'assurances"],a:1,j:"Le preneur souscrit et paie. L'assuré est couvert. Le bénéficiaire reçoit la prestation."},
+{q:"L'<b>assuré</b> est :",o:["Celui qui paie la prime","Celui dont le risque est couvert par la police","Celui qui reçoit l'indemnité","L'intermédiaire qui distribue le contrat"],a:1,j:"L'assuré est la personne dont le risque est couvert. Peut être la même personne que le preneur."},
+{q:"Le <b>bénéficiaire</b> d'un contrat d'assurance vie :",o:["Paie la prime","Est la personne sur la tête de laquelle repose le risque","Reçoit la prestation en cas de réalisation du risque","Est toujours le conjoint survivant"],a:2,j:"Le bénéficiaire reçoit la prestation. Il est désigné par le preneur dans la police."},
+{q:"La <b>personne lésée</b> désigne :",o:["L'assuré victime d'un sinistre sur son bien","Le tiers victime d'un dommage couvert en RC","Le preneur qui n'a pas reçu son indemnité","L'assureur victime de fraude"],a:1,j:"La personne lésée est le tiers victime en responsabilité civile (ex: piéton renversé)."},
+{q:"L'<b>intérêt d'assurance</b> signifie que :",o:["L'assureur doit avoir un intérêt commercial","Le preneur doit avoir un intérêt patrimonial à la non-réalisation du risque","Le contrat doit présenter un intérêt général","Le bénéficiaire doit justifier d'un intérêt financier"],a:1,j:"Sans intérêt d'assurance, le contrat est nul. L'intérêt peut être direct ou indirect."},
+{q:"Sans intérêt d'assurance, le contrat est :",o:["Valable à prime réduite","Suspendu","Nul","Valable mais sans prestation"],a:2,j:"L'intérêt d'assurance est une condition de validité. Son absence rend le contrat nul."},
+{q:"En assurance <b>indemnitaire</b>, la prestation :",o:["Est fixée à l'avance dans le contrat","Est limitée au préjudice réel subi","Peut dépasser la valeur du dommage","Est calculée par la FSMA"],a:1,j:"Indemnitaire = max le dommage réel. L'assurance ne peut pas être source d'enrichissement."},
+{q:"L'assurance <b>forfaitaire</b> se caractérise par :",o:["Une prestation limitée au dommage réel","Une prestation fixée à l'avance indépendamment du préjudice","Une obligation de prouver le dommage exact","L'interdiction de cumuler avec d'autres assurances"],a:1,j:"Forfaitaire : montant fixé dans le contrat (ex: capital décès de 100.000 €), peu importe le dommage réel."},
+{q:"Le <b>principe indemnitaire</b> interdit que :",o:["L'assuré souscrive plusieurs polices","L'indemnisation dépasse la valeur du préjudice réel","L'assuré désigne plusieurs bénéficiaires","L'assuré change d'assureur après un sinistre"],a:1,j:"Pas d'enrichissement via l'assurance. L'indemnité ≤ le préjudice réel subi."},
+{q:"La <b>police d'assurance</b> est :",o:["La demande du futur preneur","Le document contractuel constatant droits et obligations","Un rapport d'expertise","Un document publicitaire"],a:1,j:"La police matérialise le contrat. Elle comprend les conditions générales et particulières."},
+{q:"Un <b>avenant</b> est :",o:["Un document qui modifie un contrat en cours","La première page de la police","Un refus de couverture","Le PV de l'expert après sinistre"],a:0,j:"L'avenant modifie les conditions d'un contrat existant (adresse, garantie, capital…)."},
+{q:"Les <b>conditions générales</b> sont :",o:["Négociées pour chaque client","Des clauses standard pour tous les contrats du même type","Fixées par arrêté royal","Un résumé des exclusions"],a:1,j:"CG = standardisées. Les conditions particulières personnalisent le contrat pour chaque client."},
+{q:"La <b>proposition d'assurance</b> est :",o:["Le contrat définitif","Une offre du preneur que l'assureur peut accepter ou refuser","Un engagement ferme de l'assureur","Un document de résiliation"],a:1,j:"La proposition est une offre du preneur. L'assureur n'est pas obligé de l'accepter."},
+{q:"En cas de déclaration inexacte de <b>bonne foi</b>, l'assureur peut :",o:["Annuler rétroactivement le contrat","Réduire proportionnellement la prestation","Refuser toute prestation","Majorer rétroactivement toutes les primes passées"],a:1,j:"Bonne foi = adaptation de prime ou réduction proportionnelle. La nullité est réservée à la mauvaise foi."},
+{q:"En cas de déclaration inexacte de <b>mauvaise foi</b>, l'assureur peut :",o:["Adapter la prime pour l'avenir","Déclarer la nullité du contrat et conserver les primes","Uniquement résilier sans indemnité","Saisir la CTIF"],a:1,j:"Mauvaise foi = nullité du contrat + conservation des primes + refus de toute prestation."},
+{q:"La <b>franchise</b> est :",o:["La réduction de prime après années sans sinistre","La partie du dommage restant à charge de l'assuré","Le montant maximal versé par l'assureur","La cotisation minimale pour ouvrir un dossier"],a:1,j:"Franchise = part du dommage supportée par l'assuré. Absolue ou relative."},
+{q:"En cas d'<b>aggravation du risque</b>, le preneur doit :",o:["Résilier immédiatement","En informer l'assureur sans délai","Attendre la prochaine échéance","Ne rien faire si c'est temporaire"],a:1,j:"Obligation de déclarer toute aggravation nouvelle et significative. L'assureur peut adapter ou résilier."},
+{q:"En cas de <b>diminution du risque</b>, le preneur peut :",o:["Rien","Demander une réduction de prime ; si refus, résilier","Exiger un remboursement rétroactif","Augmenter le capital sans surcoût"],a:1,j:"Le preneur peut demander la réduction de prime. Si refus, il peut résilier."},
+{q:"La suspension de garantie pour non-paiement intervient :",o:["Immédiatement","15 jours après mise en demeure","30 jours après mise en demeure formelle","60 jours après mise en demeure"],a:2,j:"30 jours après la mise en demeure formelle. Ensuite, l'assureur peut résilier."},
+{q:"Les intérêts de retard dus par l'assureur sont au :",o:["Taux légal simple","Double du taux légal","Triple du taux légal","Taux EURIBOR + 2%"],a:1,j:"Double du taux légal : sanction pour encourager le paiement rapide de l'indemnité."},
+{q:"La <b>règle de proportionnalité</b> s'applique en cas de :",o:["Désaccord sur le montant du sinistre","Sous-assurance (valeur assurée < valeur réelle)","Non-paiement de prime","Négligence de l'assuré"],a:1,j:"Sous-assurance → indemnité réduite. Formule : Indemnité = Dommage × (Valeur assurée / Valeur réelle)."},
+{q:"Bien assuré 400K€, valeur réelle 800K€, dommage 100K€. L'indemnité sera :",o:["100.000 €","50.000 €","75.000 €","25.000 €"],a:1,j:"100.000 × (400.000/800.000) = 50.000 €."},
+{q:"La <b>valeur à neuf</b> se distingue de la <b>valeur réelle</b> car :",o:["Elle est toujours inférieure","Elle ne tient pas compte de la vétusté","Elle intègre la hausse immobilière","Elle est pour les biens de moins de 5 ans"],a:1,j:"Valeur à neuf = coût de remplacement SANS vétusté. Valeur réelle = valeur à neuf MOINS la vétusté."},
+{q:"En surassurance de <b>bonne foi</b>, l'assureur :",o:["Annule le contrat et garde les primes","Réduit la prime ; l'indemnité ne dépasse jamais la valeur réelle","Peut verser plus que la valeur réelle","Rembourse toutes les primes en trop"],a:1,j:"Le principe indemnitaire empêche toujours de verser plus que le dommage réel."},
+{q:"La <b>subrogation</b> permet à l'assureur de :",o:["Substituer un autre assureur","Exercer un recours contre le tiers responsable après indemnisation","Changer les conditions du contrat","Résilier après sinistre"],a:1,j:"L'assureur récupère les sommes versées auprès du tiers responsable du sinistre."},
+{q:"La subrogation ne peut <b>pas</b> s'exercer contre :",o:["Le tiers responsable identifié","Les membres de la famille vivant sous le même toit (sauf acte intentionnel)","Un professionnel responsable","Un automobiliste fautif"],a:1,j:"L'assureur ne peut pas se retourner contre la famille cohabitante, sauf acte intentionnel."},
+{q:"Après un sinistre, le preneur doit :",o:["Payer une surcotisation et résilier","Déclarer dans les délais ET prendre des mesures pour limiter les dommages","Contacter immédiatement la police judiciaire","Attendre que l'assureur le contacte"],a:1,j:"Double obligation : (1) déclaration dans les délais, (2) mesures conservatoires."},
+{q:"Les <b>actes intentionnels</b> de l'assuré sont :",o:["Couverts si la prime est payée","Jamais couverts en assurance","Couverts uniquement en RC auto","Couverts avec franchise majorée"],a:1,j:"Les actes intentionnels sont toujours exclus. Exclusion légale absolue."},
+{q:"La <b>faute lourde</b> en RC auto est :",o:["Toujours exclue","Couverte vis-à-vis des victimes (tiers lésés)","Exclue pour les jeunes conducteurs","Couverte avec franchise de 5.000 €"],a:1,j:"En RC auto, la faute lourde est couverte vis-à-vis des victimes. L'assureur peut exercer un recours contre l'assuré."},
+{q:"La durée standard d'un contrat non-vie est :",o:["3 ans minimum","5 ans renouvelable","1 an renouvelable tacitement","10 ans non résiliable"],a:2,j:"1 an renouvelable tacitement, sauf résiliation dans les délais (généralement 3 mois avant échéance)."},
+{q:"La résiliation après sinistre est possible :",o:["Uniquement par l'assuré","Par l'assureur ET le preneur, dans le mois suivant le paiement ou refus","Seulement par un tribunal","Si le sinistre dépasse 10.000 €"],a:1,j:"Les deux parties peuvent résilier dans le mois suivant le paiement ou le refus."},
+{q:"Le délai de <b>prescription</b> pour les actions du contrat d'assurance est de :",o:["1 an","3 ans","5 ans","10 ans"],a:1,j:"3 ans — loi du 4 avril 2014. Après, toute action est irrecevable."},
+{q:"L'<b>Ombudsman des Assurances</b> traite :",o:["Les litiges entre compagnies","Les plaintes des consommateurs (contrats, sinistres, intermédiaires)","Les recours pénaux","Les contrôles prudentiels"],a:1,j:"L'Ombudsman traite gratuitement les plaintes des consommateurs. Avis non contraignant mais très suivi."},
+{q:"La <b>coassurance</b> est :",o:["Deux preneurs souscrivent ensemble","Plusieurs assureurs couvrent conjointement un même risque par quotes-parts","Un assuré a plusieurs contrats chez le même assureur","Un assureur sous-traite à un réassureur"],a:1,j:"Coassurance : plusieurs assureurs, chacun pour sa quote-part. L'apériteur gère le contrat."},
+{q:"L'<b>apériteur</b> en coassurance est :",o:["Le plus petit coassureur","L'assureur chef de file qui gère le contrat","Le réassureur principal","Le courtier qui a placé le risque"],a:1,j:"L'apériteur est le chef de file qui gère le contrat et les sinistres pour tous les coassureurs."},
+{q:"En coassurance, les coassureurs sont-ils <b>solidaires</b> ?",o:["Oui, toujours","Non, chacun ne répond que de sa quote-part","Oui, mais seulement en incendie","Oui, si le preneur le demande"],a:1,j:"Pas de solidarité : chaque coassureur ne répond que de sa propre quote-part."},
+{q:"Les garanties <b>FLEXA</b> en incendie sont :",o:["Fissures, Lézardes, Effondrement, Xénon, Amiante","Feu, Foudre, Explosion, chute d'Aéronef","Froid, Lumière, Évaporation, X-rays, Avalanche","Fraude, Liquidation, Émeutes, Xénon, Attentat"],a:1,j:"FLEXA = Feu, Foudre, Explosion, chute d'Aéronef. Garanties de base en risques simples."},
+{q:"La <b>RC auto</b> est obligatoire pour :",o:["Les voitures de plus de 5 ans","Tous les véhicules automoteurs terrestres en circulation","Les voitures personnelles uniquement","Les véhicules de plus de 5.000 €"],a:1,j:"Loi 21/11/1989 : RC auto obligatoire pour tout véhicule automoteur terrestre."},
+{q:"La <b>RC professionnelle</b> est légalement obligatoire pour :",o:["Tous les indépendants","Les courtiers, architectes, réviseurs d'entreprises…","Les professions médicales uniquement","Les professions qui le souhaitent"],a:1,j:"Obligatoire pour certaines professions réglementées : courtiers, architectes, réviseurs, avocats…"},
+{q:"La convention <b>RDR</b> permet :",o:["De régler sans expert","À l'assureur de la victime d'indemniser directement, puis de se retourner contre l'assureur du responsable","Au responsable d'être indemnisé en priorité","De fixer les tarifs RC auto"],a:1,j:"RDR : l'assureur de la victime paie directement, puis récupère auprès de l'assureur du responsable."},
+{q:"La branche <b>21</b> offre :",o:["Un rendement lié aux marchés sans garantie","Un taux garanti + participation bénéficiaire possible","Un capital garanti par l'État","Un rendement fixé par la FSMA"],a:1,j:"B21 = sécurité : taux garanti par l'assureur + éventuelle participation bénéficiaire."},
+{q:"En branche <b>23</b>, le risque d'investissement est porté par :",o:["L'assureur","L'État via un fonds de garantie","Le preneur (l'assuré)","Le réassureur"],a:2,j:"B23 : aucune garantie de capital. Le risque est entièrement supporté par le preneur."},
+{q:"La <b>protection juridique</b> couvre :",o:["La RC du preneur","Les frais de défense juridique et de recours de l'assuré","Uniquement les frais d'avocat en pénal","Les amendes administratives"],a:1,j:"La PJ défend les intérêts juridiques de l'assuré : frais d'avocat, procédure, recours."},
+{q:"L'assurance <b>hospitalisation</b> couvre :",o:["La perte de revenus","Les frais restant à charge après l'INAMI (ticket modérateur, suppléments)","Les accidents à l'hôpital uniquement","Les maladies professionnelles"],a:1,j:"L'hospitalisation complète la mutuelle : ticket modérateur, suppléments chambre, honoraires."},
+{q:"L'assurance <b>revenu garanti</b> est cruciale pour les indépendants car :",o:["Ils gagnent plus que les salariés","L'INAMI leur verse un forfait très faible en invalidité","Ils ne cotisent pas à l'INAMI","Leur contrat les protège déjà"],a:1,j:"Les indépendants n'ont qu'un forfait INAMI limité en incapacité. Le revenu garanti compense l'écart."},
+{q:"Les 3 conditions de la <b>responsabilité civile</b> sont :",o:["Âge, capacité, assurance","Faute (ou fait générateur), dommage, lien de causalité","Intention, préjudice, témoins","Contrat, garantie, franchise"],a:1,j:"RC = (1) faute ou fait générateur, (2) dommage réel et certain, (3) lien causal."},
+{q:"La <b>RC Produits</b> (loi 25/02/1991) est :",o:["Contractuelle uniquement","Extracontractuelle, sans faute — prouver le défaut et le dommage suffit","Pénale","Délictuelle avec preuve de la faute"],a:1,j:"Responsabilité objective (sans faute) : la victime doit prouver le défaut et le dommage subi."},
+{q:"Le principe <b>claims made</b> signifie que :",o:["La garantie joue pour les sinistres survenus pendant le contrat","La garantie joue pour les réclamations introduites pendant le contrat, quelle que soit la date de la faute","Le client doit réclamer dans les 30 jours","L'assureur peut refuser les réclamations tardives"],a:1,j:"Claims made : c'est la date de la réclamation qui compte, pas la date de la faute."},
+{q:"Le <b>KID</b> est obligatoire pour :",o:["Tous les contrats d'assurance","Les produits PRIIPS (B23, B44)","Les contrats de plus de 100.000 €","Les contrats du 2e pilier"],a:1,j:"KID = Key Information Document pour les PRIIPS. À ne pas confondre avec l'IPID (non-vie)."},
+{q:"La <b>RC familiale</b> couvre :",o:["Uniquement le preneur","Le preneur, conjoint, enfants à charge et personnel domestique","La famille jusqu'au 4e degré","Les accidents dans le domicile uniquement"],a:1,j:"RC familiale : le ménage dans la vie privée, y compris animaux et personnel de maison."},
+{q:"Le <b>FCGB</b> (Fonds Commun de Garantie Belge) intervient pour :",o:["Les courtiers en difficulté","Les victimes de conducteurs non assurés ou non identifiés","Les primes impayées","La formation des intermédiaires"],a:1,j:"Le FCGB est le filet de sécurité pour les victimes quand le responsable est non assuré ou en fuite."},
+];
+
+// ═══════════════════════════════════════════════════════
+// BANQUE MODULE 1.2 — 60 QUESTIONS
+// ═══════════════════════════════════════════════════════
+const B2=[
+{q:"La <b>distribution d'assurances</b> (art. 5, 46°) comprend :",o:["Uniquement la vente directe par les compagnies","Les activités de présentation, proposition, préparation, conclusion et assistance","Seulement la gestion des sinistres","L'édition de documentation commerciale"],a:1,j:"Définition très large : présentation, proposition, préparation à la conclusion, conclusion, et assistance."},
+{q:"Laquelle est <b>exclue</b> de la distribution d'assurances (art. 258) ?",o:["La vente par un courtier inscrit","La fourniture d'informations à titre occasionnel dans une autre activité","La proposition d'assurance vie par un agent","L'assistance en cas de sinistre"],a:1,j:"Les informations occasionnelles et accessoires dans une autre activité ne sont pas de la distribution."},
+{q:"La différence entre <b>courtier</b> et <b>agent</b> est :",o:["Le courtier vend plus de produits","Le courtier agit pour le preneur ; l'agent est mandataire de la compagnie","L'agent exerce sans inscription FSMA","Le courtier est uniquement en non-vie"],a:1,j:"Courtier = mandataire du preneur (indépendant). Agent = mandataire de la compagnie."},
+{q:"Un <b>sous-agent</b> :",o:["Est inscrit directement à la FSMA","Agit sous la responsabilité d'un courtier ou agent inscrit","Exerce de manière indépendante","Est un ancien courtier"],a:1,j:"Le sous-agent agit sous la responsabilité d'un intermédiaire inscrit. Pas d'inscription directe."},
+{q:"Un <b>intermédiaire accessoire</b> distribue :",o:["Pour toutes les branches","En activité principale","En complément d'une autre activité (ex: garagiste)","Sans condition de connaissances"],a:2,j:"L'intermédiaire accessoire distribue en complément d'une activité principale non-assurance."},
+{q:"L'inscription au <b>registre FSMA</b> est :",o:["Recommandée mais non obligatoire","Obligatoire sous peine de sanctions pénales et civiles","Requise seulement pour les gros portefeuilles","Remplacée par Certassur"],a:1,j:"Condition sine qua non. L'exercice sans inscription est passible de sanctions pénales."},
+{q:"Les conditions d'inscription FSMA comprennent :",o:["Un diplôme universitaire en droit","Connaissances, honorabilité, RC professionnelle, garantie financière","10 ans d'expérience","La RC professionnelle uniquement"],a:1,j:"4 conditions : connaissances (Certassur), honorabilité, RC pro, garantie financière."},
+{q:"La <b>PCP</b> se distingue du <b>RD</b> parce que :",o:["La PCP réussit tous les modules","La PCP ne réussit que le module 1 (1.1+1.2) ; le RD aussi les modules spécifiques","Aucune différence","La PCP exerce sans FSMA"],a:1,j:"PCP = module 1 uniquement. RD = module 1 + modules spécifiques (2, 3, 4)."},
+{q:"Le <b>passeport européen</b> permet à un intermédiaire de :",o:["Exercer uniquement en Belgique et Luxembourg","Exercer dans toute l'UE en LPS ou établissement","Vendre sans inscription nulle part","Obtenir une équivalence de diplôme"],a:1,j:"Un intermédiaire inscrit dans un État peut exercer dans toute l'UE en LPS ou via succursale."},
+{q:"Exercer <b>sans inscription FSMA</b> risque :",o:["Un simple avertissement","Des sanctions administratives ET pénales","Rien si les clients sont satisfaits","Un retrait du diplôme Certassur"],a:1,j:"Sanctions administratives (FSMA) et pénales (amendes, emprisonnement)."},
+{q:"Le <b>CDE Livre VI</b> régit :",o:["Les relations B2B uniquement","Les pratiques commerciales et la protection du consommateur (B2C)","Les relations assureurs-réassureurs","Le droit bancaire international"],a:1,j:"Le CDE Livre VI protège le consommateur dans les relations B2C. Autorité : SPF Économie."},
+{q:"La <b>publicité comparative</b> est :",o:["Interdite en toutes circonstances","Autorisée si objective, non trompeuse et non dénigrante","Autorisée seulement pour les assureurs directs","Réservée aux comparateurs agréés"],a:1,j:"Autorisée sous conditions : objective, caractéristiques comparables, non trompeuse, non dénigrante."},
+{q:"Les pratiques commerciales <b>trompeuses</b> :",o:["Proposent des réductions saisonnières","Contiennent de fausses informations induisant le consommateur en erreur","Utilisent des visuels attractifs","Mentionnent les avantages fiscaux"],a:1,j:"Fausses informations ou omissions significatives induisant en erreur dans la décision d'achat."},
+{q:"Le droit de rétractation pour un contrat <b>non-vie à distance</b> est de :",o:["7 jours ouvrables","14 jours calendrier","30 jours calendrier","Aucun"],a:1,j:"14 jours calendrier pour les non-vie à distance. 30 jours pour l'assurance vie individuelle."},
+{q:"Le droit de rétractation pour une <b>assurance vie</b> à distance est de :",o:["7 jours","14 jours","30 jours calendrier","60 jours"],a:2,j:"30 jours calendrier pour l'assurance vie individuelle à distance."},
+{q:"L'autorité de contrôle du CDE Livre VI est :",o:["La FSMA","La BNB","Le SPF Économie","L'Ombudsman"],a:2,j:"Le SPF Économie est l'autorité pour les pratiques commerciales et protection des consommateurs."},
+{q:"Le <b>RGPD</b> s'applique :",o:["Aux entreprises de plus de 250 employés","À toute organisation traitant des données de résidents UE","Seulement aux données en ligne","Uniquement aux données financières"],a:1,j:"Le RGPD s'applique à toute organisation, quelle que soit sa taille."},
+{q:"L'<b>APD</b> est :",o:["Un organe européen","L'autorité belge de contrôle du RGPD","Un département de la FSMA","Un service de la BNB"],a:1,j:"APD = Autorité de Protection des Données. Contrôle belge du RGPD."},
+{q:"Le principe de <b>minimisation des données</b> (RGPD) impose :",o:["De collecter le maximum de données par précaution","De ne collecter que les données strictement nécessaires","De ne jamais collecter de données sensibles","De supprimer les données après 24h"],a:1,j:"Minimisation : collecter uniquement les données nécessaires à la finalité poursuivie."},
+{q:"Le <b>consentement</b> RGPD doit être :",o:["Implicite — le silence vaut acceptation","Libre, spécifique, éclairé, univoque et rétractable","Donné une seule fois pour toujours","Obtenu devant notaire"],a:1,j:"Libre, spécifique, éclairé, univoque et toujours rétractable."},
+{q:"Le <b>droit à l'effacement</b> :",o:["Permet de tout supprimer dans tous les cas","Peut être refusé si une obligation légale impose la conservation","Ne concerne que les données en ligne","S'exerce dans les 30 jours après fin du contrat"],a:1,j:"Pas absolu. En assurances, conservation souvent 10 ans (obligations légales)."},
+{q:"Le <b>droit à la portabilité</b> permet :",o:["La destruction de toutes ses données","De recevoir ses données dans un format structuré et de les transférer","D'exiger une copie papier certifiée","Rien en assurances"],a:1,j:"Le client reçoit ses données en format lisible par machine et peut les transférer."},
+{q:"La durée de conservation des données (RGPD) est :",o:["Illimitée avec consentement","Le temps nécessaire + obligations légales","Maximum 2 ans","Maximum 5 ans"],a:1,j:"Le temps nécessaire aux finalités + obligations légales (ex: 10 ans en assurance)."},
+{q:"La base légale la plus courante pour gérer une police est :",o:["Le consentement","L'exécution d'un contrat","L'intérêt légitime","L'obligation légale"],a:1,j:"Pour gérer la police, la base légale principale est l'exécution du contrat."},
+{q:"La <b>LBA</b> impose aux courtiers en vie :",o:["De refuser tout client étranger","D'identifier les clients (KYC) et déclarer les soupçons à la CTIF","De consulter la FSMA avant chaque transaction","De conserver les fonds sur un compte séparé"],a:1,j:"LBA : identification (KYC), vigilance continue, déclaration des soupçons à la CTIF."},
+{q:"La <b>CTIF</b> est :",o:["La Commission Tarifaire des Intermédiaires","La Cellule de Traitement des Informations Financières","Le Centre Technique de l'Industrie Financière","La Commission de Transparence des Investissements"],a:1,j:"CTIF = renseignement financier belge. Reçoit et analyse les déclarations de soupçon."},
+{q:"Les paiements en <b>espèces</b> sont limités à :",o:["1.000 €","3.000 €","5.000 €","10.000 €"],a:1,j:"Maximum 3.000 € en espèces. Au-delà : paiement bancaire obligatoire."},
+{q:"Une <b>PPE</b> est :",o:["Tout client avec casier judiciaire","Une personne exerçant ou ayant exercé des fonctions publiques importantes","Tout client étranger non-UE","Un client dont la prime dépasse 10.000 €"],a:1,j:"PPE = fonctions publiques importantes (chef d'État, ministre…) + entourage proche."},
+{q:"Pour une PPE, il faut appliquer :",o:["Une procédure simplifiée","Un refus systématique","Des mesures de vigilance renforcée","Une déclaration automatique à la CTIF"],a:2,j:"Vigilance renforcée : identification approfondie, origine des fonds, approbation hiérarchique."},
+{q:"Le registre <b>UBO</b> sert à :",o:["Lister les clients à risque","Identifier les bénéficiaires effectifs des personnes morales","Lister les intermédiaires sanctionnés","Recenser les opérations suspectes"],a:1,j:"UBO = Ultimate Beneficial Owners. Personnes physiques qui contrôlent in fine une entité."},
+{q:"L'<b>AMLCO</b> est :",o:["Un logiciel de détection de fraudes","Le responsable interne de la conformité antiblanchiment","Un agent de la CTIF","Un certificat FSMA"],a:1,j:"AMLCO = Anti-Money Laundering Compliance Officer. Chaque entité assujettie doit en désigner un."},
+{q:"La conservation des documents d'identification (LBA) dure :",o:["1 an","5 ans après la fin de la relation","10 ans","Illimitée"],a:1,j:"5 ans après la fin de la relation d'affaires."},
+{q:"Qui contrôle la conformité LBA des <b>intermédiaires</b> ?",o:["La BNB","La FSMA","La CTIF","Le SPF Finances"],a:1,j:"FSMA = intermédiaires. BNB = entreprises d'assurances. CTIF = reçoit les déclarations."},
+{q:"Avant de recommander un produit, le distributeur doit :",o:["Obtenir l'approbation de la compagnie","Effectuer une analyse des besoins et exigences du client","Présenter au minimum 3 offres","Vérifier la solvabilité du client"],a:1,j:"L'analyse des besoins (needs analysis) est une obligation légale DDA."},
+{q:"L'<b>IPID</b> est :",o:["Un document interne de la compagnie","Un document standardisé obligatoire remis avant conclusion d'un contrat non-vie","Requis pour les produits vie avec investissement","Facultatif"],a:1,j:"IPID = document standardisé (max 2 pages) remis avant conclusion d'un contrat non-vie."},
+{q:"Le <b>KID</b> est obligatoire pour :",o:["Tous les contrats non-vie","Les produits PRIIPS (B23, B44)","Les contrats de plus de 50.000 €","Les contrats du 2e pilier"],a:1,j:"KID = Key Information Document pour les PRIIPS. À ne pas confondre avec l'IPID."},
+{q:"La <b>DDA</b> impose notamment :",o:["Des tarifs uniformes dans l'UE","Des règles de conduite, l'analyse des besoins et 15h/an de formation","L'interdiction des commissions","La vente en ligne obligatoire"],a:1,j:"DDA : analyse des besoins, règles de conduite, formation continue 15h/an, transparence."},
+{q:"La formation continue obligatoire est de :",o:["5h/an","10h/an","15h/an (minimum DDA)","20h/an"],a:2,j:"15 heures par an minimum. Obligatoire pour tous les distributeurs (RD et PCP)."},
+{q:"La formation de 15h/an s'applique :",o:["Uniquement aux RD","Aux PCP de moins de 3 ans","À tous les distributeurs (RD et PCP)","Aux courtiers indépendants uniquement"],a:2,j:"Tous les distributeurs : RD et PCP, sans distinction d'ancienneté."},
+{q:"Le dossier client doit être conservé :",o:["1 an","5 ans après la fin de la relation","10 ans","Indéfiniment"],a:1,j:"Conservation : 5 ans après la fin de la relation commerciale."},
+{q:"Le principe fondamental (art. 279) impose d'agir :",o:["Dans l'intérêt de la compagnie","Honnêtement, équitablement et professionnellement, au mieux des intérêts du client","Pour maximiser ses commissions","Selon les instructions écrites du client"],a:1,j:"La règle d'or : honnêteté, équité, professionnalisme, meilleur intérêt du client."},
+{q:"L'<b>AssurMiFID</b> s'applique :",o:["À tous les contrats non-vie","Aux assurances vie avec composante d'investissement (B23, B44)","Aux assurances de groupe uniquement","À tous les contrats de retraite"],a:1,j:"AssurMiFID concerne les produits avec composante d'investissement : B23, B44, PRIIPS."},
+{q:"Le <b>test d'adéquation</b> évalue :",o:["La solvabilité de la compagnie","Connaissances, expérience, situation financière et objectifs du client","La conformité des clauses","La santé du client"],a:1,j:"Test d'adéquation (suitability) : vérifie que le produit est adapté au profil complet du client."},
+{q:"La différence entre test d'<b>adéquation</b> et de <b>pertinence</b> :",o:["Aucune différence","L'adéquation évalue tout le profil (conseil) ; la pertinence évalue seulement les connaissances (sans conseil)","La pertinence est plus complète","L'adéquation est facultatif"],a:1,j:"Adéquation (avec conseil) = profil complet. Pertinence (sans conseil) = connaissances/expérience seulement."},
+{q:"En cas de <b>conflit d'intérêts</b>, le distributeur doit :",o:["Privilégier la compagnie","Cesser la relation client","Identifier, informer le client, et agir dans son meilleur intérêt","Facturer des frais de gestion"],a:2,j:"DDA : identifier, informer, agir dans le meilleur intérêt du client."},
+{q:"La transparence sur les <b>rémunérations</b> est :",o:["Facultative","Une obligation légale : le client doit connaître le mode de rémunération","Requise seulement sur demande écrite","Applicable aux courtiers uniquement"],a:1,j:"La DDA impose la transparence : commissions, honoraires, ou autre mode de rémunération."},
+{q:"Recommander un produit pour sa <b>commission élevée</b> plutôt que pour le client :",o:["Est normal","Viole le principe du meilleur intérêt et les règles sur les conflits d'intérêts","Est autorisé si le produit est de qualité","N'est une infraction que si le client se plaint"],a:1,j:"Viole le principe du meilleur intérêt (art. 279) et les règles sur les conflits d'intérêts."},
+{q:"En matière de <b>publicité</b> sur les assurances :",o:["Toute publicité doit être approuvée par la FSMA","La publicité doit être identifiable et non trompeuse","Les courtiers ne peuvent faire aucune publicité","La publicité est interdite pour les produits investissement"],a:1,j:"Communications clairement identifiables comme publicité et non trompeuses."},
+{q:"L'<b>Ombudsman</b> traite les plaintes relatives :",o:["Aux litiges entre compagnies","Aux contrats, sinistres et comportement des intermédiaires","Aux contrôles prudentiels","Aux pensions du 2e pilier"],a:1,j:"L'Ombudsman traite gratuitement les plaintes des consommateurs (contrats, sinistres, intermédiaires)."},
+{q:"Pour les plaintes <b>pensions complémentaires</b>, l'organisme compétent est :",o:["L'Ombudsman","La FSMA","Fedris","Le SPF Finances"],a:1,j:"La FSMA est compétente pour les plaintes relatives aux pensions complémentaires."},
+{q:"Un distributeur doit disposer d'une procédure interne de :",o:["Gestion des conflits d'intérêts ET traitement des plaintes","Gestion des investissements","Comptabilité analytique","Recrutement"],a:0,j:"Deux procédures obligatoires : conflits d'intérêts et traitement des plaintes clients."},
+{q:"Le <b>devoir de conseil</b> du courtier implique :",o:["D'offrir le produit le moins cher","De recommander le produit le plus adapté aux besoins du client","De présenter tous les produits du marché","De garantir la performance"],a:1,j:"Recommander le produit le plus adapté aux besoins et exigences du client, après analyse."},
+{q:"La DDA a été transposée en droit belge dans :",o:["Le Code civil","La loi du 4 avril 2014 (modifiée)","Un arrêté royal de 2020","Le CDE Livre VII"],a:1,j:"La DDA a été transposée dans la loi du 4 avril 2014, modifiée pour intégrer les nouvelles règles."},
+{q:"Le <b>principe de licéité</b> du RGPD exige que tout traitement repose sur :",o:["L'approbation du DPO uniquement","Au moins une des 6 bases légales (consentement, contrat, obligation légale…)","Le seul consentement du client","L'autorisation de l'APD"],a:1,j:"6 bases légales : consentement, contrat, obligation légale, intérêts vitaux, mission publique, intérêt légitime."},
+{q:"Les <b>pratiques commerciales agressives</b> sont celles qui :",o:["Proposent des prix très bas","Limitent la liberté de choix du consommateur par contrainte ou pression","Utilisent des publicités en ligne répétitives","Offrent des cadeaux avec les produits"],a:1,j:"Agressives = contrainte, harcèlement, pression indue limitant la liberté de choix du consommateur."},
+{q:"Un courtier qui ne respecte pas les obligations <b>RGPD</b> risque :",o:["Un simple avertissement sans conséquences","Des amendes pouvant atteindre 20 millions € ou 4% du CA annuel mondial","La perte de son inscription FSMA uniquement","Aucune sanction pratique"],a:1,j:"Le RGPD prévoit des amendes très élevées : jusqu'à 20 millions € ou 4% du CA mondial."},
+{q:"La <b>double assurance</b> (ou cumul d'assurances) est :",o:["Interdite en Belgique","Autorisée mais le total des indemnités ne peut dépasser le dommage réel","Obligatoire pour les risques industriels","Recommandée pour les biens de grande valeur"],a:1,j:"Le cumul est autorisé mais le principe indemnitaire s'applique : pas d'enrichissement, les assureurs se répartissent."},
+];
+
+// ═══════════════════════════════════════════════════════
+// ENGINE
+// ═══════════════════════════════════════════════════════
+const EXAMS=[null,{mod:'Module 1.1',title:'Marché de l\'assurance & Contrat',bank:B1},{mod:'Module 1.2',title:'Règles et codes de conduite',bank:B2}];
+let cur=null,curData=null,curQ=[],ans=[],timer=null,secs=3600,t0=null,done=false;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function goHome(){clearInterval(timer);showHistory();show('home');}
+
+function startExam(n){
+  cur=n;curData=EXAMS[n];
+  curQ=shuffle(curData.bank).slice(0,20);
+  ans=new Array(20).fill(null);done=false;secs=3600;t0=Date.now();
+  document.getElementById('examTopTitle').textContent=curData.mod+' — '+curData.title;
+  render();prog();startTimer();show('exam');
+}
+function retryExam(){startExam(cur);}
+
+function render(){
+  const b=document.getElementById('examBody'),L=['A','B','C','D'];let h='';
+  curQ.forEach((q,i)=>{
+    h+=`<div class="q-card" id="qc${i}"><div class="q-num">${i+1}</div><div class="q-text">${q.q}</div><div class="q-options">`;
+    q.o.forEach((opt,j)=>{h+=`<label class="q-option" id="op${i}_${j}" onclick="sel(${i},${j})"><input type="radio" name="q${i}"><span class="opt-letter">${L[j]}</span><span>${opt}</span></label>`;});
+    h+=`</div><div class="q-feedback" id="fb${i}"></div></div>`;
+  });
+  h+=`<div class="submit-zone"><div class="submit-counter">Répondues : <span id="ac">0</span>/20</div><button class="btn-submit" onclick="submit()">Soumettre mon examen</button></div>`;
+  b.innerHTML=h;
+}
+
+function sel(i,j){if(done)return;ans[i]=j;for(let k=0;k<4;k++){const o=document.getElementById(`op${i}_${k}`);if(o)o.classList.toggle('selected',k===j);}document.getElementById(`qc${i}`)?.classList.add('answered');prog();}
+
+function prog(){const n=ans.filter(a=>a!==null).length;const e=document.getElementById('progressBar'),l=document.getElementById('progressLabel'),c=document.getElementById('ac');if(e)e.style.width=(n/20*100)+'%';if(l)l.textContent=n+'/20';if(c)c.textContent=n;}
+
+function startTimer(){clearInterval(timer);timer=setInterval(()=>{secs--;const d=document.getElementById('timerDisplay');if(d){d.textContent=`${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;if(secs<=300)d.parentElement.classList.add('timer-warn');}if(secs<=0){clearInterval(timer);submit();}},1000);}
+
+function submit(){
+  if(done)return;done=true;clearInterval(timer);
+  const t=Math.round((Date.now()-t0)/1000);let ok=0;const L=['A','B','C','D'];
+  curQ.forEach((q,i)=>{
+    const c=document.getElementById(`qc${i}`),fb=document.getElementById(`fb${i}`),ch=ans[i],g=ch===q.a;if(g)ok++;
+    if(c){c.classList.remove('answered');c.classList.add(g?'correct':'wrong');}
+    for(let k=0;k<4;k++){const o=document.getElementById(`op${i}_${k}`);if(!o)continue;o.classList.add('disabled');o.classList.remove('selected');if(k===q.a)o.classList.add('correct-opt');if(k===ch&&!g)o.classList.add('wrong-opt');}
+    if(fb){fb.classList.add('show',g?'ok':'ko');fb.innerHTML=(g?'<b>✓ Correct !</b> ':`<b>✗ Incorrect.</b> Bonne réponse : <b>${L[q.a]}</b>. `)+q.j;}
+  });
+  saveHistory(ok,t);showResults(ok,t);
+}
+
+function showResults(ok,t){
+  const p=Math.round(ok/20*100),pass=ok>=12,m=Math.floor(t/60),s=t%60,L=['A','B','C','D'];
+  document.getElementById('resultsMod').textContent=curData.mod;
+  document.getElementById('resultsTitle').textContent=curData.title;
+  const r=document.getElementById('scoreRing');r.className='score-ring '+(pass?'pass':'fail');
+  document.getElementById('scoreFraction').textContent=ok+'/20';
+  document.getElementById('scorePct').textContent=p+'%';
+  const v=document.getElementById('verdict');v.className='verdict '+(pass?'pass':'fail');v.textContent=pass?'✓ RÉUSSI':'✗ ÉCHOUÉ';
+  document.getElementById('statCorrect').textContent=ok;
+  document.getElementById('statWrong').textContent=20-ok;
+  document.getElementById('statTime').textContent=`${m}m${String(s).padStart(2,'0')}s`;
+  const rev=document.getElementById('reviewCards');let h='';
+  curQ.forEach((q,i)=>{
+    const ch=ans[i],g=ch===q.a;
+    h+=`<div class="q-card ${g?'correct':'wrong'}"><div class="q-num">${i+1}</div><div class="q-text">${q.q}</div><div class="q-options">`;
+    q.o.forEach((opt,k)=>{let cls='q-option disabled';if(k===q.a)cls+=' correct-opt';else if(k===ch&&!g)cls+=' wrong-opt';h+=`<div class="${cls}"><span class="opt-letter">${L[k]}</span><span>${opt}</span></div>`;});
+    h+=`</div><div class="q-feedback show ${g?'ok':'ko'}">${g?'<b>✓ Correct !</b> ':`<b>✗ Incorrect.</b> Bonne réponse : <b>${L[q.a]}</b>. `}${q.j}</div></div>`;
+  });
+  rev.innerHTML=h;show('results');
+}
+
+// ═══════════════════════════════════════════════════════
+// HISTORIQUE (localStorage)
+// ═══════════════════════════════════════════════════════
+function getHist(){try{return JSON.parse(localStorage.getItem('pcp_hist')||'[]');}catch(e){return [];}}
+function saveHistory(ok,t){const h=getHist();h.push({mod:cur,score:ok,time:t,date:new Date().toLocaleDateString('fr-BE')});if(h.length>50)h.shift();localStorage.setItem('pcp_hist',JSON.stringify(h));}
+
+function showHistory(){
+  const h=getHist(),el=document.getElementById('homeHistory');
+  if(!h.length){el.innerHTML='';return;}
+  const h1=h.filter(x=>x.mod===1).slice(-5).reverse();
+  const h2=h.filter(x=>x.mod===2).slice(-5).reverse();
+  let html='<div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;">';
+  if(h1.length){
+    html+='<div class="history-box"><h3>⚖️ Module 1.1 — Derniers résultats</h3>';
+    h1.forEach(x=>{const p=x.score>=12;html+=`<div class="history-row"><span>${x.date}</span><span class="history-score ${p?'history-pass':'history-fail'}">${x.score}/20 (${Math.round(x.score/20*100)}%) ${p?'✓':'✗'}</span></div>`;});
+    html+='</div>';
+  }
+  if(h2.length){
+    html+='<div class="history-box"><h3>🔒 Module 1.2 — Derniers résultats</h3>';
+    h2.forEach(x=>{const p=x.score>=12;html+=`<div class="history-row"><span>${x.date}</span><span class="history-score ${p?'history-pass':'history-fail'}">${x.score}/20 (${Math.round(x.score/20*100)}%) ${p?'✓':'✗'}</span></div>`;});
+    html+='</div>';
+  }
+  html+='</div>';el.innerHTML=html;
+}
+showHistory();
+</script>
+</body>
+</html>

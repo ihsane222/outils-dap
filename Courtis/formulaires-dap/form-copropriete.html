@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demande d'offre — Assurance Copropriété | DAP</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="form-header">
+  <div class="header-inner">
+    <div class="header-top">
+      <img src="assets/logo-dap.png" alt="DAP" class="header-logo">
+      <div class="header-divider"></div>
+      <div class="header-brand">Courtage d'assurances</div>
+    </div>
+    <h1 class="header-title">Demande d'offre — Assurance Copropriété</h1>
+    <p class="header-subtitle">Formulaire à compléter par le syndic ou le conseil de copropriété. Toutes les informations sont traitées de façon confidentielle.</p>
+    <div class="header-badge">🏢 Copropriété · 10–15 minutes</div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-inner">
+      <div class="step-item"><div class="step-dot active" id="dot-1">1</div><div class="step-label active" id="label-1">Syndic & Immeuble</div></div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-item"><div class="step-dot" id="dot-2">2</div><div class="step-label" id="label-2">Caractéristiques & Surfaces</div></div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-item"><div class="step-dot" id="dot-3">3</div><div class="step-label" id="label-3">Sinistres & Finalisation</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="form-container">
+<div class="form-steps-wrapper">
+
+<!-- ═══ ÉTAPE 1 : SYNDIC + IMMEUBLE ═══ -->
+<div class="step-content active" id="step-1">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏛️</span> Section 1 — Syndic / Gestionnaire</div>
+    <div class="section-body">
+      <div class="field-row two">
+        <div class="field-group"><label>Nom de la société de syndic <span class="required">*</span></label><input type="text" name="syndic_nom" required placeholder="Ex. : SYNDIC PLUS"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Nom du contact référent <span class="required">*</span></label><input type="text" name="syndic_contact" required placeholder="Jean Martin"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row two">
+        <div class="field-group"><label>Téléphone <span class="required">*</span></label><input type="tel" name="syndic_tel" required placeholder="02 000 00 00"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Email <span class="required">*</span></label><input type="email" name="syndic_email" required placeholder="contact@syndic.be"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row two">
+        <div class="field-group"><label>Numéro BCE du syndic<span class="hint">Format : BE 0XXX.XXX.XXX</span></label><input type="text" name="syndic_bce" placeholder="BE 0123.456.789"></div>
+        <div class="field-group">
+          <label>Le syndic est-il professionnel (agréé IPI) ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-required="true" data-name="syndic_professionnel">
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui (agréé IPI)</div>
+            <div class="radio-option" data-value="Non (syndic bénévole)"><input type="radio"><div class="radio-indicator"></div>Non (bénévole)</div>
+          </div>
+          <span class="field-error">Veuillez sélectionner une option</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏢</span> Section 2 — Identification de l'immeuble</div>
+    <div class="section-body">
+      <div class="field-row">
+        <div class="field-group"><label>Adresse complète de l'immeuble <span class="required">*</span></label><textarea name="immeuble_adresse" required placeholder="Rue de la Copropriété 1, 1000 Bruxelles"></textarea><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row two">
+        <div class="field-group"><label>Nom de la copropriété<span class="hint">Ex. : Résidence Les Érables</span></label><input type="text" name="immeuble_nom" placeholder="Résidence Les Érables"></div>
+        <div class="field-group"><label>Numéro BCE de l'ACP<span class="hint">Format : BE 0XXX.XXX.XXX</span></label><input type="text" name="acp_bce" placeholder="BE 0123.456.789"></div>
+      </div>
+      <div class="field-row three">
+        <div class="field-group"><label>Année de construction <span class="required">*</span></label><input type="number" name="immeuble_annee" required min="1800" max="2026" placeholder="1975"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Nombre total de lots <span class="required">*</span></label><input type="number" name="immeuble_lots" required min="1" placeholder="24"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Nombre total d'étages <span class="required">*</span></label><input type="number" name="immeuble_etages" required min="1" placeholder="8"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row two">
+        <div class="field-group"><label>Dont : lots résidentiels <span class="required">*</span></label><input type="number" name="lots_residentiels" required min="0" placeholder="22"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Dont : lots commerciaux/professionnels <span class="required">*</span></label><input type="number" name="lots_commerciaux" required min="0" placeholder="2"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-group">
+        <label>Type d'immeuble <span class="required">*</span></label>
+        <div class="radio-group" data-required="true" data-name="immeuble_type">
+          <div class="radio-option" data-value="100 % résidentiel"><input type="radio"><div class="radio-indicator"></div>100 % résidentiel</div>
+          <div class="radio-option" data-value="Mixte résidentiel/commercial"><input type="radio"><div class="radio-indicator"></div>Mixte résidentiel/commercial</div>
+          <div class="radio-option" data-value="Majoritairement commercial"><input type="radio"><div class="radio-indicator"></div>Majoritairement commercial</div>
+          <div class="radio-option" data-value="Usage spécifique"><input type="radio"><div class="radio-indicator"></div>Usage spécifique (bureaux, clinique...)</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="index.html" class="btn btn-secondary">← Retour</a>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Caractéristiques →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 2 : CARACTÉRISTIQUES + SURFACES + ESPACES ═══ -->
+<div class="step-content" id="step-2">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏗️</span> Section 3 — Caractéristiques de l'immeuble</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Type de toiture <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="toiture">
+          <div class="radio-option" data-value="Ardoises naturelles"><input type="radio"><div class="radio-indicator"></div>Ardoises naturelles</div>
+          <div class="radio-option" data-value="Ardoises artificielles"><input type="radio"><div class="radio-indicator"></div>Ardoises artificielles</div>
+          <div class="radio-option" data-value="Tuiles"><input type="radio"><div class="radio-indicator"></div>Tuiles</div>
+          <div class="radio-option" data-value="Toiture plate"><input type="radio"><div class="radio-indicator"></div>Toiture plate</div>
+          <div class="radio-option" data-value="Mixte"><input type="radio"><div class="radio-indicator"></div>Mixte</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Type de chauffage des parties communes <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="chauffage_commun">
+          <div class="radio-option" data-value="Chauffage central (mazout)"><input type="radio"><div class="radio-indicator"></div>Central (mazout)</div>
+          <div class="radio-option" data-value="Chauffage central (gaz)"><input type="radio"><div class="radio-indicator"></div>Central (gaz)</div>
+          <div class="radio-option" data-value="Pas de chauffage central"><input type="radio"><div class="radio-indicator"></div>Pas de chauffage commun</div>
+          <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-row two">
+        <div class="field-group">
+          <label>Façade classée (patrimoine) ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-required="true" data-name="facade_classee">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Hauteur sous plafond parties communes > 3m ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-required="true" data-name="plafond_haut">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Matériaux nobles dans les parties communes ? <span class="required">*</span><span class="hint">Marbre, parquet, stucs...</span></label>
+        <div class="radio-group inline" data-required="true" data-name="materiaux_nobles">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group" style="margin-top:16px;">
+        <label>Équipements présents dans l'immeuble</label>
+        <div class="checkbox-group" data-name="equipements">
+          <div class="checkbox-option" data-value="Ascenseur(s)"><input type="checkbox"><div class="checkbox-indicator"></div>Ascenseur(s)</div>
+          <div class="checkbox-option" data-value="Parking souterrain"><input type="checkbox"><div class="checkbox-indicator"></div>Parking souterrain</div>
+          <div class="checkbox-option" data-value="Local vélos sécurisé"><input type="checkbox"><div class="checkbox-indicator"></div>Local vélos sécurisé</div>
+          <div class="checkbox-option" data-value="Conciergerie/gardiennage"><input type="checkbox"><div class="checkbox-indicator"></div>Conciergerie/gardiennage</div>
+          <div class="checkbox-option" data-value="Borne de recharge électrique"><input type="checkbox"><div class="checkbox-indicator"></div>Borne de recharge électrique</div>
+          <div class="checkbox-option" data-value="Panneaux solaires toiture commune"><input type="checkbox"><div class="checkbox-indicator"></div>Panneaux solaires (toiture commune)</div>
+          <div class="checkbox-option" data-value="Toiture terrasse"><input type="checkbox"><div class="checkbox-indicator"></div>Toiture terrasse</div>
+          <div class="checkbox-option" data-value="Citerne à mazout collective"><input type="checkbox"><div class="checkbox-indicator"></div>Citerne à mazout collective</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">📐</span> Section 4 — Surfaces</div>
+    <div class="section-body">
+      <div class="field-row three">
+        <div class="field-group"><label>Surface parties communes (m²) <span class="required">*</span></label><input type="number" name="surface_communes" required min="0" placeholder="450"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Surface parties privatives (m²) <span class="required">*</span></label><input type="number" name="surface_privatives" required min="0" placeholder="1800"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Valeur de reconstruction estimée (€)<span class="hint">Si disponible</span></label><input type="number" name="valeur_reconstruction" min="0" placeholder="2500000"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏊</span> Section 5 — Espaces communs et aménagements</div>
+    <div class="section-body">
+      <div class="field-group">
+        <label>Espaces communs présents</label>
+        <div class="checkbox-group" data-name="espaces_communs">
+          <div class="checkbox-option" data-value="Piscine commune"><input type="checkbox"><div class="checkbox-indicator"></div>Piscine commune</div>
+          <div class="checkbox-option" data-value="Sauna/Hammam commun"><input type="checkbox"><div class="checkbox-indicator"></div>Sauna/Hammam commun</div>
+          <div class="checkbox-option" data-value="Salle de réunion/fêtes"><input type="checkbox"><div class="checkbox-indicator"></div>Salle de réunion/fêtes</div>
+          <div class="checkbox-option" data-value="Terrasse commune"><input type="checkbox"><div class="checkbox-indicator"></div>Terrasse commune</div>
+          <div class="checkbox-option" data-value="Jardin commun"><input type="checkbox"><div class="checkbox-indicator"></div>Jardin commun</div>
+          <div class="checkbox-option" data-value="Terrain de sport"><input type="checkbox"><div class="checkbox-indicator"></div>Terrain de sport</div>
+          <div class="checkbox-option" data-value="Local technique"><input type="checkbox"><div class="checkbox-indicator"></div>Local technique</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Sinistres & Finalisation →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 3 : TRAVAUX + SINISTRES + ASSURANCE + PAIEMENT ═══ -->
+<div class="step-content" id="step-3">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🔧</span> Section 6 — Travaux et état du bâtiment</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>État général de l'immeuble <span class="required">*</span></label>
+        <div class="radio-group" data-required="true" data-name="etat_immeuble">
+          <div class="radio-option" data-value="Excellent (< 10 ans ou rénové récemment)"><input type="radio"><div class="radio-indicator"></div>Excellent (< 10 ans ou rénové récemment)</div>
+          <div class="radio-option" data-value="Bon"><input type="radio"><div class="radio-indicator"></div>Bon</div>
+          <div class="radio-option" data-value="Moyen (entretien courant nécessaire)"><input type="radio"><div class="radio-indicator"></div>Moyen (entretien courant nécessaire)</div>
+          <div class="radio-option" data-value="À rénover"><input type="radio"><div class="radio-indicator"></div>À rénover</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Travaux importants (> 50 000 €) prévus ou votés en AG dans les 12 prochains mois ? <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="travaux_prevus" data-trigger="cond_travaux_copro">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="conditional-block" id="block_travaux_copro">
+        <div class="conditional-label">↳ Nature des travaux prévus</div>
+        <div class="field-group"><label>Nature et montant estimé des travaux <span class="required">*</span></label><textarea name="travaux_detail" placeholder="Ex. : Réfection toiture (80 000 €), remplacement ascenseur (45 000 €)"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">📋</span> Section 7 — Antécédents sinistres</div>
+    <div class="section-body">
+      <div class="field-group">
+        <label>Sinistres parties communes (5 dernières années) <span class="required">*</span></label>
+        <input type="number" name="sinistres_nb" required min="0" value="0" data-trigger="cond_sinistres_copro" placeholder="0">
+        <span class="field-error">Obligatoire</span>
+      </div>
+      <div class="conditional-block" id="block_sinistres_copro">
+        <div class="conditional-label">↳ Détails des sinistres</div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Nature des sinistres <span class="required">*</span></label>
+          <div class="checkbox-group" data-name="sinistres_nature">
+            <div class="checkbox-option" data-value="Incendie"><input type="checkbox"><div class="checkbox-indicator"></div>Incendie</div>
+            <div class="checkbox-option" data-value="Dégât des eaux"><input type="checkbox"><div class="checkbox-indicator"></div>Dégât des eaux</div>
+            <div class="checkbox-option" data-value="Tempête"><input type="checkbox"><div class="checkbox-indicator"></div>Tempête</div>
+            <div class="checkbox-option" data-value="Vol/Vandalisme"><input type="checkbox"><div class="checkbox-indicator"></div>Vol/Vandalisme</div>
+            <div class="checkbox-option" data-value="Dommages ascenseur"><input type="checkbox"><div class="checkbox-indicator"></div>Dommages ascenseur</div>
+            <div class="checkbox-option" data-value="Autre"><input type="checkbox"><div class="checkbox-indicator"></div>Autre</div>
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Montant total réglé par l'assureur (€)</label>
+          <textarea name="sinistres_montants" placeholder="Ex. : 12 000 €"></textarea>
+        </div>
+        <div class="field-group">
+          <label>Refoulement d'égout, inondation ou fissures structurelles (10 dernières années) ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-name="inondation">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+        <div class="field-group" style="margin-top:12px;">
+          <label>Résiliation du contrat par un assureur (3 dernières années) ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-name="resiliation_assureur">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏢</span> Section 8 — Assurance actuelle</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:0;">
+        <label>L'immeuble est-il actuellement assuré ? <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="assurance_actuelle" data-trigger="cond_assurance_copro">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="conditional-block" id="block_assurance_copro">
+        <div class="conditional-label">↳ Informations sur l'assurance actuelle</div>
+        <div class="field-row two">
+          <div class="field-group"><label>Compagnie actuelle <span class="required">*</span></label><input type="text" name="assurance_compagnie" placeholder="Ex. : Baloise"></div>
+          <div class="field-group"><label>Date d'échéance <span class="required">*</span></label><input type="date" name="assurance_echeance"></div>
+        </div>
+        <div class="field-row two">
+          <div class="field-group"><label>Numéro de contrat</label><input type="text" name="assurance_contrat"></div>
+          <div class="field-group"><label>Prime annuelle (€)</label><input type="number" name="assurance_prime" min="0"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🛡️</span> Section 9 — Couvertures souhaitées</div>
+    <div class="section-body">
+      <div class="field-group">
+        <label>Couvertures souhaitées <span class="required">*</span></label>
+        <div class="checkbox-group" data-required="true" data-name="couvertures">
+          <div class="checkbox-option" data-value="Incendie & périls connexes"><input type="checkbox"><div class="checkbox-indicator"></div>Incendie & périls connexes (obligatoire)</div>
+          <div class="checkbox-option" data-value="Dégât des eaux"><input type="checkbox"><div class="checkbox-indicator"></div>Dégât des eaux</div>
+          <div class="checkbox-option" data-value="Tempête/Grêle/Neige"><input type="checkbox"><div class="checkbox-indicator"></div>Tempête/Grêle/Neige</div>
+          <div class="checkbox-option" data-value="Vol & Vandalisme parties communes"><input type="checkbox"><div class="checkbox-indicator"></div>Vol & Vandalisme parties communes</div>
+          <div class="checkbox-option" data-value="Bris de vitre parties communes"><input type="checkbox"><div class="checkbox-indicator"></div>Bris de vitre parties communes</div>
+          <div class="checkbox-option" data-value="RC Immeuble & Syndic"><input type="checkbox"><div class="checkbox-indicator"></div>RC Immeuble & Syndic</div>
+          <div class="checkbox-option" data-value="Protection juridique"><input type="checkbox"><div class="checkbox-indicator"></div>Protection juridique</div>
+          <div class="checkbox-option" data-value="Ascenseur (maintenance et bris)"><input type="checkbox"><div class="checkbox-indicator"></div>Ascenseur (maintenance et bris)</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner au moins une option</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">💳</span> Paiement</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Fréquence de paiement <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="paiement_frequence">
+          <div class="radio-option" data-value="Annuel"><input type="radio"><div class="radio-indicator"></div>Annuel</div>
+          <div class="radio-option" data-value="Semestriel"><input type="radio"><div class="radio-indicator"></div>Semestriel</div>
+          <div class="radio-option" data-value="Mensuel"><input type="radio"><div class="radio-indicator"></div>Mensuel</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group"><label>IBAN de l'ACP<span class="hint">Format : BE XX XXXX XXXX XXXX</span></label><input type="text" name="paiement_iban" placeholder="BE32 0000 0000 0000"></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">❤️</span> DAP Solidarity</div>
+    <div class="section-body">
+      <div class="solidarity-header"><div class="solidarity-icon">🤝</div><div class="solidarity-text"><strong>DAP reverse 10 % de sa commission à une association de votre choix.</strong></div></div>
+      <div class="radio-group" data-required="true" data-name="solidarity">
+        <div class="radio-option" data-value="Un Pas de Côté"><input type="radio"><div class="radio-indicator"></div><strong>Un Pas de Côté</strong> — Aide aux personnes en transition de vie</div>
+        <div class="radio-option" data-value="Le Pont des Arts"><input type="radio"><div class="radio-indicator"></div><strong>Le Pont des Arts</strong> — Accès à la culture pour tous</div>
+        <div class="radio-option" data-value="Stop Harcèlement"><input type="radio"><div class="radio-indicator"></div><strong>Stop Harcèlement</strong> — Lutte contre le harcèlement scolaire et en ligne</div>
+        <div class="radio-option" data-value="Union des Artistes"><input type="radio"><div class="radio-indicator"></div><strong>Union des Artistes</strong> — Soutien aux artistes indépendants</div>
+        <div class="radio-option" data-value="L'Ilot"><input type="radio"><div class="radio-indicator"></div><strong>L'Ilot</strong> — Accompagnement des personnes sans-abri</div>
+        <div class="radio-option" data-value="Co-Construire"><input type="radio"><div class="radio-indicator"></div><strong>Co-Construire</strong> — Projets d'économie sociale et solidaire</div>
+        <div class="radio-option" data-value="Dynamo International"><input type="radio"><div class="radio-indicator"></div><strong>Dynamo International</strong> — Travail de rue et aide à la jeunesse</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">💬</span> Remarques</div>
+    <div class="section-body"><div class="field-group"><label>Remarques ou informations complémentaires</label><textarea name="remarques" placeholder="Documents joints, informations complémentaires..."></textarea></div></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-submit" id="submit-btn" onclick="submitForm('copropriete')">✅ Envoyer ma demande</button>
+  </div>
+</div>
+
+</div>
+
+<div class="success-screen">
+  <div class="success-icon">✅</div>
+  <h2 class="success-title">Demande envoyée avec succès !</h2>
+  <p class="success-text">Votre conseiller DAP analysera votre dossier et vous contactera dans les <strong>24 heures ouvrables</strong>.</p>
+  <a href="index.html" class="btn btn-primary" style="display:inline-flex; margin:0 auto;">← Retour à l'accueil</a>
+</div>
+
+</div>
+
+<script src="assets/form.js"></script>
+<script>
+window.CONDITIONALS = {
+  cond_travaux_copro: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_travaux_copro' }],
+  cond_sinistres_copro: [{ condition: { type: 'gte', value: 1 }, target: 'block_sinistres_copro' }],
+  cond_assurance_copro: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_assurance_copro' }]
+};
+</script>
+</body>
+</html>

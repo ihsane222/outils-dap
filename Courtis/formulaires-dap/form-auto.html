@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demande d'offre — Assurance Auto | DAP</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="form-header">
+  <div class="header-inner">
+    <div class="header-top">
+      <img src="assets/logo-dap.png" alt="DAP" class="header-logo">
+      <div class="header-divider"></div>
+      <div class="header-brand">Courtage d'assurances</div>
+    </div>
+    <h1 class="header-title">Demande d'offre — Assurance Auto</h1>
+    <p class="header-subtitle">Merci de compléter ce formulaire afin que DAP puisse vous établir une offre personnalisée.<br>Toutes les informations transmises sont traitées de façon confidentielle.</p>
+    <div class="header-badge">🚗 Assurance Auto · 8–12 minutes</div>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar">
+    <div class="progress-inner">
+      <div class="step-item">
+        <div class="step-dot active" id="dot-1">1</div>
+        <div class="step-label active" id="label-1">Preneur & Conducteurs</div>
+      </div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-item">
+        <div class="step-dot" id="dot-2">2</div>
+        <div class="step-label" id="label-2">Véhicule</div>
+      </div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-item">
+        <div class="step-dot" id="dot-3">3</div>
+        <div class="step-label" id="label-3">Sinistres & Assurance</div>
+      </div>
+      <div class="step-line" id="line-3"></div>
+      <div class="step-item">
+        <div class="step-dot" id="dot-4">4</div>
+        <div class="step-label" id="label-4">Couvertures & Finalisation</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="form-container">
+<div class="form-steps-wrapper">
+
+<!-- ═══ ÉTAPE 1 : PRENEUR + CONDUCTEURS ═══ -->
+<div class="step-content active" id="step-1">
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">👤</span> Section 1 — Preneur d'assurance</div>
+    <div class="section-body">
+      <div class="field-row two">
+        <div class="field-group">
+          <label>Nom <span class="required">*</span></label>
+          <input type="text" name="nom" required placeholder="Dupont">
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+        <div class="field-group">
+          <label>Prénom <span class="required">*</span></label>
+          <input type="text" name="prenom" required placeholder="Jean">
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+      </div>
+      <div class="field-row two">
+        <div class="field-group">
+          <label>Date de naissance <span class="required">*</span></label>
+          <input type="date" name="date_naissance" required>
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+        <div class="field-group">
+          <label>Téléphone <span class="required">*</span><span class="hint">Format : 04XX XX XX XX</span></label>
+          <input type="tel" name="telephone" required placeholder="0470 00 00 00">
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Email <span class="required">*</span></label>
+          <input type="email" name="email" required placeholder="jean.dupont@email.be">
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label>Adresse complète <span class="required">*</span><span class="hint">Rue, numéro, code postal, commune</span></label>
+          <textarea name="adresse" required placeholder="Rue de la Paix 1, 1000 Bruxelles"></textarea>
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+      </div>
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Profession / Statut <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="profession">
+          <div class="radio-option" data-value="Salarié"><input type="radio" name="profession" value="Salarié"><div class="radio-indicator"></div>Salarié</div>
+          <div class="radio-option" data-value="Indépendant"><input type="radio" name="profession" value="Indépendant"><div class="radio-indicator"></div>Indépendant</div>
+          <div class="radio-option" data-value="Fonctionnaire"><input type="radio" name="profession" value="Fonctionnaire"><div class="radio-indicator"></div>Fonctionnaire</div>
+          <div class="radio-option" data-value="Étudiant"><input type="radio" name="profession" value="Étudiant"><div class="radio-indicator"></div>Étudiant</div>
+          <div class="radio-option" data-value="Sans emploi"><input type="radio" name="profession" value="Sans emploi"><div class="radio-indicator"></div>Sans emploi</div>
+          <div class="radio-option" data-value="Pensionné"><input type="radio" name="profession" value="Pensionné"><div class="radio-indicator"></div>Pensionné</div>
+          <div class="radio-option" data-value="Autre"><input type="radio" name="profession" value="Autre"><div class="radio-indicator"></div>Autre</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group">
+        <label>Numéro BCE <span class="hint">Si indépendant ou société — Format : BE 0XXX.XXX.XXX</span></label>
+        <input type="text" name="bce" placeholder="BE 0123.456.789">
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🧑‍✈️</span> Section 2 — Conducteur habituel</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Le conducteur habituel est-il le preneur ? <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="conducteur_habituel_est_preneur" data-trigger="cond_conducteur_habituel">
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+
+      <div class="conditional-block" id="block_conducteur_habituel">
+        <div class="conditional-label">↳ Informations sur le conducteur habituel</div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Nom du conducteur habituel <span class="required">*</span></label>
+            <input type="text" name="cond_hab_nom" placeholder="Dupont">
+          </div>
+          <div class="field-group">
+            <label>Prénom <span class="required">*</span></label>
+            <input type="text" name="cond_hab_prenom" placeholder="Marie">
+          </div>
+        </div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Date de naissance <span class="required">*</span></label>
+            <input type="date" name="cond_hab_date_naiss">
+          </div>
+          <div class="field-group">
+            <label>Date d'obtention du permis <span class="required">*</span></label>
+            <input type="date" name="cond_hab_date_permis">
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Lien avec le preneur <span class="required">*</span></label>
+          <div class="radio-group inline" data-name="cond_hab_lien">
+            <div class="radio-option" data-value="Conjoint/Cohabitant"><input type="radio"><div class="radio-indicator"></div>Conjoint/Cohabitant</div>
+            <div class="radio-option" data-value="Enfant"><input type="radio"><div class="radio-indicator"></div>Enfant</div>
+            <div class="radio-option" data-value="Parent"><input type="radio"><div class="radio-indicator"></div>Parent</div>
+            <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+          </div>
+        </div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Sinistres responsables (5 dernières années) <span class="required">*</span></label>
+            <input type="number" name="cond_hab_sinistres" min="0" value="0" placeholder="0">
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Déchéance du droit à conduire (3 dernières années) ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-name="cond_hab_decheance" data-trigger="cond_cond_hab_decheance">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+        <div class="conditional-block" id="block_cond_hab_decheance">
+          <div class="field-group">
+            <label>Motif et date de la déchéance</label>
+            <textarea name="cond_hab_decheance_detail" placeholder="Ex. : Conduite sous influence, 15/03/2024"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">👥</span> Section 3 — Conducteur occasionnel</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Y a-t-il un conducteur occasionnel ? <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="conducteur_occasionnel" data-trigger="cond_conducteur_occasionnel">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+
+      <div class="conditional-block" id="block_conducteur_occasionnel">
+        <div class="conditional-label">↳ Informations sur le conducteur occasionnel</div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Nom <span class="required">*</span></label>
+            <input type="text" name="cond_occ_nom">
+          </div>
+          <div class="field-group">
+            <label>Prénom <span class="required">*</span></label>
+            <input type="text" name="cond_occ_prenom">
+          </div>
+        </div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Date de naissance <span class="required">*</span></label>
+            <input type="date" name="cond_occ_date_naiss">
+          </div>
+          <div class="field-group">
+            <label>Date d'obtention du permis <span class="required">*</span></label>
+            <input type="date" name="cond_occ_date_permis">
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Lien avec le preneur</label>
+          <div class="radio-group inline" data-name="cond_occ_lien">
+            <div class="radio-option" data-value="Conjoint/Cohabitant"><input type="radio"><div class="radio-indicator"></div>Conjoint/Cohabitant</div>
+            <div class="radio-option" data-value="Enfant"><input type="radio"><div class="radio-indicator"></div>Enfant</div>
+            <div class="radio-option" data-value="Parent"><input type="radio"><div class="radio-indicator"></div>Parent</div>
+            <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+          </div>
+        </div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Sinistres responsables (5 dernières années)</label>
+            <input type="number" name="cond_occ_sinistres" min="0" value="0">
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Déchéance du droit à conduire (3 dernières années) ?</label>
+          <div class="radio-group inline" data-name="cond_occ_decheance">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="index.html" class="btn btn-secondary">← Retour</a>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Véhicule →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 2 : VÉHICULE ═══ -->
+<div class="step-content" id="step-2">
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🚗</span> Section 4 — Données du véhicule</div>
+    <div class="section-body">
+      <div class="field-row two">
+        <div class="field-group">
+          <label>Marque <span class="required">*</span></label>
+          <input type="text" name="vehicule_marque" required placeholder="Ex. : Volkswagen">
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+        <div class="field-group">
+          <label>Modèle <span class="required">*</span></label>
+          <input type="text" name="vehicule_modele" required placeholder="Ex. : Golf">
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+      </div>
+      <div class="field-row three">
+        <div class="field-group">
+          <label>Puissance fiscale (kW) <span class="required">*</span></label>
+          <input type="number" name="vehicule_kw" required min="1" placeholder="85">
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+        <div class="field-group">
+          <label>Date de 1ère mise en circulation <span class="required">*</span></label>
+          <input type="date" name="vehicule_mise_circulation" required>
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+        <div class="field-group">
+          <label>Valeur catalogue HTVA (€) <span class="required">*</span></label>
+          <input type="number" name="vehicule_valeur" required min="0" placeholder="25000">
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+      </div>
+
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Carburant <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="vehicule_carburant">
+          <div class="radio-option" data-value="Essence"><input type="radio"><div class="radio-indicator"></div>Essence</div>
+          <div class="radio-option" data-value="Diesel"><input type="radio"><div class="radio-indicator"></div>Diesel</div>
+          <div class="radio-option" data-value="Hybride"><input type="radio"><div class="radio-indicator"></div>Hybride</div>
+          <div class="radio-option" data-value="Hybride rechargeable"><input type="radio"><div class="radio-indicator"></div>Hybride rechargeable</div>
+          <div class="radio-option" data-value="Électrique"><input type="radio"><div class="radio-indicator"></div>Électrique</div>
+          <div class="radio-option" data-value="GPL"><input type="radio"><div class="radio-indicator"></div>GPL</div>
+          <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Usage du véhicule <span class="required">*</span></label>
+        <div class="radio-group" data-required="true" data-name="vehicule_usage">
+          <div class="radio-option" data-value="Privé uniquement"><input type="radio"><div class="radio-indicator"></div>Privé uniquement</div>
+          <div class="radio-option" data-value="Privé + trajets domicile-travail"><input type="radio"><div class="radio-indicator"></div>Privé + trajets domicile-travail</div>
+          <div class="radio-option" data-value="Professionnel occasionnel"><input type="radio"><div class="radio-indicator"></div>Professionnel occasionnel</div>
+          <div class="radio-option" data-value="Professionnel intensif"><input type="radio"><div class="radio-indicator"></div>Professionnel intensif</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Kilométrage annuel estimé <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="vehicule_km">
+          <div class="radio-option" data-value="< 10 000 km"><input type="radio"><div class="radio-indicator"></div>Moins de 10 000 km</div>
+          <div class="radio-option" data-value="10 000–20 000 km"><input type="radio"><div class="radio-indicator"></div>10 000–20 000 km</div>
+          <div class="radio-option" data-value="20 000–30 000 km"><input type="radio"><div class="radio-indicator"></div>20 000–30 000 km</div>
+          <div class="radio-option" data-value="> 30 000 km"><input type="radio"><div class="radio-indicator"></div>Plus de 30 000 km</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Kilométrage limité contractuellement souhaité ?</label>
+        <div class="radio-group inline" data-name="vehicule_km_limite">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Options / équipements spéciaux à déclarer <span class="hint">Ex. : GPS intégré, jantes alu, toit ouvrant...</span></label>
+        <textarea name="vehicule_options" placeholder="Listez ici les équipements spéciaux..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Sinistres & Assurance →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 3 : SINISTRES + ASSURANCE ACTUELLE ═══ -->
+<div class="step-content" id="step-3">
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">📋</span> Section 5 — Antécédents sinistres</div>
+    <div class="section-body">
+      <div class="field-row">
+        <div class="field-group">
+          <label>Nombre de sinistres déclarés au cours des 5 dernières années <span class="required">*</span></label>
+          <input type="number" name="sinistres_nb" required min="0" value="0" data-trigger="cond_sinistres" placeholder="0">
+          <span class="field-error">Ce champ est obligatoire</span>
+        </div>
+      </div>
+
+      <div class="conditional-block" id="block_sinistres">
+        <div class="conditional-label">↳ Détails des sinistres</div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Date(s) du ou des sinistres <span class="required">*</span><span class="hint">Une date par ligne si plusieurs sinistres</span></label>
+          <textarea name="sinistres_dates" placeholder="15/03/2022&#10;08/11/2023"></textarea>
+        </div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Montant(s) total(aux) réglé(s) par l'assureur (€)</label>
+          <textarea name="sinistres_montants" placeholder="Ex. : 2500 €&#10;800 €"></textarea>
+        </div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Votre responsabilité était-elle engagée ? <span class="required">*</span></label>
+          <div class="radio-group" data-name="sinistres_responsabilite">
+            <div class="radio-option" data-value="Entièrement responsable"><input type="radio"><div class="radio-indicator"></div>Entièrement responsable</div>
+            <div class="radio-option" data-value="Partiellement responsable"><input type="radio"><div class="radio-indicator"></div>Partiellement responsable</div>
+            <div class="radio-option" data-value="Non responsable"><input type="radio"><div class="radio-indicator"></div>Non responsable</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Description succincte des sinistres</label>
+          <textarea name="sinistres_description" placeholder="Décrivez brièvement les circonstances..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏢</span> Section 6 — Assurance actuelle</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Êtes-vous actuellement assuré(e) pour ce véhicule ? <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="assurance_actuelle" data-trigger="cond_assurance_actuelle">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+
+      <div class="conditional-block" id="block_assurance_actuelle">
+        <div class="conditional-label">↳ Informations sur l'assurance actuelle</div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Compagnie actuelle <span class="required">*</span></label>
+            <input type="text" name="assurance_compagnie" placeholder="Ex. : AG Insurance">
+          </div>
+          <div class="field-group">
+            <label>Numéro de contrat</label>
+            <input type="text" name="assurance_contrat">
+          </div>
+        </div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Prime annuelle actuelle (€)</label>
+            <input type="number" name="assurance_prime" min="0" placeholder="850">
+          </div>
+          <div class="field-group">
+            <label>Date d'échéance du contrat <span class="required">*</span></label>
+            <input type="date" name="assurance_echeance">
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Motif du changement</label>
+          <div class="radio-group inline" data-name="assurance_motif">
+            <div class="radio-option" data-value="Prix"><input type="radio"><div class="radio-indicator"></div>Prix</div>
+            <div class="radio-option" data-value="Couverture insuffisante"><input type="radio"><div class="radio-indicator"></div>Couverture insuffisante</div>
+            <div class="radio-option" data-value="Service"><input type="radio"><div class="radio-indicator"></div>Service</div>
+            <div class="radio-option" data-value="Résiliation par l'assureur"><input type="radio"><div class="radio-indicator"></div>Résiliation par l'assureur</div>
+            <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Couvertures & Finalisation →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 4 : COUVERTURES + PAIEMENT + SOLIDARITY ═══ -->
+<div class="step-content" id="step-4">
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🛡️</span> Section 7 — Couvertures souhaitées</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Formule souhaitée <span class="required">*</span></label>
+        <div class="radio-group" data-required="true" data-name="couverture_formule">
+          <div class="radio-option" data-value="RC uniquement"><input type="radio"><div class="radio-indicator"></div>RC (obligatoire) uniquement</div>
+          <div class="radio-option" data-value="RC + Mini omnium"><input type="radio"><div class="radio-indicator"></div>RC + Mini omnium</div>
+          <div class="radio-option" data-value="RC + Omnium complète"><input type="radio"><div class="radio-indicator"></div>RC + Omnium complète</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group">
+        <label>Options supplémentaires souhaitées</label>
+        <div class="checkbox-group" data-name="couverture_options">
+          <div class="checkbox-option" data-value="Assistance"><input type="checkbox"><div class="checkbox-indicator"></div>Assistance</div>
+          <div class="checkbox-option" data-value="Protection juridique"><input type="checkbox"><div class="checkbox-indicator"></div>Protection juridique</div>
+          <div class="checkbox-option" data-value="Conducteur"><input type="checkbox"><div class="checkbox-indicator"></div>Conducteur</div>
+          <div class="checkbox-option" data-value="Objets dans le véhicule"><input type="checkbox"><div class="checkbox-indicator"></div>Objets dans le véhicule</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">💳</span> Section 8 — Paiement</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Fréquence de paiement souhaitée <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="paiement_frequence">
+          <div class="radio-option" data-value="Annuel"><input type="radio"><div class="radio-indicator"></div>Annuel</div>
+          <div class="radio-option" data-value="Semestriel"><input type="radio"><div class="radio-indicator"></div>Semestriel</div>
+          <div class="radio-option" data-value="Mensuel"><input type="radio"><div class="radio-indicator"></div>Mensuel</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group">
+        <label>IBAN pour domiciliation <span class="hint">Format : BE XX XXXX XXXX XXXX</span></label>
+        <input type="text" name="paiement_iban" placeholder="BE32 0000 0000 0000">
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">❤️</span> Section 9 — DAP Solidarity</div>
+    <div class="section-body">
+      <div class="solidarity-header">
+        <div class="solidarity-icon">🤝</div>
+        <div class="solidarity-text">
+          <strong>DAP reverse 10 % de sa commission à une association caritative de votre choix.</strong><br>
+          Choisissez l'association que vous souhaitez soutenir :
+        </div>
+      </div>
+      <div class="radio-group" data-required="true" data-name="solidarity">
+        <div class="radio-option" data-value="Un Pas de Côté"><input type="radio"><div class="radio-indicator"></div><strong>Un Pas de Côté</strong> — Aide aux personnes en transition de vie</div>
+        <div class="radio-option" data-value="Le Pont des Arts"><input type="radio"><div class="radio-indicator"></div><strong>Le Pont des Arts</strong> — Accès à la culture pour tous</div>
+        <div class="radio-option" data-value="Stop Harcèlement"><input type="radio"><div class="radio-indicator"></div><strong>Stop Harcèlement</strong> — Lutte contre le harcèlement scolaire et en ligne</div>
+        <div class="radio-option" data-value="Union des Artistes"><input type="radio"><div class="radio-indicator"></div><strong>Union des Artistes</strong> — Soutien aux artistes indépendants</div>
+        <div class="radio-option" data-value="L'Ilot"><input type="radio"><div class="radio-indicator"></div><strong>L'Ilot</strong> — Accompagnement des personnes sans-abri</div>
+        <div class="radio-option" data-value="Co-Construire"><input type="radio"><div class="radio-indicator"></div><strong>Co-Construire</strong> — Projets d'économie sociale et solidaire</div>
+        <div class="radio-option" data-value="Dynamo International"><input type="radio"><div class="radio-indicator"></div><strong>Dynamo International</strong> — Travail de rue et aide à la jeunesse</div>
+      </div>
+      <span class="field-error">Veuillez sélectionner une association</span>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">💬</span> Remarques</div>
+    <div class="section-body">
+      <div class="field-group">
+        <label>Remarques ou informations complémentaires</label>
+        <textarea name="remarques" placeholder="Toute information utile pour votre conseiller DAP..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-submit" id="submit-btn" onclick="submitForm('auto')">
+      ✅ Envoyer ma demande
+    </button>
+  </div>
+</div>
+
+</div><!-- /form-steps-wrapper -->
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen">
+  <div class="success-icon">✅</div>
+  <h2 class="success-title">Demande envoyée avec succès !</h2>
+  <p class="success-text">Merci pour votre confiance. Votre conseiller DAP analysera votre dossier et vous contactera dans les <strong>24 heures ouvrables</strong> avec une offre personnalisée.</p>
+  <a href="index.html" class="btn btn-primary" style="display:inline-flex; margin: 0 auto;">← Retour à l'accueil</a>
+</div>
+
+</div><!-- /form-container -->
+
+<script src="assets/form.js"></script>
+<script>
+window.CONDITIONALS = {
+  cond_conducteur_habituel: [
+    { condition: { type: 'equals', value: 'Non' }, target: 'block_conducteur_habituel' }
+  ],
+  cond_cond_hab_decheance: [
+    { condition: { type: 'equals', value: 'Oui' }, target: 'block_cond_hab_decheance' }
+  ],
+  cond_conducteur_occasionnel: [
+    { condition: { type: 'equals', value: 'Oui' }, target: 'block_conducteur_occasionnel' }
+  ],
+  cond_sinistres: [
+    { condition: { type: 'gte', value: 1 }, target: 'block_sinistres' }
+  ],
+  cond_assurance_actuelle: [
+    { condition: { type: 'equals', value: 'Oui' }, target: 'block_assurance_actuelle' }
+  ]
+};
+</script>
+</body>
+</html>

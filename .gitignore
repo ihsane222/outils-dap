@@ -1,0 +1,17 @@
+.DS_Store
+*.xlsx
+*.pdf
+*.mp4
+*.pptx
+*.docx
+.claude/
+.mcp.json
+credentials.json
+token.pickle
+node_modules/
+package-lock.json
+courtis-v3/
+rdv-optimizer/
+Courtis/dap-bureau-uccle/
+Courtis/pipeline-streamlit/
+n8n/skills/

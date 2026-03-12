@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demande d'offre — Assurance Habitation | DAP</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="form-header">
+  <div class="header-inner">
+    <div class="header-top">
+      <img src="assets/logo-dap.png" alt="DAP" class="header-logo">
+      <div class="header-divider"></div>
+      <div class="header-brand">Courtage d'assurances</div>
+    </div>
+    <h1 class="header-title">Demande d'offre — Assurance Habitation / Incendie</h1>
+    <p class="header-subtitle">Toutes les informations transmises sont traitées de façon confidentielle par DAP.</p>
+    <div class="header-badge">🏠 Habitation / Incendie · 10–15 minutes</div>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-inner">
+      <div class="step-item"><div class="step-dot active" id="dot-1">1</div><div class="step-label active" id="label-1">Identité & Qualité</div></div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-item"><div class="step-dot" id="dot-2">2</div><div class="step-label" id="label-2">Description du bien</div></div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-item"><div class="step-dot" id="dot-3">3</div><div class="step-label" id="label-3">Dépendances & État</div></div>
+      <div class="step-line" id="line-3"></div>
+      <div class="step-item"><div class="step-dot" id="dot-4">4</div><div class="step-label" id="label-4">Sinistres & Finalisation</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="form-container">
+<div class="form-steps-wrapper">
+
+<!-- ═══ ÉTAPE 1 : IDENTITÉ + QUALITÉ ═══ -->
+<div class="step-content active" id="step-1">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">👤</span> Section 1 — Identité du preneur</div>
+    <div class="section-body">
+      <div class="field-row two">
+        <div class="field-group"><label>Nom <span class="required">*</span></label><input type="text" name="nom" required placeholder="Dupont"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Prénom <span class="required">*</span></label><input type="text" name="prenom" required placeholder="Sophie"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row two">
+        <div class="field-group"><label>Date de naissance <span class="required">*</span></label><input type="date" name="date_naissance" required><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Téléphone <span class="required">*</span><span class="hint">Format : 04XX XX XX XX</span></label><input type="tel" name="telephone" required placeholder="0470 00 00 00"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Email <span class="required">*</span></label><input type="email" name="email" required placeholder="sophie.dupont@email.be"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-row">
+        <div class="field-group"><label>Adresse personnelle <span class="required">*</span><span class="hint">Si différente de l'adresse du bien à assurer</span></label><textarea name="adresse" required placeholder="Rue de la Paix 1, 1000 Bruxelles"></textarea><span class="field-error">Obligatoire</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏠</span> Section 2 — Qualité par rapport au bien</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Votre qualité par rapport au bien à assurer <span class="required">*</span></label>
+        <div class="radio-group" data-required="true" data-name="qualite" data-trigger="cond_qualite">
+          <div class="radio-option" data-value="Propriétaire occupant"><input type="radio"><div class="radio-indicator"></div>Propriétaire occupant</div>
+          <div class="radio-option" data-value="Locataire"><input type="radio"><div class="radio-indicator"></div>Locataire</div>
+          <div class="radio-option" data-value="Propriétaire non-occupant"><input type="radio"><div class="radio-indicator"></div>Propriétaire non-occupant</div>
+          <div class="radio-option" data-value="Co-locataire"><input type="radio"><div class="radio-indicator"></div>Co-locataire</div>
+          <div class="radio-option" data-value="Usufruitier"><input type="radio"><div class="radio-indicator"></div>Usufruitier</div>
+          <div class="radio-option" data-value="Nu-propriétaire"><input type="radio"><div class="radio-indicator"></div>Nu-propriétaire</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="conditional-block" id="block_locataire">
+        <div class="conditional-label">↳ Information locataire</div>
+        <div class="field-group"><label>Loyer mensuel hors charges (€) <span class="required">*</span></label><input type="number" name="loyer" min="0" placeholder="800"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">📍</span> Section 3 — Adresse du bien à assurer</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:0;">
+        <label>L'adresse du bien est-elle différente de votre adresse personnelle ? <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="adresse_differente" data-trigger="cond_adresse_bien">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="conditional-block" id="block_adresse_bien">
+        <div class="conditional-label">↳ Adresse du bien à assurer</div>
+        <div class="field-group"><label>Adresse complète du bien <span class="required">*</span><span class="hint">Rue, numéro, code postal, commune</span></label><textarea name="adresse_bien" placeholder="Avenue Louise 100, 1050 Bruxelles"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="index.html" class="btn btn-secondary">← Retour</a>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Description du bien →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 2 : DESCRIPTION + PIÈCES ═══ -->
+<div class="step-content" id="step-2">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏗️</span> Section 4 — Description du bien</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Type de bien <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="type_bien" data-trigger="cond_type_bien">
+          <div class="radio-option" data-value="Appartement"><input type="radio"><div class="radio-indicator"></div>Appartement</div>
+          <div class="radio-option" data-value="Maison unifamiliale"><input type="radio"><div class="radio-indicator"></div>Maison unifamiliale</div>
+          <div class="radio-option" data-value="Villa"><input type="radio"><div class="radio-indicator"></div>Villa</div>
+          <div class="radio-option" data-value="Kot/Studio"><input type="radio"><div class="radio-indicator"></div>Kot/Studio</div>
+          <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-row three">
+        <div class="field-group"><label>Superficie habitable (m²) <span class="required">*</span></label><input type="number" name="superficie" required min="1" placeholder="120"><span class="field-error">Obligatoire</span></div>
+        <div class="field-group"><label>Année de construction <span class="required">*</span></label><input type="number" name="annee_construction" required min="1800" max="2026" placeholder="1985"><span class="field-error">Obligatoire</span></div>
+      </div>
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Type de chauffage principal <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="chauffage">
+          <div class="radio-option" data-value="Mazout"><input type="radio"><div class="radio-indicator"></div>Mazout</div>
+          <div class="radio-option" data-value="Gaz naturel"><input type="radio"><div class="radio-indicator"></div>Gaz naturel</div>
+          <div class="radio-option" data-value="Pompe à chaleur"><input type="radio"><div class="radio-indicator"></div>Pompe à chaleur</div>
+          <div class="radio-option" data-value="Électrique"><input type="radio"><div class="radio-indicator"></div>Électrique</div>
+          <div class="radio-option" data-value="Pellets/Bois"><input type="radio"><div class="radio-indicator"></div>Pellets/Bois</div>
+          <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Type de toiture <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="toiture">
+          <div class="radio-option" data-value="Ardoises naturelles"><input type="radio"><div class="radio-indicator"></div>Ardoises naturelles</div>
+          <div class="radio-option" data-value="Ardoises artificielles"><input type="radio"><div class="radio-indicator"></div>Ardoises artificielles</div>
+          <div class="radio-option" data-value="Tuiles"><input type="radio"><div class="radio-indicator"></div>Tuiles</div>
+          <div class="radio-option" data-value="Toiture plate"><input type="radio"><div class="radio-indicator"></div>Toiture plate</div>
+          <div class="radio-option" data-value="Chaume"><input type="radio"><div class="radio-indicator"></div>Chaume</div>
+          <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-row three">
+        <div class="field-group">
+          <label>Façade classée (patrimoine) ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-required="true" data-name="facade_classee">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Hauteur sous plafond > 3m ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-required="true" data-name="plafond_haut">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Matériaux nobles présents ? <span class="required">*</span><span class="hint">Marbre, parquet massif, plafonds sculptés...</span></label>
+          <div class="radio-group inline" data-required="true" data-name="materiaux_nobles">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spécificités appartement (conditionnel) -->
+  <div class="conditional-block" id="block_appart" style="margin-bottom:20px;">
+    <div class="section-card" style="margin-bottom:0;">
+      <div class="section-title"><span class="icon">🏢</span> Section 6 — Spécificités appartement</div>
+      <div class="section-body">
+        <div class="field-row two">
+          <div class="field-group"><label>Étage de l'appartement <span class="required">*</span><span class="hint">0 = rez-de-chaussée</span></label><input type="number" name="etage" min="0" placeholder="3"></div>
+          <div class="field-group"><label>Nombre total d'étages de l'immeuble <span class="required">*</span></label><input type="number" name="nb_etages" min="1" placeholder="8"></div>
+        </div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Hébergement touristique (Airbnb...) ? <span class="required">*</span></label>
+            <div class="radio-group inline" data-name="hebergement_touristique">
+              <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+              <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Activité professionnelle dans le bien ? <span class="required">*</span></label>
+            <div class="radio-group inline" data-name="activite_pro">
+              <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+              <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+            </div>
+          </div>
+        </div>
+        <div class="field-row two">
+          <div class="field-group">
+            <label>Ascenseur dans l'immeuble ?</label>
+            <div class="radio-group inline" data-name="ascenseur">
+              <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+              <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🚪</span> Section 5 — Composition du bien (nombre de pièces)</div>
+    <div class="section-body">
+      <p style="font-size:13px; color:#6b7280; margin-bottom:16px;">Indiquez le nombre de pièces par type (mettre 0 si inexistant)</p>
+      <div class="field-row three">
+        <div class="field-group"><label>Cuisine(s) <span class="required">*</span></label><input type="number" name="pieces_cuisine" required min="0" value="1"></div>
+        <div class="field-group"><label>Living(s) / Salon(s) <span class="required">*</span></label><input type="number" name="pieces_living" required min="0" value="1"></div>
+        <div class="field-group"><label>Chambre(s) <span class="required">*</span></label><input type="number" name="pieces_chambres" required min="0" value="2"></div>
+      </div>
+      <div class="field-row three">
+        <div class="field-group"><label>Salle(s) de bain <span class="required">*</span></label><input type="number" name="pieces_sdb" required min="0" value="1"></div>
+        <div class="field-group"><label>Bureau(x)</label><input type="number" name="pieces_bureau" min="0" value="0"></div>
+        <div class="field-group"><label>Dressing(s)</label><input type="number" name="pieces_dressing" min="0" value="0"></div>
+      </div>
+      <div class="field-row three">
+        <div class="field-group"><label>Salle(s) de bien-être</label><input type="number" name="pieces_bienetre" min="0" value="0"></div>
+        <div class="field-group"><label>Salle de loisir / Hobby</label><input type="number" name="pieces_loisir" min="0" value="0"></div>
+        <div class="field-group"><label>Salle de repassage / Buanderie</label><input type="number" name="pieces_repassage" min="0" value="0"></div>
+      </div>
+      <div class="field-row three">
+        <div class="field-group"><label>Cave(s) <span class="hint">Voir détail ci-dessous</span></label><input type="number" name="pieces_cave" min="0" value="0" data-trigger="cond_cave_detail"></div>
+        <div class="field-group"><label>Grenier(s)</label><input type="number" name="pieces_grenier" min="0" value="0"></div>
+        <div class="field-group"><label>Autres pièces ≥ 4 m²</label><input type="number" name="pieces_autres" min="0" value="0"></div>
+      </div>
+      <div class="conditional-block" id="block_cave_detail">
+        <div class="conditional-label">↳ Affectation(s) de la/des cave(s)</div>
+        <div class="checkbox-group" data-name="cave_affectation">
+          <div class="checkbox-option" data-value="Débarras"><input type="checkbox"><div class="checkbox-indicator"></div>Débarras</div>
+          <div class="checkbox-option" data-value="Chaufferie"><input type="checkbox"><div class="checkbox-indicator"></div>Chaufferie</div>
+          <div class="checkbox-option" data-value="Buanderie"><input type="checkbox"><div class="checkbox-indicator"></div>Buanderie</div>
+          <div class="checkbox-option" data-value="Atelier"><input type="checkbox"><div class="checkbox-indicator"></div>Atelier</div>
+        </div>
+        <div class="field-group" style="margin-top:12px;">
+          <label>Sous-sol habitable (plafond ≥ 2,10 m) ?</label>
+          <div class="radio-group inline" data-name="cave_sous_sol">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Dépendances & État →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 3 : DÉPENDANCES + ÉTAT ═══ -->
+<div class="step-content" id="step-3">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏡</span> Section 7 — Dépendances et équipements</div>
+    <div class="section-body">
+      <div class="field-row two" style="margin-bottom:16px;">
+        <div class="field-group">
+          <label>Cave aménagée ?</label>
+          <div class="radio-group inline" data-name="cave_amenagee">
+            <div class="radio-option" data-value="Pas de cave"><input type="radio"><div class="radio-indicator"></div>Pas de cave</div>
+            <div class="radio-option" data-value="Non aménagée"><input type="radio"><div class="radio-indicator"></div>Non aménagée</div>
+            <div class="radio-option" data-value="Aménagée"><input type="radio"><div class="radio-indicator"></div>Aménagée</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Grenier aménagé ?</label>
+          <div class="radio-group inline" data-name="grenier_amenage">
+            <div class="radio-option" data-value="Pas de grenier"><input type="radio"><div class="radio-indicator"></div>Pas de grenier</div>
+            <div class="radio-option" data-value="Non aménagé"><input type="radio"><div class="radio-indicator"></div>Non aménagé</div>
+            <div class="radio-option" data-value="Aménagé"><input type="radio"><div class="radio-indicator"></div>Aménagé</div>
+          </div>
+        </div>
+      </div>
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Équipements et annexes présents sur le bien</label>
+        <div class="checkbox-group" data-name="equipements" data-trigger="cond_piscine,cond_feu_ouvert">
+          <div class="checkbox-option" data-value="Balcon"><input type="checkbox"><div class="checkbox-indicator"></div>Balcon</div>
+          <div class="checkbox-option" data-value="Loggia"><input type="checkbox"><div class="checkbox-indicator"></div>Loggia</div>
+          <div class="checkbox-option" data-value="Terrasse"><input type="checkbox"><div class="checkbox-indicator"></div>Terrasse</div>
+          <div class="checkbox-option" data-value="Pergola"><input type="checkbox"><div class="checkbox-indicator"></div>Pergola</div>
+          <div class="checkbox-option" data-value="Véranda"><input type="checkbox"><div class="checkbox-indicator"></div>Véranda</div>
+          <div class="checkbox-option" data-value="Jardin"><input type="checkbox"><div class="checkbox-indicator"></div>Jardin</div>
+          <div class="checkbox-option" data-value="Piscine"><input type="checkbox"><div class="checkbox-indicator"></div>Piscine</div>
+          <div class="checkbox-option" data-value="Panneaux solaires"><input type="checkbox"><div class="checkbox-indicator"></div>Panneaux solaires (photovoltaïques)</div>
+          <div class="checkbox-option" data-value="Feu ouvert"><input type="checkbox"><div class="checkbox-indicator"></div>Feu ouvert / Cheminée</div>
+          <div class="checkbox-option" data-value="Toiture terrasse"><input type="checkbox"><div class="checkbox-indicator"></div>Toiture terrasse</div>
+          <div class="checkbox-option" data-value="Toiture terrasse végétalisée"><input type="checkbox"><div class="checkbox-indicator"></div>Toiture terrasse végétalisée</div>
+          <div class="checkbox-option" data-value="Mezzanine"><input type="checkbox"><div class="checkbox-indicator"></div>Mezzanine</div>
+          <div class="checkbox-option" data-value="Atelier (jardin)"><input type="checkbox"><div class="checkbox-indicator"></div>Atelier (jardin)</div>
+          <div class="checkbox-option" data-value="Remise de jardin"><input type="checkbox"><div class="checkbox-indicator"></div>Remise de jardin</div>
+          <div class="checkbox-option" data-value="Ossature bois"><input type="checkbox"><div class="checkbox-indicator"></div>Ossature bois</div>
+          <div class="checkbox-option" data-value="Éolienne"><input type="checkbox"><div class="checkbox-indicator"></div>Éolienne</div>
+        </div>
+      </div>
+
+      <!-- Conditionnels -->
+      <div class="conditional-block" id="block_piscine">
+        <div class="field-group"><label>Superficie de la piscine (m²)</label><input type="number" name="piscine_superficie" min="0" placeholder="30"></div>
+      </div>
+      <div class="conditional-block" id="block_feu_ouvert">
+        <div class="conditional-label">↳ Précision feu ouvert / cheminée</div>
+        <div class="field-group">
+          <label>De quel type s'agit-il ?</label>
+          <div class="radio-group inline" data-name="cheminee_type">
+            <div class="radio-option" data-value="Feu ouvert (utilisé)"><input type="radio"><div class="radio-indicator"></div>Feu ouvert utilisé</div>
+            <div class="radio-option" data-value="Cheminée décorative (fermée)"><input type="radio"><div class="radio-indicator"></div>Cheminée décorative (fermée)</div>
+            <div class="radio-option" data-value="Insert/Poêle à bois"><input type="radio"><div class="radio-indicator"></div>Insert / Poêle à bois</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Garage -->
+      <div class="field-row two" style="margin-top:16px;">
+        <div class="field-group">
+          <label>Garage(s) / Emplacement(s) de parking</label>
+          <input type="number" name="garage_emplacements" min="0" value="0" placeholder="0">
+          <span class="hint">Nombre total d'emplacements (couverts ou non)</span>
+        </div>
+        <div class="field-group">
+          <label>Annexe > 20 m² ?</label>
+          <div class="radio-group inline" data-name="annexe_grande" data-trigger="cond_annexe">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+      </div>
+      <div class="conditional-block" id="block_annexe">
+        <div class="conditional-label">↳ Destination de l'annexe</div>
+        <div class="field-group">
+          <div class="radio-group inline" data-name="annexe_destination">
+            <div class="radio-option" data-value="Habitation secondaire"><input type="radio"><div class="radio-indicator"></div>Habitation secondaire</div>
+            <div class="radio-option" data-value="Stockage"><input type="radio"><div class="radio-indicator"></div>Stockage</div>
+            <div class="radio-option" data-value="Atelier / Studio"><input type="radio"><div class="radio-indicator"></div>Atelier / Studio</div>
+            <div class="radio-option" data-value="Autre"><input type="radio"><div class="radio-indicator"></div>Autre</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuisine équipée -->
+      <div class="field-group" style="margin-top:16px;">
+        <label>Cuisine équipée d'une valeur > 25 000 € ? <span class="hint">Électroménagers encastrés inclus</span></label>
+        <div class="radio-group inline" data-name="cuisine_equipee_haut_gamme">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏗️</span> Section 8 — État du bâtiment</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>État général du bâtiment <span class="required">*</span></label>
+        <div class="radio-group" data-required="true" data-name="etat_batiment">
+          <div class="radio-option" data-value="Standard"><input type="radio"><div class="radio-indicator"></div>Standard</div>
+          <div class="radio-option" data-value="Rénové il y a moins de 10 ans"><input type="radio"><div class="radio-indicator"></div>Rénové il y a moins de 10 ans</div>
+          <div class="radio-option" data-value="En cours de construction"><input type="radio"><div class="radio-indicator"></div>En cours de construction</div>
+          <div class="radio-option" data-value="En rénovation lourde"><input type="radio"><div class="radio-indicator"></div>En rénovation lourde</div>
+          <div class="radio-option" data-value="Éco-construction"><input type="radio"><div class="radio-indicator"></div>Éco-construction</div>
+          <div class="radio-option" data-value="Bâtiment passif"><input type="radio"><div class="radio-indicator"></div>Bâtiment passif</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group">
+        <label>Travaux importants (> 25 000 €) prévus dans les 12 prochains mois ? <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="travaux_prevus">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-primary" onclick="nextStep()">Suivant : Sinistres & Finalisation →</button>
+  </div>
+</div>
+
+<!-- ═══ ÉTAPE 4 : SINISTRES + ASSURANCE + COUVERTURES + PAIEMENT ═══ -->
+<div class="step-content" id="step-4">
+  <div class="section-card">
+    <div class="section-title"><span class="icon">📋</span> Section 9 — Antécédents sinistres</div>
+    <div class="section-body">
+      <div class="field-group">
+        <label>Nombre de sinistres habitation (5 dernières années) <span class="required">*</span></label>
+        <input type="number" name="sinistres_nb" required min="0" value="0" data-trigger="cond_sinistres_hab" placeholder="0">
+        <span class="field-error">Obligatoire</span>
+      </div>
+      <div class="conditional-block" id="block_sinistres_hab">
+        <div class="conditional-label">↳ Détails des sinistres</div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Nature du ou des sinistres <span class="required">*</span></label>
+          <div class="checkbox-group" data-name="sinistres_nature">
+            <div class="checkbox-option" data-value="Incendie"><input type="checkbox"><div class="checkbox-indicator"></div>Incendie</div>
+            <div class="checkbox-option" data-value="Dégât des eaux"><input type="checkbox"><div class="checkbox-indicator"></div>Dégât des eaux</div>
+            <div class="checkbox-option" data-value="Tempête"><input type="checkbox"><div class="checkbox-indicator"></div>Tempête</div>
+            <div class="checkbox-option" data-value="Vol/Vandalisme"><input type="checkbox"><div class="checkbox-indicator"></div>Vol/Vandalisme</div>
+            <div class="checkbox-option" data-value="Bris de vitre"><input type="checkbox"><div class="checkbox-indicator"></div>Bris de vitre</div>
+            <div class="checkbox-option" data-value="Autre"><input type="checkbox"><div class="checkbox-indicator"></div>Autre</div>
+          </div>
+        </div>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>Montant(s) réglé(s) par l'assureur (€)</label>
+          <textarea name="sinistres_montants" placeholder="Ex. : 3500 €"></textarea>
+        </div>
+        <div class="field-group">
+          <label>Refoulement d'égout, inondation ou fissures (10 dernières années) ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-name="inondation">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏢</span> Section 10 — Assurance actuelle</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:0;">
+        <label>Êtes-vous actuellement assuré(e) pour ce bien ? <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="assurance_actuelle" data-trigger="cond_assurance_actuelle_hab">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="conditional-block" id="block_assurance_hab">
+        <div class="conditional-label">↳ Informations sur l'assurance actuelle</div>
+        <div class="field-row two">
+          <div class="field-group"><label>Compagnie actuelle <span class="required">*</span></label><input type="text" name="assurance_compagnie" placeholder="Ex. : Ethias"></div>
+          <div class="field-group"><label>Numéro de contrat</label><input type="text" name="assurance_contrat"></div>
+        </div>
+        <div class="field-row two">
+          <div class="field-group"><label>Prime annuelle (€)</label><input type="number" name="assurance_prime" min="0"></div>
+          <div class="field-group"><label>Date d'échéance <span class="required">*</span></label><input type="date" name="assurance_echeance"></div>
+        </div>
+        <div class="field-group">
+          <label>Créance hypothécaire sur ce bien ? <span class="required">*</span></label>
+          <div class="radio-group inline" data-name="hypotheque" data-trigger="cond_hypotheque">
+            <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+            <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+          </div>
+        </div>
+        <div class="conditional-block" id="block_hypotheque">
+          <div class="field-group"><label>Nom de la banque créancière</label><input type="text" name="banque_creanciere" placeholder="Ex. : BNP Paribas Fortis"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🛡️</span> Section 11 — Couvertures souhaitées</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Couvertures souhaitées <span class="required">*</span></label>
+        <div class="checkbox-group" data-required="true" data-name="couvertures">
+          <div class="checkbox-option" data-value="Incendie & périls connexes"><input type="checkbox"><div class="checkbox-indicator"></div>Incendie & périls connexes (obligatoire)</div>
+          <div class="checkbox-option" data-value="Dégât des eaux"><input type="checkbox"><div class="checkbox-indicator"></div>Dégât des eaux</div>
+          <div class="checkbox-option" data-value="Tempête/Grêle/Neige"><input type="checkbox"><div class="checkbox-indicator"></div>Tempête/Grêle/Neige</div>
+          <div class="checkbox-option" data-value="Vol & Vandalisme"><input type="checkbox"><div class="checkbox-indicator"></div>Vol & Vandalisme</div>
+          <div class="checkbox-option" data-value="Bris de vitre"><input type="checkbox"><div class="checkbox-indicator"></div>Bris de vitre</div>
+          <div class="checkbox-option" data-value="RC Vie privée"><input type="checkbox"><div class="checkbox-indicator"></div>RC Vie privée</div>
+          <div class="checkbox-option" data-value="Protection juridique"><input type="checkbox"><div class="checkbox-indicator"></div>Protection juridique</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner au moins une option</span>
+      </div>
+      <div class="field-group">
+        <label>Couvrir le contenu (mobilier, effets personnels) ? <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="couvrir_contenu" data-trigger="cond_contenu">
+          <div class="radio-option" data-value="Non"><input type="radio"><div class="radio-indicator"></div>Non</div>
+          <div class="radio-option" data-value="Oui"><input type="radio"><div class="radio-indicator"></div>Oui</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="conditional-block" id="block_contenu">
+        <div class="field-group"><label>Valeur estimée du contenu (€)</label><input type="number" name="valeur_contenu" min="0" placeholder="15000"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">💳</span> Section 12 — Paiement</div>
+    <div class="section-body">
+      <div class="field-group" style="margin-bottom:16px;">
+        <label>Fréquence de paiement <span class="required">*</span></label>
+        <div class="radio-group inline" data-required="true" data-name="paiement_frequence">
+          <div class="radio-option" data-value="Annuel"><input type="radio"><div class="radio-indicator"></div>Annuel</div>
+          <div class="radio-option" data-value="Semestriel"><input type="radio"><div class="radio-indicator"></div>Semestriel</div>
+          <div class="radio-option" data-value="Trimestriel"><input type="radio"><div class="radio-indicator"></div>Trimestriel</div>
+          <div class="radio-option" data-value="Mensuel"><input type="radio"><div class="radio-indicator"></div>Mensuel</div>
+        </div>
+        <span class="field-error">Veuillez sélectionner une option</span>
+      </div>
+      <div class="field-group"><label>IBAN pour domiciliation <span class="hint">Format : BE XX XXXX XXXX XXXX</span></label><input type="text" name="paiement_iban" placeholder="BE32 0000 0000 0000"></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">❤️</span> DAP Solidarity</div>
+    <div class="section-body">
+      <div class="solidarity-header"><div class="solidarity-icon">🤝</div><div class="solidarity-text"><strong>DAP reverse 10 % de sa commission à une association de votre choix.</strong></div></div>
+      <div class="radio-group" data-required="true" data-name="solidarity">
+        <div class="radio-option" data-value="Un Pas de Côté"><input type="radio"><div class="radio-indicator"></div><strong>Un Pas de Côté</strong> — Aide aux personnes en transition de vie</div>
+        <div class="radio-option" data-value="Le Pont des Arts"><input type="radio"><div class="radio-indicator"></div><strong>Le Pont des Arts</strong> — Accès à la culture pour tous</div>
+        <div class="radio-option" data-value="Stop Harcèlement"><input type="radio"><div class="radio-indicator"></div><strong>Stop Harcèlement</strong> — Lutte contre le harcèlement scolaire et en ligne</div>
+        <div class="radio-option" data-value="Union des Artistes"><input type="radio"><div class="radio-indicator"></div><strong>Union des Artistes</strong> — Soutien aux artistes indépendants</div>
+        <div class="radio-option" data-value="L'Ilot"><input type="radio"><div class="radio-indicator"></div><strong>L'Ilot</strong> — Accompagnement des personnes sans-abri</div>
+        <div class="radio-option" data-value="Co-Construire"><input type="radio"><div class="radio-indicator"></div><strong>Co-Construire</strong> — Projets d'économie sociale et solidaire</div>
+        <div class="radio-option" data-value="Dynamo International"><input type="radio"><div class="radio-indicator"></div><strong>Dynamo International</strong> — Travail de rue et aide à la jeunesse</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title"><span class="icon">💬</span> Remarques</div>
+    <div class="section-body"><div class="field-group"><label>Remarques ou informations complémentaires</label><textarea name="remarques" placeholder="Toute information utile..."></textarea></div></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="prevStep()">← Retour</button>
+    <button class="btn btn-submit" id="submit-btn" onclick="submitForm('habitation')">✅ Envoyer ma demande</button>
+  </div>
+</div>
+
+</div>
+
+<div class="success-screen">
+  <div class="success-icon">✅</div>
+  <h2 class="success-title">Demande envoyée avec succès !</h2>
+  <p class="success-text">Votre conseiller DAP vous contactera dans les <strong>24 heures ouvrables</strong> avec une offre personnalisée.</p>
+  <a href="index.html" class="btn btn-primary" style="display:inline-flex; margin:0 auto;">← Retour à l'accueil</a>
+</div>
+
+</div>
+
+<script src="assets/form.js"></script>
+<script>
+window.CONDITIONALS = {
+  cond_qualite: [
+    { condition: { type: 'equals', value: 'Locataire' }, target: 'block_locataire' },
+    { condition: { type: 'equals', value: 'Co-locataire' }, target: 'block_locataire' }
+  ],
+  cond_adresse_bien: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_adresse_bien' }],
+  cond_type_bien: [
+    { condition: { type: 'equals', value: 'Appartement' }, target: 'block_appart' },
+    { condition: { type: 'equals', value: 'Kot/Studio' }, target: 'block_appart' }
+  ],
+  cond_cave_detail: [{ condition: { type: 'gte', value: 1 }, target: 'block_cave_detail' }],
+  cond_piscine: [{ condition: { type: 'contains', value: 'Piscine' }, target: 'block_piscine' }],
+  cond_feu_ouvert: [{ condition: { type: 'contains', value: 'Feu ouvert' }, target: 'block_feu_ouvert' }],
+  cond_annexe: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_annexe' }],
+  cond_sinistres_hab: [{ condition: { type: 'gte', value: 1 }, target: 'block_sinistres_hab' }],
+  cond_assurance_actuelle_hab: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_assurance_hab' }],
+  cond_hypotheque: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_hypotheque' }],
+  cond_contenu: [{ condition: { type: 'equals', value: 'Oui' }, target: 'block_contenu' }]
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAP Solidarity — Outil de gestion</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:     #1a1a2e;
+  --blue:     #0f3460;
+  --gold:     #e8b84b;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --orange:   #f59e0b;
+  --border:   #e2e8f0;
+  --bg:       #f4f6f9;
+  --muted:    #6b7280;
+  --so-green: #059669;
+  --so-bg:    #d1fae5;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--navy);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--blue) 100%);
+  color: white;
+  padding: 16px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+}
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.header-logo { height: 28px; }
+.header-sep  { width: 1px; height: 24px; background: rgba(255,255,255,0.2); }
+.header-title h1 { font-size: 16px; font-weight: 700; }
+.header-title p  { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.mode-badge {
+  margin-left: auto;
+  font-size: 11px; font-weight: 600;
+  padding: 4px 12px; border-radius: 20px;
+  cursor: pointer; transition: all 0.2s;
+}
+.mode-badge.demo { background: rgba(232,184,75,0.2); border: 1px solid rgba(232,184,75,0.5); color: var(--gold); }
+.mode-badge.live { background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.5); color: #34d399; }
+
+/* ── BOUTON GUIDE ── */
+.btn-guide {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 16px;
+  background: var(--gold); color: var(--navy);
+  border: none; border-radius: 20px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.btn-guide:hover { background: #f0c75a; transform: scale(1.04); box-shadow: 0 2px 10px rgba(232,184,75,0.4); }
+
+/* ── MODAL GUIDE ── */
+.guide-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55); z-index: 500;
+  align-items: center; justify-content: center; padding: 24px;
+}
+.guide-overlay.open { display: flex; }
+.guide-modal {
+  background: white; border-radius: 14px;
+  width: min(92vw, 920px); height: min(88vh, 720px);
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+}
+.guide-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  background: linear-gradient(140deg, var(--navy) 0%, var(--blue) 100%);
+  color: white; flex-shrink: 0;
+}
+.guide-modal-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+.guide-close {
+  background: rgba(255,255,255,0.15); border: none; color: white;
+  width: 30px; height: 30px; border-radius: 50%; font-size: 15px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.guide-close:hover { background: rgba(255,255,255,0.3); }
+.guide-iframe { flex: 1; border: none; width: 100%; }
+
+/* ── BOUTON RACCOURCI BRIO ── */
+.btn-shortcut {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  background: rgba(255,255,255,0.12); color: white;
+  border: 1px solid rgba(255,255,255,0.25); border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0;
+}
+.btn-shortcut:hover { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.5); }
+
+/* ── MODAL RACCOURCI ── */
+.shortcut-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55); z-index: 500;
+  align-items: center; justify-content: center; padding: 24px;
+}
+.shortcut-overlay.open { display: flex; }
+.shortcut-modal {
+  background: white; border-radius: 14px;
+  width: min(92vw, 520px);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.3); overflow: hidden;
+}
+.shortcut-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  background: linear-gradient(140deg, var(--navy) 0%, var(--blue) 100%);
+  color: white;
+}
+.shortcut-header-title { font-size: 15px; font-weight: 700; }
+.shortcut-close {
+  background: rgba(255,255,255,0.15); border: none; color: white;
+  width: 30px; height: 30px; border-radius: 50%; font-size: 15px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.shortcut-close:hover { background: rgba(255,255,255,0.3); }
+.shortcut-body { padding: 24px; }
+.shortcut-desc { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+.shortcut-drag-zone {
+  background: #f8fafc; border: 2px dashed var(--border);
+  border-radius: 12px; padding: 20px;
+  text-align: center; margin-bottom: 20px;
+}
+.shortcut-drag-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+.shortcut-bookmarklet {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px;
+  background: var(--navy); color: white;
+  border-radius: 10px; font-size: 14px; font-weight: 700;
+  text-decoration: none; cursor: grab; user-select: none;
+  box-shadow: 0 3px 12px rgba(15,52,96,0.3);
+  transition: all 0.2s;
+}
+.shortcut-bookmarklet:hover { background: var(--blue); transform: scale(1.03); }
+.shortcut-drag-hint { font-size: 11px; color: var(--muted); margin-top: 10px; }
+.shortcut-steps { display: flex; flex-direction: column; gap: 10px; }
+.shortcut-step {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 13px; color: var(--navy);
+}
+.shortcut-step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--so-green); color: white;
+  font-size: 11px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+/* ── TABS NAV ── */
+.tabs-nav {
+  background: white;
+  border-bottom: 2px solid var(--border);
+  padding: 0 28px;
+  position: sticky;
+  top: 65px;
+  z-index: 90;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.tabs-nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tab-btn {
+  padding: 14px 20px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.tab-btn:hover { color: var(--navy); }
+.tab-btn.active { color: var(--so-green); border-bottom-color: var(--so-green); }
+.tab-icon { font-size: 15px; }
+
+/* ── CONNECT PANEL ── */
+.connect-panel { background: white; border-bottom: 2px solid var(--gold); padding: 12px 28px; display: none; }
+.connect-panel.open { display: block; }
+.connect-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.connect-label { font-size: 13px; font-weight: 600; color: var(--navy); }
+.connect-input {
+  flex: 1; min-width: 260px;
+  padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px;
+  font-size: 12px; font-family: monospace; outline: none;
+}
+.connect-input:focus { border-color: var(--blue); }
+.btn-connect { padding: 7px 16px; background: var(--navy); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-connect:hover { background: var(--blue); }
+.btn-disconnect { padding: 7px 12px; background: #fee2e2; color: #991b1b; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.connect-hint { font-size: 11px; color: var(--muted); width: 100%; }
+
+/* ── MAIN ── */
+.main { flex: 1; padding: 28px 28px 48px; }
+.main-inner { max-width: 1100px; margin: 0 auto; }
+
+/* ── DEMO BANNER ── */
+.demo-banner {
+  background: rgba(232,184,75,0.12); border: 1px solid rgba(232,184,75,0.4);
+  border-radius: 10px; padding: 10px 16px; font-size: 12px; color: #92400e;
+  margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+}
+
+/* ── HERO BANNER ── */
+.hero-banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  margin-bottom: 24px;
+  min-height: 220px;
+}
+.hero-search {
+  background: white;
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.hero-add {
+  background: linear-gradient(135deg, var(--so-green) 0%, #047857 100%);
+  padding: 32px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.hero-add:hover { filter: brightness(1.07); }
+.hero-add-icon { font-size: 42px; line-height: 1; }
+.hero-add-title {
+  font-size: 20px; font-weight: 800; color: white; line-height: 1.2;
+}
+.hero-add-sub { font-size: 13px; color: rgba(255,255,255,0.75); }
+.hero-add-btn {
+  margin-top: 4px;
+  padding: 9px 22px; background: white; color: var(--so-green);
+  border: none; border-radius: 8px; font-size: 13px; font-weight: 800;
+  cursor: pointer; transition: all 0.15s;
+}
+.hero-add-btn:hover { background: #f0fdf4; }
+.search-title { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+.search-row { display: flex; gap: 10px; }
+.search-input-wrap { flex: 1; position: relative; }
+.search-input {
+  width: 100%; padding: 12px 42px 12px 16px;
+  border: 2px solid var(--border); border-radius: 10px;
+  font-size: 15px; color: var(--navy); outline: none; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--blue); }
+.search-input::placeholder { color: #c4c9d4; }
+.btn-clear {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; font-size: 16px; color: var(--muted);
+  cursor: pointer; line-height: 1; padding: 2px; display: none;
+  transition: color 0.15s;
+}
+.btn-clear:hover { color: var(--red); }
+.btn-clear.visible { display: block; }
+.btn-search {
+  padding: 12px 22px; background: var(--navy); color: white;
+  border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-search:hover { background: var(--blue); }
+.search-hint { font-size: 11px; color: var(--muted); margin-top: 8px; }
+.suggestions {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 14px;
+  padding-top: 14px; border-top: 1px dashed var(--border);
+}
+.sug-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-right: 2px; }
+.sug-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 11px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--bg); font-size: 12px; font-weight: 600; color: var(--navy);
+  cursor: pointer; transition: all 0.15s;
+}
+.sug-chip:hover { background: white; border-color: var(--blue); color: var(--blue); box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
+.sug-tag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px; }
+.tag-ok   { background: var(--so-bg);  color: var(--so-green); }
+.tag-todo { background: #fef9c3; color: #854d0e; }
+.tag-wait { background: #fee2e2; color: #991b1b; }
+.tag-mono { background: #ede9fe; color: #5b21b6; font-family: monospace; font-size: 9px; }
+
+/* ── NOT FOUND ── */
+.not-found {
+  background: white; border-radius: 12px; padding: 28px;
+  text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 2px dashed var(--border);
+}
+.not-found .icon { font-size: 36px; margin-bottom: 10px; }
+.not-found h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+.not-found p  { font-size: 13px; color: var(--muted); }
+
+/* ── RESULT CARD ── */
+.result-card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.09); }
+
+.so-banner {
+  background: var(--so-bg); border-bottom: 2px solid #6ee7b7;
+  padding: 16px 24px; display: flex; align-items: center; gap: 14px;
+}
+.so-icon { font-size: 28px; }
+.so-label { flex: 1; }
+.so-label h2 { font-size: 17px; font-weight: 800; color: var(--so-green); }
+.so-label p  { font-size: 12px; color: #065f46; margin-top: 2px; }
+.so-badge {
+  background: var(--so-green); color: white;
+  font-size: 11px; font-weight: 700; padding: 5px 14px; border-radius: 20px;
+}
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.info-block {
+  padding: 18px 24px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
+}
+.info-block:nth-child(even) { border-right: none; }
+.info-block:nth-last-child(-n+2) { border-bottom: none; }
+.info-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 4px; }
+.info-value { font-size: 14px; font-weight: 600; color: var(--navy); }
+.info-value.mono { font-family: monospace; font-size: 13px; }
+.info-value.green  { color: var(--so-green); }
+.info-value.orange { color: #b45309; }
+.info-value.red    { color: var(--red); }
+
+.prime-block {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #6ee7b7; border-radius: 10px;
+  margin: 20px 24px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 20px;
+}
+.prime-item { flex: 1; text-align: center; }
+.prime-item .pl { font-size: 11px; color: #065f46; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+.prime-item .pv { font-size: 20px; font-weight: 800; color: var(--so-green); }
+.prime-sep { width: 1px; height: 40px; background: #6ee7b7; }
+
+.asso-section { padding: 20px 24px; border-top: 1px solid var(--border); }
+.asso-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 12px; }
+.asso-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.asso-chip {
+  padding: 6px 14px; border-radius: 20px; border: 2px solid var(--border);
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  cursor: pointer; transition: all 0.15s; background: white;
+}
+.asso-chip:hover  { border-color: var(--so-green); color: var(--so-green); }
+.asso-chip.selected { border-color: var(--so-green); background: var(--so-bg); color: var(--so-green); }
+.asso-chip.current  { border-color: var(--so-green); background: var(--so-green); color: white; cursor: default; }
+.asso-status {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
+}
+.asso-status.ok   { background: var(--so-bg); color: var(--so-green); }
+.asso-status.todo { background: #fef9c3; color: #854d0e; }
+.btn-save-asso {
+  margin-top: 10px; padding: 8px 20px;
+  background: var(--so-green); color: white;
+  border: none; border-radius: 8px; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: background 0.15s; display: none;
+}
+.btn-save-asso.visible { display: inline-block; }
+.btn-save-asso:hover { background: #047857; }
+
+.card-footer-actions {
+  padding: 16px 24px; border-top: 1px solid var(--border);
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.btn-ghost {
+  padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border); background: white;
+  color: var(--navy); transition: all 0.15s;
+}
+.btn-ghost:hover { background: var(--bg); border-color: var(--blue); color: var(--blue); }
+
+/* ── KPI CARDS ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.kpi-card {
+  background: white;
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  border-top: 4px solid transparent;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+.kpi-card.k-clients  { border-top-color: var(--blue); }
+.kpi-card.k-primes   { border-top-color: var(--so-green); }
+.kpi-card.k-reverse  { border-top-color: var(--gold); }
+.kpi-card.k-sans     { border-top-color: var(--orange); }
+.kpi-icon { font-size: 26px; margin-bottom: 10px; }
+.kpi-value { font-size: 26px; font-weight: 800; color: var(--navy); margin-bottom: 4px; line-height: 1; }
+.kpi-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+.kpi-sub   { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+/* ── DASHBOARD TABLE ── */
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-size: 13px; font-weight: 700; color: var(--navy);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.btn-add {
+  padding: 8px 18px; background: var(--so-green); color: white;
+  border: none; border-radius: 8px; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: background 0.15s;
+}
+.btn-add:hover { background: #047857; }
+.filter-toggle {
+  padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+  border: 2px solid var(--orange); background: white; color: #b45309;
+}
+.filter-toggle.active { background: var(--orange); color: white; }
+.filter-toggle:hover { background: #fef3c7; }
+
+.clients-table-wrap {
+  background: white; border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07); overflow: hidden;
+}
+.clients-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.clients-table th {
+  background: var(--bg); padding: 11px 16px;
+  text-align: left; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted);
+  border-bottom: 2px solid var(--border);
+}
+.clients-table td {
+  padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: middle;
+}
+.clients-table tr:last-child td { border-bottom: none; }
+.clients-table tr:hover td { background: #f9fafb; }
+.td-name { font-weight: 700; color: var(--navy); }
+.td-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.td-mono { font-family: monospace; font-size: 12px; color: var(--muted); }
+.td-prime { font-weight: 700; color: var(--so-green); }
+.td-rev   { font-size: 12px; color: #065f46; }
+.pill {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+}
+.pill-ok     { background: var(--so-bg); color: var(--so-green); }
+.pill-todo   { background: #fef9c3; color: #854d0e; }
+.pill-pay    { background: #dbeafe; color: #1d4ed8; }
+.pill-wait   { background: #fee2e2; color: #991b1b; }
+.pill-prod   { background: #ede9fe; color: #5b21b6; }
+.btn-voir {
+  padding: 5px 12px; border: 1px solid var(--border); background: white;
+  border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--navy);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.btn-voir:hover { background: var(--navy); color: white; border-color: var(--navy); }
+
+/* ── PODIUM ── */
+.podium-wrap {
+  display: flex; justify-content: center; align-items: flex-end;
+  gap: 16px; margin-bottom: 32px; padding: 0 40px;
+}
+.podium-item {
+  display: flex; flex-direction: column; align-items: center; flex: 1; max-width: 200px;
+}
+.podium-avatar {
+  font-size: 32px; margin-bottom: 8px;
+}
+.podium-name {
+  font-size: 13px; font-weight: 700; color: var(--navy);
+  text-align: center; margin-bottom: 2px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; max-width: 160px;
+}
+.podium-societe {
+  font-size: 10px; color: var(--muted); text-align: center; margin-bottom: 8px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;
+}
+.podium-prime {
+  font-size: 16px; font-weight: 800; color: var(--so-green);
+  margin-bottom: 4px;
+}
+.podium-rev { font-size: 11px; color: #065f46; margin-bottom: 10px; }
+.podium-block {
+  width: 100%; border-radius: 10px 10px 0 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 800; color: white;
+}
+.podium-1 .podium-block { background: linear-gradient(135deg, #f59e0b, #d97706); height: 90px; }
+.podium-2 .podium-block { background: linear-gradient(135deg, #9ca3af, #6b7280); height: 70px; }
+.podium-3 .podium-block { background: linear-gradient(135deg, #cd7c3a, #a65c2a); height: 55px; }
+
+/* ── RANKING TABLE ── */
+.rank-table-wrap {
+  background: white; border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07); overflow: hidden;
+}
+.rank-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.rank-table th {
+  background: var(--bg); padding: 11px 16px; text-align: left;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--muted); border-bottom: 2px solid var(--border);
+}
+.rank-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.rank-table tr:last-child td { border-bottom: none; }
+.rank-table tr:hover td { background: #f9fafb; }
+.rank-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: white;
+}
+.rank-1 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.rank-2 { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+.rank-3 { background: linear-gradient(135deg, #cd7c3a, #a65c2a); }
+.rank-n { background: var(--border); color: var(--muted); }
+.rank-bar-wrap { height: 6px; background: var(--border); border-radius: 3px; margin-top: 4px; }
+.rank-bar { height: 6px; background: var(--so-green); border-radius: 3px; transition: width 0.4s; }
+
+/* ── MODAL ── */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 200;
+  align-items: flex-start; justify-content: center;
+  padding: 40px 20px; overflow-y: auto;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: white; border-radius: 16px; padding: 28px;
+  width: 560px; max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  margin: auto;
+}
+.modal h2 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--navy); }
+.modal-sub { font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-full { grid-column: 1 / -1; }
+.form-row label {
+  display: block; font-size: 11px; font-weight: 700;
+  color: var(--muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.3px;
+}
+.form-row input, .form-row select {
+  width: 100%; padding: 9px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 13px; color: var(--navy); outline: none; background: white;
+}
+.form-row input:focus, .form-row select:focus { border-color: var(--blue); }
+.modal-divider {
+  grid-column: 1 / -1; height: 1px; background: var(--border); margin: 4px 0;
+}
+.modal-section-label {
+  grid-column: 1 / -1; font-size: 10px; font-weight: 700;
+  color: var(--so-green); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.modal-actions { display: flex; gap: 8px; margin-top: 22px; }
+.btn-cancel { flex: 1; padding: 10px; background: #f3f4f6; color: var(--muted); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-save   { flex: 2; padding: 10px; background: var(--so-green); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-save:hover { background: #047857; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--navy); color: white;
+  padding: 11px 20px; border-radius: 10px; font-size: 13px; font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 500;
+  opacity: 0; transform: translateY(8px); transition: all 0.25s; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center; padding: 16px; font-size: 11px; color: var(--muted);
+  border-top: 1px solid var(--border); background: white;
+}
+.footer strong { color: var(--navy); }
+
+/* ── USER BADGE (header) ── */
+.user-badge {
+  display: flex; align-items: center; gap: 8px; margin-left: auto;
+}
+.user-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #0078d4; color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.user-name { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); }
+.btn-signout {
+  font-size: 11px; font-weight: 600; padding: 4px 10px;
+  border-radius: 6px; border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.btn-signout:hover { background: rgba(255,255,255,0.2); color: white; }
+
+/* ── MS LOGIN OVERLAY ── */
+.ms-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #f3f2f1;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+}
+.ms-overlay.hidden { display: none; }
+.ms-card {
+  background: white; padding: 44px 44px 36px;
+  width: 440px; max-width: 95vw;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.ms-logo {
+  margin-bottom: 16px;
+}
+.ms-title {
+  font-size: 24px; font-weight: 600; color: #1b1b1b;
+  margin-bottom: 4px; line-height: 1.2;
+}
+.ms-sub {
+  font-size: 13px; color: #1b1b1b; margin-bottom: 26px;
+}
+.ms-input-wrap { margin-bottom: 4px; position: relative; }
+.ms-input {
+  width: 100%; padding: 6px 0; border: none; border-bottom: 1px solid #666;
+  font-size: 15px; font-family: inherit; color: #1b1b1b; outline: none;
+  background: transparent; transition: border-color 0.15s;
+}
+.ms-input:focus { border-bottom: 2px solid #0078d4; }
+.ms-input-label {
+  position: absolute; left: 0; top: 6px;
+  font-size: 15px; color: #666; pointer-events: none;
+  transition: all 0.15s; transform-origin: left top;
+}
+.ms-input:focus ~ .ms-input-label,
+.ms-input.filled ~ .ms-input-label {
+  transform: scale(0.75) translateY(-22px); color: #0078d4;
+}
+.ms-error {
+  font-size: 12px; color: #a80000; margin-top: 6px; min-height: 18px;
+}
+.ms-btn {
+  margin-top: 24px; float: right;
+  padding: 6px 20px; background: #0078d4; color: white;
+  border: none; font-size: 15px; font-family: inherit; font-weight: 400;
+  cursor: pointer; transition: background 0.15s;
+}
+.ms-btn:hover { background: #006cbd; }
+.ms-clearfix { clear: both; }
+.ms-divider { border: none; border-top: 1px solid #e0e0e0; margin: 28px 0 16px; }
+.ms-demo-hint {
+  font-size: 11px; color: #666; text-align: center;
+  background: #f8f8f8; border: 1px solid #e0e0e0;
+  padding: 8px 12px; margin-top: 16px;
+}
+.ms-demo-hint strong { color: #0078d4; font-family: monospace; }
+.ms-step { display: none; }
+.ms-step.active { display: block; }
+.ms-email-display {
+  font-size: 13px; color: #1b1b1b; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.ms-email-display .ms-back {
+  color: #0078d4; cursor: pointer; font-size: 12px; text-decoration: underline;
+}
+
+/* ── VIEWS ── */
+.view { display: none; }
+.view.active { display: block; }
+
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .podium-wrap { padding: 0; gap: 8px; }
+}
+@media (max-width: 520px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+  .info-grid { grid-template-columns: 1fr; }
+  .info-block { border-right: none !important; }
+  .prime-block { flex-direction: column; gap: 10px; }
+  .prime-sep { width: 80px; height: 1px; }
+  .search-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── MS LOGIN OVERLAY ── -->
+<div class="ms-overlay" id="msOverlay">
+  <div class="ms-card">
+    <!-- Logo Microsoft SVG -->
+    <div class="ms-logo">
+      <svg width="108" height="24" viewBox="0 0 108 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0h11.5v11.5H0z" fill="#f25022"/>
+        <path d="M12.5 0H24v11.5H12.5z" fill="#7fba00"/>
+        <path d="M0 12.5h11.5V24H0z" fill="#00a4ef"/>
+        <path d="M12.5 12.5H24V24H12.5z" fill="#ffb900"/>
+        <text x="30" y="18" font-family="Segoe UI,sans-serif" font-size="15" font-weight="600" fill="#1b1b1b">Microsoft</text>
+      </svg>
+    </div>
+
+    <!-- Étape 1 : email -->
+    <div class="ms-step active" id="msStep1">
+      <div class="ms-title">Se connecter</div>
+      <div class="ms-sub">Utilisez votre compte Microsoft</div>
+      <div class="ms-input-wrap">
+        <input type="email" class="ms-input" id="msEmail"
+          onkeydown="if(event.key==='Enter') msNext()"
+          oninput="this.classList.toggle('filled', this.value.length > 0)">
+        <label class="ms-input-label">Adresse e-mail, téléphone ou Skype</label>
+      </div>
+      <div class="ms-error" id="msErr1"></div>
+      <button class="ms-btn" onclick="msNext()">Suivant</button>
+      <div class="ms-clearfix"></div>
+    </div>
+
+    <!-- Étape 2 : mot de passe -->
+    <div class="ms-step" id="msStep2">
+      <div class="ms-title">Entrez le mot de passe</div>
+      <div class="ms-email-display">
+        <span id="msEmailDisplay"></span>
+        <span class="ms-back" onclick="msBack()">↩ Modifier</span>
+      </div>
+      <div class="ms-input-wrap">
+        <input type="password" class="ms-input" id="msPassword"
+          onkeydown="if(event.key==='Enter') msSignIn()"
+          oninput="this.classList.toggle('filled', this.value.length > 0)">
+        <label class="ms-input-label">Mot de passe</label>
+      </div>
+      <div class="ms-error" id="msErr2"></div>
+      <button class="ms-btn" onclick="msSignIn()">Se connecter</button>
+      <div class="ms-clearfix"></div>
+    </div>
+
+    <hr class="ms-divider">
+    <div class="ms-demo-hint">
+      Accès démo &nbsp;·&nbsp; <strong>demo@dapsolidarity.be</strong> &nbsp;/&nbsp; <strong>DapSo2026!</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-inner">
+    <img src="formulaires-dap/assets/logo-dap.png" alt="DAP" class="header-logo" onerror="this.style.display='none'">
+    <div class="header-sep"></div>
+    <div class="header-title">
+      <h1>DAP Solidarity</h1>
+      <p>Gestion & suivi des preneurs · Production &amp; Sinistre</p>
+    </div>
+    <span class="mode-badge demo" id="modeBadge" onclick="toggleConnect()" title="Connecter au Google Sheet">⚙ Mode démo</span>
+    <button class="btn-shortcut" onclick="openShortcut()" title="Installer le raccourci Brio">⚡ Raccourci Brio</button>
+    <button class="btn-guide" onclick="openGuide()" title="Ouvrir le guide utilisateur">📖 Guide</button>
+    <div class="user-badge" id="userBadge" style="display:none">
+      <div class="user-avatar" id="userAvatar"></div>
+      <span class="user-name" id="userName"></span>
+      <button class="btn-signout" onclick="msSignOut()">Se déconnecter</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TABS NAV ── -->
+<div class="tabs-nav">
+  <div class="tabs-nav-inner">
+    <button class="tab-btn active" onclick="setView('recherche', this)">
+      <span class="tab-icon">🔍</span> Recherche
+    </button>
+    <button class="tab-btn" onclick="setView('dashboard', this)">
+      <span class="tab-icon">📊</span> Dashboard
+    </button>
+    <button class="tab-btn" onclick="setView('classement', this)">
+      <span class="tab-icon">🏆</span> Classement
+    </button>
+  </div>
+</div>
+
+<!-- ── CONNECT PANEL ── -->
+<div class="connect-panel" id="connectPanel">
+  <div class="connect-inner">
+    <span class="connect-label">URL Apps Script :</span>
+    <input type="text" class="connect-input" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+    <button class="btn-connect" onclick="connectLive()">Connecter</button>
+    <button class="btn-disconnect" onclick="disconnectLive()" id="btnDisconnect" style="display:none">Déconnecter</button>
+    <span class="connect-hint">Déployez apps-script-solidarity.gs comme Web App et collez l'URL ici.</span>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="main-inner">
+
+    <!-- Demo banner -->
+    <div class="demo-banner" id="demoBanner">
+      <strong>Mode démo</strong> — Données fictives à titre d'illustration.
+    </div>
+
+    <!-- ═══ VUE RECHERCHE ═══ -->
+    <div class="view active" id="view-recherche">
+      <div class="hero-banner">
+
+        <!-- Moitié gauche : recherche -->
+        <div class="hero-search">
+          <div class="search-title">Recherche client DAP Solidarity</div>
+          <div class="search-row">
+            <div class="search-input-wrap">
+              <input
+                type="text" class="search-input" id="searchInput"
+                placeholder="Nom, n° contrat ou e-mail…"
+                onkeydown="if(event.key==='Enter') doSearch()"
+                oninput="onSearchInput()" autofocus>
+              <button class="btn-clear" id="btnClear" onclick="newSearch()" title="Effacer">✕</button>
+            </div>
+            <button class="btn-search" onclick="doSearch()">Rechercher</button>
+          </div>
+          <div class="search-hint">Tapez au moins 2 caractères · insensible à la casse et aux accents</div>
+          <div class="suggestions" id="demoSuggestions">
+            <span class="sug-label">Exemples :</span>
+            <button class="sug-chip" onclick="quickSearch('Martin Leclerc')"     title="Client avec association choisie">Martin Leclerc <span class="sug-tag tag-ok">asso ✓</span></button>
+            <button class="sug-chip" onclick="quickSearch('Sophie Renard')"      title="Client sans association">Sophie Renard <span class="sug-tag tag-todo">sans asso</span></button>
+            <button class="sug-chip" onclick="quickSearch('Ahmed Benali')"       title="Paiement en attente">Ahmed Benali <span class="sug-tag tag-wait">impayé</span></button>
+            <button class="sug-chip" onclick="quickSearch('SO-2024-004')"        title="Recherche par contrat">SO-2024-004 <span class="sug-tag tag-mono">contrat</span></button>
+          </div>
+        </div>
+
+        <!-- Moitié droite : ajouter un donneur -->
+        <div class="hero-add" onclick="openAddModal()">
+          <div class="hero-add-icon">❤️</div>
+          <div class="hero-add-title">Ajouter un<br>nouveau donneur</div>
+          <div class="hero-add-sub">Enregistrer un preneur DAP Solidarity<br>et suivre sa participation</div>
+          <button class="hero-add-btn" onclick="openAddModal()">+ Nouveau donneur</button>
+        </div>
+
+      </div>
+      <div id="resultZone"></div>
+    </div>
+
+    <!-- ═══ VUE DASHBOARD ═══ -->
+    <div class="view" id="view-dashboard">
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid" id="kpiGrid"></div>
+
+      <!-- Tableau -->
+      <div class="section-head">
+        <span class="section-title">Tous les preneurs</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="filter-toggle" id="filterSansAsso" onclick="toggleFilterSansAsso()">⚠ Sans association</button>
+          <button class="btn-add" onclick="openAddModal()">+ Ajouter un preneur</button>
+        </div>
+      </div>
+      <div class="clients-table-wrap">
+        <table class="clients-table" id="clientsTable">
+          <thead>
+            <tr>
+              <th>Preneur / Société</th>
+              <th>Contrat</th>
+              <th>Produit</th>
+              <th>Prime TTC/an</th>
+              <th>Reversement</th>
+              <th>Association</th>
+              <th>Paiement</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="clientsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ VUE CLASSEMENT ═══ -->
+    <div class="view" id="view-classement">
+      <!-- Podium -->
+      <div id="podiumWrap" class="podium-wrap"></div>
+
+      <!-- Tableau ranking -->
+      <div class="section-head">
+        <span class="section-title">Classement complet — par prime TTC</span>
+      </div>
+      <div class="rank-table-wrap">
+        <table class="rank-table">
+          <thead>
+            <tr>
+              <th>Rang</th>
+              <th>Preneur</th>
+              <th>Société</th>
+              <th>Produit</th>
+              <th>Prime TTC/an</th>
+              <th>Reversement asso (10%)</th>
+              <th>Association</th>
+              <th>Participation</th>
+            </tr>
+          </thead>
+          <tbody id="rankTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer">
+  <strong>DAP</strong> Courtage d'assurances &nbsp;·&nbsp; Outil DAP Solidarity v2.0 &nbsp;·&nbsp; Mars 2026
+</div>
+
+<!-- ── MODAL RACCOURCI BRIO ── -->
+<div class="shortcut-overlay" id="shortcutOverlay" onclick="if(event.target===this)closeShortcut()">
+  <div class="shortcut-modal">
+    <div class="shortcut-header">
+      <div class="shortcut-header-title">⚡ Raccourci Brio — Installation</div>
+      <button class="shortcut-close" onclick="closeShortcut()">✕</button>
+    </div>
+    <div class="shortcut-body">
+      <p class="shortcut-desc">
+        L'extension Chrome DAP Solidarity s'installe une seule fois sur votre navigateur. Elle vous permet de rechercher un preneur directement depuis Brio en un clic — sans changer d'onglet manuellement.
+      </p>
+
+      <div class="shortcut-drag-zone">
+        <div class="shortcut-drag-label">Comment utiliser l'extension</div>
+        <div style="display:flex;align-items:center;gap:10px;margin:8px 0 4px;">
+          <div style="width:36px;height:36px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🤝</div>
+          <div style="font-size:12px;color:var(--navy);line-height:1.5;">
+            <strong>Option 1 :</strong> Sélectionnez le nom du preneur dans Brio → cliquez sur l'icône DAP dans Chrome → l'outil s'ouvre avec la recherche pré-remplie.<br>
+            <strong>Option 2 :</strong> Clic droit sur le nom → <em>"Rechercher dans DAP Solidarity"</em>.
+          </div>
+        </div>
+        <div class="shortcut-drag-hint" style="margin-top:8px;">L'extension lit automatiquement le texte sélectionné — aucune copier-coller nécessaire.</div>
+      </div>
+
+      <div class="shortcut-steps">
+        <div class="shortcut-step">
+          <div class="shortcut-step-num">1</div>
+          <span>Demandez le dossier <strong>dap-solidarity-extension</strong> à votre administrateur</span>
+        </div>
+        <div class="shortcut-step">
+          <div class="shortcut-step-num">2</div>
+          <span>Dans Chrome : <strong>⋮ → Extensions → Gérer les extensions → Mode développeur → Charger l'extension</strong></span>
+        </div>
+        <div class="shortcut-step">
+          <div class="shortcut-step-num">3</div>
+          <span>Configurez l'URL de l'outil via l'icône ⚙ de l'extension — une seule fois</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL GUIDE ── -->
+<div class="guide-overlay" id="guideOverlay" onclick="if(event.target===this)closeGuide()">
+  <div class="guide-modal">
+    <div class="guide-modal-header">
+      <div class="guide-modal-title">📖 Guide utilisateur — DAP Solidarity</div>
+      <button class="guide-close" onclick="closeGuide()" title="Fermer">✕</button>
+    </div>
+    <iframe class="guide-iframe" id="guideIframe" src="about:blank"></iframe>
+  </div>
+</div>
+
+<!-- ── MODAL AJOUT PRENEUR ── -->
+<div class="overlay" id="addOverlay" onclick="closeOnBg(event)">
+  <div class="modal">
+    <h2>Ajouter un nouveau preneur</h2>
+    <p class="modal-sub">Client ayant souscrit via DAP Solidarity</p>
+    <div class="form-grid">
+      <div class="modal-section-label">Identité</div>
+      <div class="form-row form-full">
+        <label>Preneur <span style="color:var(--red)">*</span></label>
+        <input type="text" id="f-preneur" placeholder="Nom complet du preneur">
+      </div>
+      <div class="form-row">
+        <label>E-mail</label>
+        <input type="email" id="f-mail" placeholder="client@exemple.be">
+      </div>
+      <div class="form-row">
+        <label>Société partenaire</label>
+        <input type="text" id="f-societe" placeholder="Nom de la société">
+      </div>
+
+      <div class="modal-divider"></div>
+      <div class="modal-section-label">Contrat</div>
+
+      <div class="form-row">
+        <label>Numéro de contrat</label>
+        <input type="text" id="f-contrat" placeholder="SO-2025-XXX">
+      </div>
+      <div class="form-row">
+        <label>Produit</label>
+        <select id="f-produit">
+          <option value="Auto">Auto</option>
+          <option value="Habitation">Habitation</option>
+          <option value="RC Professionnelle">RC Professionnelle</option>
+          <option value="Copropriété">Copropriété</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Date de souscription</label>
+        <input type="date" id="f-datesocket">
+      </div>
+      <div class="form-row">
+        <label>Date de prise d'effet</label>
+        <input type="date" id="f-dateeffet">
+      </div>
+
+      <div class="modal-divider"></div>
+      <div class="modal-section-label">Primes</div>
+
+      <div class="form-row">
+        <label>Prime annuelle HT (€)</label>
+        <input type="number" id="f-primeht" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="form-row">
+        <label>Prime annuelle TTC (€)</label>
+        <input type="number" id="f-primettc" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="form-row">
+        <label>Fractionnement</label>
+        <select id="f-fraction">
+          <option value="Annuel">Annuel</option>
+          <option value="Semestriel">Semestriel</option>
+          <option value="Trimestriel">Trimestriel</option>
+          <option value="Mensuel">Mensuel</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>État paiement</label>
+        <select id="f-etat">
+          <option value="Payé">Payé</option>
+          <option value="En attente">En attente</option>
+        </select>
+      </div>
+
+      <div class="modal-divider"></div>
+      <div class="modal-section-label">DAP</div>
+
+      <div class="form-row">
+        <label>Contact DAP</label>
+        <input type="text" id="f-contact" placeholder="Prénom Nom">
+      </div>
+      <div class="form-row">
+        <label>Association choisie</label>
+        <select id="f-asso">
+          <option value="">— Non choisie —</option>
+          <option value="Union des Artistes Belges">Union des Artistes Belges</option>
+          <option value="Stop Harcèlement">Stop Harcèlement</option>
+          <option value="L'Ilot">L'Ilot</option>
+          <option value="Dynamo International">Dynamo International</option>
+          <option value="Le Pont des Arts">Le Pont des Arts</option>
+          <option value="Un Pas de Côté">Un Pas de Côté</option>
+          <option value="Co-construire">Co-construire</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddModal()">Annuler</button>
+      <button class="btn-save" onclick="saveNewClient()">Ajouter le preneur →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  DAP Solidarity — Outil de gestion v2.0 — Mars 2026
+// ═══════════════════════════════════════════════════════════════
+
+const ASSOS = [
+  "Union des Artistes Belges", "Stop Harcèlement", "L'Ilot",
+  "Dynamo International", "Le Pont des Arts", "Un Pas de Côté", "Co-construire",
+];
+
+// ── DONNÉES DÉMO ─────────────────────────────────────────────────
+let DEMO_DATA = [
+  {
+    preneur: "Martin Leclerc", societe: "Cabinet Leclerc & Associés",
+    mail: "m.leclerc@gmail.com", contrat: "SO-2024-001", produit: "Auto",
+    dateSocket: "2024-03-15", dateEffet: "2024-04-01",
+    primeHT: "420,00 €", primeTTC: "504,00 €", primeVal: 504,
+    fraction: "Annuel", etatPaiement: "Payé", datePaiement: "2024-04-01",
+    contactDap: "Lorena Morales", siteDap: "dapsolidarity.be", asso: "L'Ilot",
+  },
+  {
+    preneur: "Sophie Renard", societe: "Renard Immobilier",
+    mail: "s.renard@hotmail.be", contrat: "SO-2024-002", produit: "Habitation",
+    dateSocket: "2024-05-10", dateEffet: "2024-06-01",
+    primeHT: "310,00 €", primeTTC: "372,00 €", primeVal: 372,
+    fraction: "Mensuel", etatPaiement: "Payé", datePaiement: "2024-06-01",
+    contactDap: "Matias Garcia", siteDap: "dapsolidarity.be", asso: "",
+  },
+  {
+    preneur: "Ahmed Benali", societe: "Benali Consulting SPRL",
+    mail: "a.benali@outlook.com", contrat: "SO-2024-003", produit: "RC Professionnelle",
+    dateSocket: "2024-07-22", dateEffet: "2024-08-01",
+    primeHT: "680,00 €", primeTTC: "816,00 €", primeVal: 816,
+    fraction: "Trimestriel", etatPaiement: "En attente", datePaiement: "",
+    contactDap: "Maxime Dubois", siteDap: "dapsolidarity.be", asso: "Stop Harcèlement",
+  },
+  {
+    preneur: "Charlotte Dupuis", societe: "Dupuis & Fils SA",
+    mail: "ch.dupuis@skynet.be", contrat: "SO-2024-004", produit: "Habitation",
+    dateSocket: "2024-09-05", dateEffet: "2024-10-01",
+    primeHT: "255,00 €", primeTTC: "306,00 €", primeVal: 306,
+    fraction: "Annuel", etatPaiement: "Payé", datePaiement: "2024-10-01",
+    contactDap: "Sufyan Khalil", siteDap: "dapsolidarity.be", asso: "",
+  },
+  {
+    preneur: "Thomas Bastin", societe: "Bastin Architectes",
+    mail: "t.bastin@gmail.com", contrat: "SO-2025-001", produit: "Auto",
+    dateSocket: "2025-01-12", dateEffet: "2025-02-01",
+    primeHT: "540,00 €", primeTTC: "648,00 €", primeVal: 648,
+    fraction: "Semestriel", etatPaiement: "Payé", datePaiement: "2025-02-01",
+    contactDap: "Lorena Morales", siteDap: "dapsolidarity.be", asso: "Dynamo International",
+  },
+];
+
+// ── STATE ─────────────────────────────────────────────────────────
+let liveMode     = false;
+let scriptUrl    = '';
+let currentResult = null;
+let selectedAsso  = '';
+let currentView   = 'recherche';
+
+// ── NAVIGATION ONGLETS ────────────────────────────────────────────
+function setView(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  currentView = name;
+
+  if (name === 'dashboard')  renderDashboard();
+  if (name === 'classement') renderClassement();
+}
+
+// ── NORMALISATION ─────────────────────────────────────────────────
+function normalize(str) {
+  return (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+
+// ── RECHERCHE ─────────────────────────────────────────────────────
+async function doSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (q.length < 2) { toast('Tapez au moins 2 caractères'); return; }
+  if (liveMode) await searchLive(q);
+  else searchDemo(q);
+}
+
+function searchDemo(q) {
+  const nq = normalize(q);
+  const found = DEMO_DATA.find(d =>
+    normalize(d.preneur).includes(nq) ||
+    normalize(d.contrat).includes(nq) ||
+    normalize(d.mail).includes(nq)
+  );
+  renderResult(found || null, q);
+}
+
+async function searchLive(q) {
+  try {
+    const res  = await fetch(scriptUrl + '?action=search&q=' + encodeURIComponent(q));
+    const data = await res.json();
+    renderResult(data.found ? data.client : null, q);
+  } catch (e) {
+    toast('Erreur de connexion au Google Sheet');
+  }
+}
+
+// ── RENDER RESULT ─────────────────────────────────────────────────
+function renderResult(client, q) {
+  const zone = document.getElementById('resultZone');
+  selectedAsso = '';
+
+  if (!client) {
+    zone.innerHTML = `
+      <div class="not-found">
+        <div class="icon">🔍</div>
+        <h3>Aucun client DAP Solidarity trouvé</h3>
+        <p>« ${q} » ne correspond à aucun preneur, contrat ou e-mail dans la base DAP Solidarity.</p>
+      </div>`;
+    currentResult = null;
+    return;
+  }
+
+  currentResult = client;
+  const pttc = client.primeVal || parseFloat((client.primeTTC || '').replace(/[^\d,]/g,'').replace(',','.')) || 0;
+  const reversement = pttc > 0 ? (pttc * 0.10).toFixed(2).replace('.', ',') + ' €' : '—';
+  const ep = (client.etatPaiement || '').toLowerCase();
+  const epCls = ep === 'payé' ? 'green' : ep === 'en attente' ? 'orange' : 'red';
+  const assoChosen = client.asso || '';
+
+  const chips = ASSOS.map(a => {
+    const isCurrent = a === assoChosen;
+    return `<button class="asso-chip ${isCurrent ? 'current' : ''}"
+      onclick="selectAsso(this, '${a.replace(/'/g,"\\'")}')">
+      ${isCurrent ? '✓ ' : ''}${a}</button>`;
+  }).join('');
+
+  const assoStatusHtml = assoChosen
+    ? `<div class="asso-status ok">✓ Association choisie : <strong>${assoChosen}</strong></div>`
+    : `<div class="asso-status todo">⚠ Association pas encore choisie — à signaler au client</div>`;
+
+  zone.innerHTML = `
+    <div class="result-card">
+      <div class="so-banner">
+        <div class="so-icon">🤝</div>
+        <div class="so-label">
+          <h2>${client.preneur}</h2>
+          <p>${client.societe ? client.societe + ' · ' : ''}${client.mail || '—'}</p>
+        </div>
+        <span class="so-badge">✦ DAP SOLIDARITY</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Numéro contrat</div>
+          <div class="info-value mono">${client.contrat || '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Produit</div>
+          <div class="info-value">${client.produit || '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Date de souscription</div>
+          <div class="info-value">${fmtDate(client.dateSocket)}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Prise d'effet</div>
+          <div class="info-value">${fmtDate(client.dateEffet)}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Fractionnement</div>
+          <div class="info-value">${client.fraction || '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">État paiement</div>
+          <div class="info-value ${epCls}">${client.etatPaiement || '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Contact DAP</div>
+          <div class="info-value">${client.contactDap || '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Société partenaire</div>
+          <div class="info-value">${client.societe || '—'}</div>
+        </div>
+      </div>
+      <div class="prime-block">
+        <div class="prime-item">
+          <div class="pl">Prime annuelle TTC</div>
+          <div class="pv">${client.primeTTC || '—'}</div>
+        </div>
+        <div class="prime-sep"></div>
+        <div class="prime-item">
+          <div class="pl">Reversement asso (10%)</div>
+          <div class="pv">${reversement}</div>
+        </div>
+        <div class="prime-sep"></div>
+        <div class="prime-item">
+          <div class="pl">Prime annuelle HT</div>
+          <div class="pv" style="font-size:15px;color:#374151;">${client.primeHT || '—'}</div>
+        </div>
+      </div>
+      <div class="asso-section">
+        <div class="asso-title">Association partenaire</div>
+        ${assoStatusHtml}
+        <div style="margin-top:14px;">
+          <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:8px;">
+            ${assoChosen ? 'Modifier le choix :' : 'Enregistrer le choix du client :'}
+          </div>
+          <div class="asso-chips">${chips}</div>
+          <button class="btn-save-asso" id="btnSaveAsso" onclick="saveAsso()">Enregistrer le choix →</button>
+        </div>
+      </div>
+      <div class="card-footer-actions">
+        <button class="btn-ghost" onclick="copyMail()">📋 Copier l'e-mail</button>
+      </div>
+    </div>`;
+}
+
+// ── ASSOCIATION ───────────────────────────────────────────────────
+function selectAsso(btn, asso) {
+  if (btn.classList.contains('current')) return;
+  document.querySelectorAll('.asso-chip').forEach(c => {
+    if (!c.classList.contains('current')) c.classList.remove('selected');
+  });
+  btn.classList.toggle('selected');
+  selectedAsso = btn.classList.contains('selected') ? asso : '';
+  document.getElementById('btnSaveAsso').classList.toggle('visible', !!selectedAsso);
+}
+
+async function saveAsso() {
+  if (!selectedAsso || !currentResult) return;
+  if (liveMode) {
+    try {
+      await fetch(scriptUrl + '?action=updateAsso&contrat=' + encodeURIComponent(currentResult.contrat) + '&asso=' + encodeURIComponent(selectedAsso));
+    } catch(e) { toast('Erreur de sauvegarde'); return; }
+  } else {
+    const idx = DEMO_DATA.findIndex(d => d.contrat === currentResult.contrat);
+    if (idx >= 0) DEMO_DATA[idx].asso = selectedAsso;
+  }
+  currentResult.asso = selectedAsso;
+  toast('Association enregistrée : ' + selectedAsso);
+  renderResult(currentResult, currentResult.preneur);
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────
+let filterSansAsso = false;
+
+function toggleFilterSansAsso() {
+  filterSansAsso = !filterSansAsso;
+  const btn = document.getElementById('filterSansAsso');
+  btn.classList.toggle('active', filterSansAsso);
+  renderDashboard();
+}
+
+function renderDashboard() {
+  const all  = DEMO_DATA;
+  const data = filterSansAsso ? all.filter(d => !d.asso) : all;
+  const totalPrimes      = all.reduce((s, d) => s + (d.primeVal || 0), 0);
+  const totalReversement = totalPrimes * 0.10;
+  const sansAsso         = all.filter(d => !d.asso).length;
+
+  // KPI cards
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi-card k-clients">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-value">${data.length}</div>
+      <div class="kpi-label">Preneurs actifs</div>
+      <div class="kpi-sub">DAP Solidarity</div>
+    </div>
+    <div class="kpi-card k-primes">
+      <div class="kpi-icon">💶</div>
+      <div class="kpi-value">${fmt(totalPrimes)}</div>
+      <div class="kpi-label">Total primes TTC / an</div>
+      <div class="kpi-sub">Ensemble du portefeuille</div>
+    </div>
+    <div class="kpi-card k-reverse">
+      <div class="kpi-icon">🤝</div>
+      <div class="kpi-value">${fmt(totalReversement)}</div>
+      <div class="kpi-label">Total reversements assocs</div>
+      <div class="kpi-sub">10% des primes TTC</div>
+    </div>
+    <div class="kpi-card k-sans">
+      <div class="kpi-icon">${sansAsso > 0 ? '⚠️' : '✅'}</div>
+      <div class="kpi-value" style="color:${sansAsso > 0 ? 'var(--orange)' : 'var(--so-green)'}">${sansAsso}</div>
+      <div class="kpi-label">Sans association choisie</div>
+      <div class="kpi-sub">${sansAsso > 0 ? 'À contacter' : 'Tous assignés !'}</div>
+    </div>`;
+
+  // Table
+  const rows = data.map(d => {
+    const rev = d.primeVal ? fmt(d.primeVal * 0.10) : '—';
+    const epCls = d.etatPaiement === 'Payé' ? 'pill-pay' : 'pill-wait';
+    return `<tr>
+      <td>
+        <div class="td-name">${d.preneur}</div>
+        <div class="td-sub">${d.societe || '—'}</div>
+      </td>
+      <td><span class="td-mono">${d.contrat}</span></td>
+      <td><span class="pill pill-prod">${d.produit}</span></td>
+      <td class="td-prime">${d.primeTTC}</td>
+      <td class="td-rev">${rev}</td>
+      <td>
+        ${d.asso
+          ? `<span class="pill pill-ok">✓ ${d.asso}</span>`
+          : `<span class="pill pill-todo">⚠ Non choisie</span>`}
+      </td>
+      <td><span class="pill ${epCls}">${d.etatPaiement}</span></td>
+      <td><button class="btn-voir" onclick="goSearch('${d.preneur.replace(/'/g,"\\'")}')">Voir →</button></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('clientsTbody').innerHTML = rows;
+  const btn = document.getElementById('filterSansAsso');
+  if (btn) btn.classList.toggle('active', filterSansAsso);
+}
+
+// ── CLASSEMENT ────────────────────────────────────────────────────
+function renderClassement() {
+  const sorted = [...DEMO_DATA].sort((a, b) => (b.primeVal || 0) - (a.primeVal || 0));
+  const maxVal = sorted[0]?.primeVal || 1;
+
+  // Podium (top 3)
+  const podiumEmoji  = ['🥇', '🥈', '🥉'];
+  const podiumClass  = ['podium-1', 'podium-2', 'podium-3'];
+  const podiumOrder  = [1, 0, 2]; // affichage : 2ème | 1er | 3ème
+  const top3 = sorted.slice(0, 3);
+
+  const podiumItems = podiumOrder.map(i => {
+    const d = top3[i];
+    if (!d) return '<div class="podium-item"></div>';
+    return `
+      <div class="podium-item ${podiumClass[i]}">
+        <div class="podium-avatar">${podiumEmoji[i]}</div>
+        <div class="podium-name">${d.preneur}</div>
+        <div class="podium-societe">${d.societe || '—'}</div>
+        <div class="podium-prime">${d.primeTTC}</div>
+        <div class="podium-rev">↳ ${fmt(d.primeVal * 0.10)} à reverser</div>
+        <div class="podium-block">${i + 1}</div>
+      </div>`;
+  }).join('');
+  document.getElementById('podiumWrap').innerHTML = podiumItems;
+
+  // Tableau complet
+  const rows = sorted.map((d, i) => {
+    const rev   = d.primeVal ? fmt(d.primeVal * 0.10) : '—';
+    const pct   = Math.round((d.primeVal / maxVal) * 100);
+    const numCls = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-n';
+    return `<tr>
+      <td><div class="rank-num ${numCls}">${i + 1}</div></td>
+      <td>
+        <div class="td-name">${d.preneur}</div>
+        <div class="td-sub">${d.mail || ''}</div>
+      </td>
+      <td>${d.societe || '—'}</td>
+      <td><span class="pill pill-prod">${d.produit}</span></td>
+      <td class="td-prime">${d.primeTTC}</td>
+      <td class="td-rev">${rev}</td>
+      <td>${d.asso ? `<span class="pill pill-ok" style="font-size:10px">${d.asso}</span>` : '<span class="pill pill-todo" style="font-size:10px">Non choisie</span>'}</td>
+      <td style="min-width:100px;">
+        <div style="font-size:11px;font-weight:700;color:var(--so-green);margin-bottom:3px;">${pct}%</div>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%"></div></div>
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('rankTbody').innerHTML = rows;
+}
+
+// ── AJOUTER UN PRENEUR ────────────────────────────────────────────
+function openAddModal() {
+  document.getElementById('addOverlay').classList.add('open');
+  document.getElementById('f-preneur').focus();
+}
+function closeAddModal() {
+  document.getElementById('addOverlay').classList.remove('open');
+}
+function closeOnBg(e) {
+  if (e.target === document.getElementById('addOverlay')) closeAddModal();
+}
+
+function saveNewClient() {
+  const preneur = document.getElementById('f-preneur').value.trim();
+  if (!preneur) { toast('Le nom du preneur est obligatoire'); return; }
+
+  const primeTTCVal = parseFloat(document.getElementById('f-primettc').value) || 0;
+  const primeHTVal  = parseFloat(document.getElementById('f-primeht').value)  || 0;
+
+  const newClient = {
+    preneur,
+    societe:      document.getElementById('f-societe').value.trim(),
+    mail:         document.getElementById('f-mail').value.trim(),
+    contrat:      document.getElementById('f-contrat').value.trim(),
+    produit:      document.getElementById('f-produit').value,
+    dateSocket:   document.getElementById('f-datesocket').value,
+    dateEffet:    document.getElementById('f-dateeffet').value,
+    primeHT:      primeHTVal  ? primeHTVal.toFixed(2).replace('.', ',') + ' €' : '',
+    primeTTC:     primeTTCVal ? primeTTCVal.toFixed(2).replace('.', ',') + ' €' : '',
+    primeVal:     primeTTCVal,
+    fraction:     document.getElementById('f-fraction').value,
+    etatPaiement: document.getElementById('f-etat').value,
+    datePaiement: '',
+    contactDap:   document.getElementById('f-contact').value.trim(),
+    siteDap:      'dapsolidarity.be',
+    asso:         document.getElementById('f-asso').value,
+  };
+
+  DEMO_DATA.unshift(newClient);
+  closeAddModal();
+  toast('Preneur ajouté : ' + preneur);
+
+  // Reset form
+  ['f-preneur','f-societe','f-mail','f-contrat','f-datesocket','f-dateeffet','f-primeht','f-primettc','f-contact'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-asso').value = '';
+
+  if (currentView === 'dashboard')  renderDashboard();
+  if (currentView === 'classement') renderClassement();
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function fmt(val) {
+  return val.toFixed(2).replace('.', ',') + ' €';
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+function copyMail() {
+  if (!currentResult?.mail) return;
+  navigator.clipboard.writeText(currentResult.mail).then(() => toast('E-mail copié : ' + currentResult.mail));
+}
+function onSearchInput() {
+  const val = document.getElementById('searchInput').value;
+  document.getElementById('btnClear').classList.toggle('visible', val.length > 0);
+}
+
+function quickSearch(q) {
+  document.getElementById('searchInput').value = q;
+  document.getElementById('btnClear').classList.add('visible');
+  doSearch();
+}
+
+function newSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('resultZone').innerHTML = '';
+  document.getElementById('btnClear').classList.remove('visible');
+  document.getElementById('searchInput').focus();
+  currentResult = null;
+}
+function goSearch(preneur) {
+  setView('recherche', document.querySelectorAll('.tab-btn')[0]);
+  document.getElementById('searchInput').value = preneur;
+  doSearch();
+}
+
+// ── LIVE MODE ──────────────────────────────────────────────────────
+function toggleConnect() {
+  document.getElementById('connectPanel').classList.toggle('open');
+}
+function connectLive() {
+  const url = document.getElementById('scriptUrlInput').value.trim();
+  if (!url.startsWith('https://script.google.com')) {
+    toast('URL invalide — doit commencer par https://script.google.com');
+    return;
+  }
+  scriptUrl = url; liveMode = true;
+  localStorage.setItem('dapso_script_url', url);
+  updateModeUI();
+  toast('Connecté au Google Sheet');
+}
+function disconnectLive() {
+  liveMode = false; scriptUrl = '';
+  localStorage.removeItem('dapso_script_url');
+  document.getElementById('scriptUrlInput').value = '';
+  updateModeUI();
+  toast('Déconnecté — retour en mode démo');
+}
+function updateModeUI() {
+  const badge  = document.getElementById('modeBadge');
+  const btn    = document.getElementById('btnDisconnect');
+  const banner = document.getElementById('demoBanner');
+  const sug = document.getElementById('demoSuggestions');
+  if (liveMode) {
+    badge.className = 'mode-badge live';
+    badge.textContent = '● Connecté';
+    btn.style.display = 'inline-block';
+    banner.style.display = 'none';
+    if (sug) sug.style.display = 'none';
+  } else {
+    badge.className = 'mode-badge demo';
+    badge.textContent = '⚙ Mode démo';
+    btn.style.display = 'none';
+    banner.style.display = 'flex';
+    if (sug) sug.style.display = 'flex';
+  }
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── MS LOGIN (démo) ───────────────────────────────────────────────
+const DEMO_EMAIL = 'demo@dapsolidarity.be';
+const DEMO_PASS  = 'DapSo2026!';
+
+function msNext() {
+  const email = document.getElementById('msEmail').value.trim();
+  const err   = document.getElementById('msErr1');
+  if (!email || !email.includes('@')) {
+    err.textContent = 'Entrez une adresse e-mail valide.'; return;
+  }
+  err.textContent = '';
+  document.getElementById('msEmailDisplay').textContent = email;
+  document.getElementById('msStep1').classList.remove('active');
+  document.getElementById('msStep2').classList.add('active');
+  setTimeout(() => document.getElementById('msPassword').focus(), 50);
+}
+
+function msBack() {
+  document.getElementById('msStep2').classList.remove('active');
+  document.getElementById('msStep1').classList.add('active');
+  document.getElementById('msPassword').value = '';
+  document.getElementById('msErr2').textContent = '';
+}
+
+function msSignIn() {
+  const email = document.getElementById('msEmail').value.trim();
+  const pass  = document.getElementById('msPassword').value;
+  const err   = document.getElementById('msErr2');
+
+  if (email.toLowerCase() !== DEMO_EMAIL || pass !== DEMO_PASS) {
+    err.textContent = 'Votre compte ou mot de passe est incorrect. Réessayez.';
+    document.getElementById('msPassword').value = '';
+    return;
+  }
+
+  // Succès
+  document.getElementById('msOverlay').classList.add('hidden');
+  setLoggedUser(email);
+
+  // Si l'outil a été ouvert via ?search= (extension Chrome), relancer la recherche après login
+  const urlQ = new URLSearchParams(window.location.search).get('search');
+  if (urlQ) {
+    document.getElementById('searchInput').value = urlQ;
+    onSearchInput();
+    doSearch();
+  }
+}
+
+function setLoggedUser(email) {
+  // Initiales depuis l'email
+  const parts    = email.split('@')[0].split('.');
+  const initials = parts.map(p => p[0].toUpperCase()).join('').slice(0, 2);
+  const name     = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userName').textContent   = name;
+  document.getElementById('userBadge').style.display = 'flex';
+  document.getElementById('modeBadge').style.marginLeft = '0';
+}
+
+function msSignOut() {
+  document.getElementById('userBadge').style.display = 'none';
+  document.getElementById('msOverlay').classList.remove('hidden');
+  // Reset form
+  document.getElementById('msEmail').value    = '';
+  document.getElementById('msPassword').value = '';
+  document.getElementById('msErr1').textContent = '';
+  document.getElementById('msErr2').textContent = '';
+  document.getElementById('msStep2').classList.remove('active');
+  document.getElementById('msStep1').classList.add('active');
+  document.getElementById('msEmail').classList.remove('filled');
+  document.getElementById('msPassword').classList.remove('filled');
+}
+
+// ── GUIDE ─────────────────────────────────────────────────────────
+function openGuide() {
+  const overlay = document.getElementById('guideOverlay');
+  const iframe  = document.getElementById('guideIframe');
+  if (iframe.src === 'about:blank' || iframe.src === '') {
+    iframe.src = 'Documentation/DAP-Solidarity-Guide.html';
+  }
+  overlay.classList.add('open');
+}
+function closeGuide() {
+  document.getElementById('guideOverlay').classList.remove('open');
+}
+
+// ── RACCOURCI BRIO ────────────────────────────────────────────────
+function openShortcut() {
+  // Génère le bookmarklet avec l'URL actuelle de l'outil
+  const base = window.location.origin + window.location.pathname;
+  const code = `javascript:(function(){var q=window.getSelection().toString().trim();if(!q)q=prompt('Nom du preneur DAP Solidarity ?','');if(q)window.open('${base}?search='+encodeURIComponent(q),'_blank');})();`;
+  document.getElementById('bookmarkletLink').href = code;
+  document.getElementById('shortcutOverlay').classList.add('open');
+}
+function closeShortcut() {
+  document.getElementById('shortcutOverlay').classList.remove('open');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+(function init() {
+  const saved = localStorage.getItem('dapso_script_url');
+  if (saved) {
+    scriptUrl = saved; liveMode = true;
+    document.getElementById('scriptUrlInput').value = saved;
+    updateModeUI();
+  }
+
+  // Recherche automatique via paramètre URL ?search=
+  const urlQ = new URLSearchParams(window.location.search).get('search');
+  if (urlQ) {
+    document.getElementById('searchInput').value = urlQ;
+    onSearchInput();
+    doSearch();
+  }
+})();
+</script>
+</body>
+</html>

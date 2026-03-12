@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulaires DAP — Demandes d'offre</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .index-header { background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%); color: white; }
+  .index-header-inner { max-width: 860px; margin: 0 auto; padding: 40px 32px 36px; position: relative; z-index: 1; }
+  .index-header::before { content:''; position:absolute; top:-60px; right:-60px; width:300px; height:300px; background:rgba(232,184,75,0.08); border-radius:50%; }
+  .index-body { max-width: 860px; margin: 0 auto; padding: 36px 20px 60px; }
+  .index-intro { background:white; border-radius:12px; padding:24px 28px; margin-bottom:28px; box-shadow:0 2px 8px rgba(26,26,46,0.07); border:1px solid #e2e8f0; font-size:14px; color:#4b5563; line-height:1.7; }
+  .index-intro strong { color:#1a1a2e; }
+  .form-card-auto .form-card-header { border-top: 4px solid #3b82f6; }
+  .form-card-hab .form-card-header { border-top: 4px solid #f59e0b; }
+  .form-card-copro .form-card-header { border-top: 4px solid #8b5cf6; }
+  .form-card-rc .form-card-header { border-top: 4px solid #ef4444; }
+  .header-top { display:flex; align-items:center; gap:18px; margin-bottom:18px; position:relative; z-index:1; }
+</style>
+</head>
+<body>
+
+<div class="index-header" style="position:relative; overflow:hidden;">
+  <div class="index-header-inner">
+    <div class="header-top">
+      <img src="assets/logo-dap.png" alt="DAP" class="header-logo">
+      <div style="width:1px; height:36px; background:rgba(255,255,255,0.2);"></div>
+      <div style="color:rgba(255,255,255,0.65); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Courtage d'assurances</div>
+    </div>
+    <h1 style="font-size:30px; font-weight:800; margin-bottom:8px;">Demandes d'offre en ligne</h1>
+    <p style="color:rgba(255,255,255,0.65); font-size:15px;">Sélectionnez le type d'assurance pour lequel vous souhaitez une offre personnalisée.</p>
+  </div>
+</div>
+
+<div class="index-body">
+  <div class="index-intro">
+    <strong>Comment ça fonctionne ?</strong> Choisissez votre formulaire ci-dessous, complétez-le en quelques minutes, et votre conseiller DAP vous contactera dans les 24h avec une offre adaptée à votre situation. Toutes les informations transmises sont traitées de façon confidentielle.
+  </div>
+
+  <div class="index-grid">
+
+    <a href="form-auto.html" class="form-card form-card-auto">
+      <div class="form-card-header">
+        <img src="assets/logo-dap.png" alt="DAP" class="card-logo">
+        <div class="form-card-icon">🚗</div>
+        <div class="form-card-title">Assurance Auto</div>
+        <div class="form-card-desc">RC, Mini omnium ou Omnium complète pour votre véhicule. Inclut conducteurs habituel et occasionnel, antécédents et assurance actuelle.</div>
+      </div>
+      <div class="form-card-footer">
+        <span>⏱ 8–12 minutes · 53 questions</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+
+    <a href="form-habitation.html" class="form-card form-card-hab">
+      <div class="form-card-header">
+        <img src="assets/logo-dap.png" alt="DAP" class="card-logo">
+        <div class="form-card-icon">🏠</div>
+        <div class="form-card-title">Assurance Habitation / Incendie</div>
+        <div class="form-card-desc">Pour propriétaires occupants, locataires, propriétaires non-occupants. Maison, appartement, villa ou studio.</div>
+      </div>
+      <div class="form-card-footer">
+        <span>⏱ 10–15 minutes · 57 questions</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+
+    <a href="form-copropriete.html" class="form-card form-card-copro">
+      <div class="form-card-header">
+        <img src="assets/logo-dap.png" alt="DAP" class="card-logo">
+        <div class="form-card-icon">🏢</div>
+        <div class="form-card-title">Assurance Copropriété</div>
+        <div class="form-card-desc">Pour les syndics et conseils de copropriété. Parties communes, RC immeuble, ascenseur et couvertures souhaitées.</div>
+      </div>
+      <div class="form-card-footer">
+        <span>⏱ 10–15 minutes · 48 questions</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+
+    <a href="form-rcpro.html" class="form-card form-card-rc">
+      <div class="form-card-header">
+        <img src="assets/logo-dap.png" alt="DAP" class="card-logo">
+        <div class="form-card-icon">💼</div>
+        <div class="form-card-title">RC Professionnelle</div>
+        <div class="form-card-desc">Pour indépendants et sociétés. Conseil, IT, ingénierie, formation, médical… Couverture adaptée aux activités professionnelles belges.</div>
+      </div>
+      <div class="form-card-footer">
+        <span>⏱ 10–15 minutes · 55 questions</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+
+  </div>
+
+  <div style="text-align:center; margin-top:36px; color:#9ca3af; font-size:12px; line-height:1.8;">
+    <p>🔒 Vos données sont traitées de façon confidentielle et ne sont jamais partagées à des tiers sans votre accord.</p>
+    <p style="margin-top:4px;">Une question ? Contactez-nous : <strong style="color:#1a1a2e;">info@dap.be</strong> ou via votre conseiller DAP.</p>
+  </div>
+</div>
+
+</body>
+</html>

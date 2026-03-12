@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAP — Pipeline des demandes entrantes</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #1a1a2e;
+  --blue:   #0f3460;
+  --gold:   #e8b84b;
+  --green:  #10b981;
+  --red:    #ef4444;
+  --border: #e2e8f0;
+  --bg:     #f4f6f9;
+  --muted:  #6b7280;
+  --auto:   #3b82f6;
+  --hab:    #f59e0b;
+  --copro:  #8b5cf6;
+  --rcpro:  #ef4444;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--navy);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--blue) 100%);
+  color: white;
+  padding: 18px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+}
+.header-inner {
+  max-width: 1700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.header-logo { height: 30px; }
+.header-sep  { width: 1px; height: 26px; background: rgba(255,255,255,0.2); }
+.header-title { flex: 1; }
+.header-title h1 { font-size: 17px; font-weight: 700; }
+.header-title p  { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+.mode-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.mode-badge.demo {
+  background: rgba(232,184,75,0.2);
+  border: 1px solid rgba(232,184,75,0.5);
+  color: var(--gold);
+}
+.mode-badge.live {
+  background: rgba(16,185,129,0.2);
+  border: 1px solid rgba(16,185,129,0.5);
+  color: #34d399;
+}
+
+/* ── CONNECT PANEL ── */
+.connect-panel {
+  background: white;
+  border-bottom: 2px solid var(--gold);
+  padding: 14px 28px;
+  display: none;
+}
+.connect-panel.open { display: block; }
+.connect-inner {
+  max-width: 1700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.connect-label { font-size: 13px; font-weight: 600; color: var(--navy); }
+.connect-input {
+  flex: 1;
+  min-width: 280px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: monospace;
+  outline: none;
+}
+.connect-input:focus { border-color: var(--blue); }
+.btn-connect {
+  padding: 7px 18px;
+  background: var(--navy);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-connect:hover { background: var(--blue); }
+.btn-disconnect {
+  padding: 7px 14px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.connect-hint { font-size: 11px; color: var(--muted); }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 28px;
+}
+.stats-inner {
+  max-width: 1700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.stat { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.stat .n { font-weight: 700; font-size: 16px; }
+.stat .l { color: var(--muted); }
+.stat.s-total   .n { color: var(--blue); }
+.stat.s-attente .n { color: var(--hab); }
+.stat.s-urgent  .n { color: var(--red); }
+.stat.s-win     .n { color: var(--green); }
+.stats-sep { width: 1px; height: 18px; background: var(--border); }
+.reset-btn {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+.reset-btn:hover { color: var(--red); }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  background: white;
+  border-bottom: 2px solid var(--border);
+  padding: 10px 28px;
+}
+.filter-inner {
+  max-width: 1700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.filter-lbl { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.filter-select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--navy);
+  background: white;
+  cursor: pointer;
+  outline: none;
+}
+.filter-select:focus { border-color: var(--blue); }
+.tabs { display: flex; gap: 5px; }
+.tab {
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: white;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--muted);
+}
+.tab:hover { border-color: var(--blue); color: var(--blue); }
+.tab.active              { background: var(--navy); border-color: var(--navy); color: white; }
+.tab.active[data-t="auto"]       { background: var(--auto);  border-color: var(--auto); }
+.tab.active[data-t="habitation"] { background: var(--hab);   border-color: var(--hab); }
+.tab.active[data-t="copropriete"]{ background: var(--copro); border-color: var(--copro); }
+.tab.active[data-t="rcpro"]      { background: var(--rcpro); border-color: var(--rcpro); }
+.add-btn {
+  margin-left: auto;
+  padding: 6px 14px;
+  background: var(--gold);
+  color: var(--navy);
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.add-btn:hover { background: #d4a53e; }
+
+/* ── BOARD ── */
+.board-wrap { overflow-x: auto; padding: 20px 28px 40px; }
+.board {
+  display: flex;
+  gap: 14px;
+  min-width: max-content;
+  max-width: 1700px;
+  margin: 0 auto;
+}
+
+/* ── COLUMN ── */
+.col { width: 255px; flex-shrink: 0; }
+.col-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 8px 8px 0 0;
+  background: white;
+  border: 1px solid var(--border);
+  border-bottom: none;
+}
+.col-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.col-name { flex: 1; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--navy); }
+.col-cnt {
+  font-size: 11px; font-weight: 700;
+  min-width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px; color: white;
+}
+.col-body {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid var(--border);
+  border-top: 3px solid;
+  border-radius: 0 0 8px 8px;
+  padding: 10px;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.col-empty {
+  text-align: center;
+  padding: 28px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Column accent colors */
+.c-recu    .col-dot, .c-recu    .col-cnt { background: #6b7280; }
+.c-recu    .col-body { border-top-color: #6b7280; }
+.c-cours   .col-dot, .c-cours   .col-cnt { background: var(--auto); }
+.c-cours   .col-body { border-top-color: var(--auto); }
+.c-devis   .col-dot, .c-devis   .col-cnt { background: var(--hab); }
+.c-devis   .col-body { border-top-color: var(--hab); }
+.c-relance .col-dot, .c-relance .col-cnt { background: var(--copro); }
+.c-relance .col-body { border-top-color: var(--copro); }
+.c-cloture .col-dot, .c-cloture .col-cnt { background: var(--green); }
+.c-cloture .col-body { border-top-color: var(--green); }
+
+/* ── CARD ── */
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 11px 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  border: 1px solid var(--border);
+  position: relative;
+  transition: box-shadow 0.15s, transform 0.1s;
+}
+.card:hover    { box-shadow: 0 4px 14px rgba(0,0,0,0.11); transform: translateY(-1px); }
+.card.urgent   { border-left: 3px solid var(--red); }
+.card.c-perdu  { opacity: 0.6; }
+
+.urgent-pulse {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 7px; height: 7px;
+  background: var(--red);
+  border-radius: 50%;
+  animation: blink 1.5s ease-in-out infinite;
+}
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+.badge {
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px;
+  color: white; text-transform: uppercase; letter-spacing: 0.3px;
+}
+.b-auto       { background: var(--auto); }
+.b-habitation { background: var(--hab);  color: #1a1a2e; }
+.b-copropriete{ background: var(--copro); }
+.b-rcpro      { background: var(--rcpro); }
+
+.card-ref { font-size: 10px; color: var(--muted); font-family: monospace; }
+.card-name {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  margin-bottom: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.card-phone { font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 2px; }
+.card-email {
+  font-size: 11px; color: var(--muted); margin-bottom: 7px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 9px;
+}
+.card-agent { font-size: 11px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.days-badge {
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 10px; flex-shrink: 0; margin-left: 6px;
+}
+.d-ok  { background: #d1fae5; color: #065f46; }
+.d-mid { background: #fef9c3; color: #854d0e; }
+.d-hot { background: #fee2e2; color: #991b1b; }
+
+/* ── PROGRESS BAR ── */
+.card-progress {
+  display: flex;
+  align-items: center;
+  margin-bottom: 9px;
+}
+.prog-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.prog-dot.done    { background: var(--green); }
+.prog-dot.current { background: var(--blue); box-shadow: 0 0 0 3px rgba(15,52,96,0.15); width: 10px; height: 10px; }
+.prog-dot.todo    { background: #e2e8f0; }
+.prog-dot.win     { background: var(--green); box-shadow: 0 0 0 3px rgba(16,185,129,0.15); width: 10px; height: 10px; }
+.prog-dot.lose    { background: var(--red);   box-shadow: 0 0 0 3px rgba(239,68,68,0.15);  width: 10px; height: 10px; }
+.prog-line {
+  flex: 1; height: 2px;
+  transition: background 0.2s;
+}
+.prog-line.done { background: var(--green); }
+.prog-line.todo { background: #e2e8f0; }
+
+.card-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+.btn {
+  flex: 1; padding: 5px 7px;
+  border: none; border-radius: 6px;
+  font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: background 0.12s, transform 0.1s;
+  text-align: center; white-space: nowrap;
+}
+.btn:active { transform: scale(0.95); }
+.btn-main  { background: var(--navy); color: white; }
+.btn-main:hover  { background: var(--blue); }
+.btn-back  { background: #f3f4f6; color: var(--muted); flex: 0; padding: 5px 9px; }
+.btn-back:hover  { background: var(--border); }
+.btn-win   { background: #d1fae5; color: #065f46; }
+.btn-win:hover   { background: #a7f3d0; }
+.btn-lose  { background: #fee2e2; color: #991b1b; }
+.btn-lose:hover  { background: #fca5a5; }
+.btn-reopen{ background: #f3f4f6; color: var(--muted); font-size: 10px; width: 100%; margin-top: 3px; }
+.btn-reopen:hover { background: var(--border); }
+
+.final-badge {
+  width: 100%; text-align: center;
+  font-size: 11px; font-weight: 700;
+  padding: 4px 8px; border-radius: 6px; display: block;
+}
+.fb-win  { background: #d1fae5; color: #065f46; }
+.fb-lose { background: #fee2e2; color: #991b1b; }
+
+/* ── ADD MODAL ── */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: white;
+  border-radius: 14px;
+  padding: 28px;
+  width: 420px;
+  max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.modal h2 { font-size: 16px; font-weight: 700; margin-bottom: 18px; color: var(--navy); }
+.form-row { margin-bottom: 13px; }
+.form-row label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.3px; }
+.form-row input, .form-row select {
+  width: 100%; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 13px; color: var(--navy); outline: none;
+}
+.form-row input:focus, .form-row select:focus { border-color: var(--blue); }
+.modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+.btn-cancel { flex: 1; padding: 9px; background: #f3f4f6; color: var(--muted); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-save   { flex: 2; padding: 9px; background: var(--navy); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.btn-save:hover { background: var(--blue); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--navy); color: white;
+  padding: 11px 20px; border-radius: 10px;
+  font-size: 13px; font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 500;
+  opacity: 0; transform: translateY(8px);
+  transition: all 0.25s; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center; padding: 18px;
+  font-size: 11px; color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: white; margin-top: 10px;
+}
+.footer strong { color: var(--navy); }
+
+@media (max-width: 768px) {
+  .board-wrap { padding: 12px; }
+  .header, .stats-bar, .filter-bar { padding-left: 16px; padding-right: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-inner">
+    <img src="assets/logo-dap.png" alt="DAP" class="header-logo">
+    <div class="header-sep"></div>
+    <div class="header-title">
+      <h1>Pipeline — Demandes entrantes</h1>
+      <p>Suivi des dossiers de la réception à la souscription</p>
+    </div>
+    <span class="mode-badge demo" id="modeBadge" onclick="toggleConnect()" title="Cliquer pour connecter aux données réelles">⚙ Mode démo</span>
+  </div>
+</div>
+
+<!-- ── CONNECT PANEL ── -->
+<div class="connect-panel" id="connectPanel">
+  <div class="connect-inner">
+    <span class="connect-label">URL Apps Script :</span>
+    <input type="text" class="connect-input" id="scriptUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+    <button class="btn-connect" onclick="connectLive()">Connecter</button>
+    <button class="btn-disconnect" onclick="disconnectLive()" id="btnDisconnect" style="display:none">Déconnecter</button>
+    <span class="connect-hint">Déployez apps-script.gs en tant que Web App et collez l'URL ici.</span>
+  </div>
+</div>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat s-total">
+      <span class="n" id="s-total">—</span>
+      <span class="l">dossiers actifs</span>
+    </div>
+    <div class="stats-sep"></div>
+    <div class="stat s-attente">
+      <span class="n" id="s-attente">—</span>
+      <span class="l">en attente réponse</span>
+    </div>
+    <div class="stats-sep"></div>
+    <div class="stat s-urgent">
+      <span class="n" id="s-urgent">—</span>
+      <span class="l">urgents (&gt;5 j)</span>
+    </div>
+    <div class="stats-sep"></div>
+    <div class="stat s-win">
+      <span class="n" id="s-win">—</span>
+      <span class="l">souscrits</span>
+    </div>
+    <button class="reset-btn" onclick="resetDemo()">↺ Réinitialiser démo</button>
+  </div>
+</div>
+
+<!-- ── FILTER BAR ── -->
+<div class="filter-bar">
+  <div class="filter-inner">
+    <span class="filter-lbl">Gestionnaire</span>
+    <select class="filter-select" id="agentFilter" onchange="render()">
+      <option value="all">Tous</option>
+      <option value="jean-dupont">Jean Dupont</option>
+      <option value="marie-martin">Marie Martin</option>
+      <option value="paul-lambert">Paul Lambert</option>
+      <option value="sarah-lecomte">Sarah Lecomte</option>
+      <option value="luc-simon">Luc Simon</option>
+    </select>
+    <span class="filter-lbl" style="margin-left:8px;">Produit</span>
+    <div class="tabs">
+      <button class="tab active" data-t="all"        onclick="setTab(this,'all')">Tout</button>
+      <button class="tab"        data-t="auto"        onclick="setTab(this,'auto')">🚗 Auto</button>
+      <button class="tab"        data-t="habitation"  onclick="setTab(this,'habitation')">🏠 Habitation</button>
+      <button class="tab"        data-t="copropriete" onclick="setTab(this,'copropriete')">🏢 Copropriété</button>
+      <button class="tab"        data-t="rcpro"       onclick="setTab(this,'rcpro')">💼 RC Pro</button>
+    </div>
+    <button class="add-btn" onclick="openAddModal()">+ Nouveau dossier</button>
+  </div>
+</div>
+
+<!-- ── BOARD ── -->
+<div class="board-wrap">
+  <div class="board" id="board"></div>
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer">
+  <strong>DAP</strong> Courtage d'assurances &nbsp;·&nbsp;
+  Pipeline des demandes v1.0 &nbsp;·&nbsp; Mars 2026 &nbsp;·&nbsp;
+  Modifications sauvegardées localement dans votre navigateur.
+</div>
+
+<!-- ── ADD MODAL ── -->
+<div class="overlay" id="overlay" onclick="closeOnBg(event)">
+  <div class="modal">
+    <h2>Ajouter un dossier manuellement</h2>
+    <div class="form-row">
+      <label>Nom complet du client</label>
+      <input type="text" id="f-client" placeholder="Ex : Jean Dupont">
+    </div>
+    <div class="form-row">
+      <label>Téléphone</label>
+      <input type="tel" id="f-tel" placeholder="0476 00 00 00">
+    </div>
+    <div class="form-row">
+      <label>E-mail</label>
+      <input type="email" id="f-email" placeholder="client@exemple.be">
+    </div>
+    <div class="form-row">
+      <label>Type de produit</label>
+      <select id="f-type">
+        <option value="auto">🚗 Assurance Auto</option>
+        <option value="habitation">🏠 Habitation / Incendie</option>
+        <option value="copropriete">🏢 Copropriété</option>
+        <option value="rcpro">💼 RC Professionnelle</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Gestionnaire assigné</label>
+      <select id="f-agent">
+        <option value="jean-dupont">Jean Dupont</option>
+        <option value="marie-martin">Marie Martin</option>
+        <option value="paul-lambert">Paul Lambert</option>
+        <option value="sarah-lecomte">Sarah Lecomte</option>
+        <option value="luc-simon">Luc Simon</option>
+        <option value="general">Équipe DAP</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save"   onclick="saveNewDossier()">Ajouter au pipeline →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  DAP — Pipeline des demandes entrantes
+//  Version 1.0 — Mars 2026
+//
+//  Pour connecter aux données réelles :
+//  1. Déployez apps-script.gs comme Web App dans Google Apps Script
+//  2. Cliquez sur "Mode démo" en haut à droite et collez l'URL
+//
+//  En mode démo, les données sont fictives et stockées dans
+//  le localStorage de votre navigateur.
+// ═══════════════════════════════════════════════════════════════
+
+// ── CONFIG ──────────────────────────────────────────────────────
+const COLUMNS = [
+  { id: 'recu',         label: 'Reçu',          css: 'c-recu' },
+  { id: 'en_cours',     label: 'En traitement',  css: 'c-cours' },
+  { id: 'devis_envoye', label: 'Devis envoyé',   css: 'c-devis' },
+  { id: 'relance',      label: 'Relancé',         css: 'c-relance' },
+  { id: 'cloture',      label: 'Clôturé',         css: 'c-cloture' },
+];
+
+const STATUS_ORDER = ['recu', 'en_cours', 'devis_envoye', 'relance'];
+
+const PRODUCT = {
+  auto:        { label: '🚗 Auto',        badge: 'b-auto' },
+  habitation:  { label: '🏠 Habitation',  badge: 'b-habitation' },
+  copropriete: { label: '🏢 Copropriété', badge: 'b-copropriete' },
+  rcpro:       { label: '💼 RC Pro',      badge: 'b-rcpro' },
+};
+
+const AGENTS = {
+  'jean-dupont':   'J. Dupont',
+  'marie-martin':  'M. Martin',
+  'paul-lambert':  'P. Lambert',
+  'sarah-lecomte': 'S. Lecomte',
+  'luc-simon':     'L. Simon',
+  'general':       'Équipe DAP',
+};
+
+const STATUS_LABEL = {
+  recu: 'Reçu', en_cours: 'En traitement',
+  devis_envoye: 'Devis envoyé', relance: 'Relancé',
+  souscrit: 'Souscrit', perdu: 'Perdu',
+};
+
+// ── DEMO DATA ────────────────────────────────────────────────────
+function ago(days) {
+  const d = new Date(); d.setDate(d.getDate() - days); return d.toISOString();
+}
+
+const DEMO = [
+  { id:'DAP-001', date: ago(0),  client:'Martin Leclerc',    tel:'0476 12 34 56', email:'m.leclerc@gmail.com',    type:'auto',        agent:'jean-dupont',   statut:'recu' },
+  { id:'DAP-002', date: ago(1),  client:'Sophie Renard',     tel:'0493 45 67 89', email:'s.renard@hotmail.be',    type:'habitation',  agent:'marie-martin',  statut:'recu' },
+  { id:'DAP-003', date: ago(1),  client:'Youssef El Amrani', tel:'0485 99 11 22', email:'y.elamrani@gmail.com',   type:'rcpro',       agent:'luc-simon',     statut:'recu' },
+  { id:'DAP-004', date: ago(2),  client:'Ahmed Benali',      tel:'0468 23 45 67', email:'a.benali@outlook.com',   type:'auto',        agent:'sarah-lecomte', statut:'en_cours' },
+  { id:'DAP-005', date: ago(3),  client:'Thomas Bastin',     tel:'0471 34 56 78', email:'t.bastin@gmail.com',     type:'rcpro',       agent:'jean-dupont',   statut:'en_cours' },
+  { id:'DAP-006', date: ago(5),  client:'Isabelle Fontaine', tel:'0487 56 78 90', email:'i.fontaine@proximus.be', type:'habitation',  agent:'paul-lambert',  statut:'en_cours' },
+  { id:'DAP-007', date: ago(4),  client:'Nathalie Pirard',   tel:'0478 67 89 01', email:'n.pirard@test.be',       type:'copropriete', agent:'jean-dupont',   statut:'devis_envoye' },
+  { id:'DAP-008', date: ago(7),  client:'Patrick Gilles',    tel:'0472 78 90 12', email:'p.gilles@gmail.com',     type:'auto',        agent:'marie-martin',  statut:'devis_envoye' },
+  { id:'DAP-009', date: ago(2),  client:'Clara Dubois',      tel:'0463 89 01 23', email:'c.dubois@test.be',       type:'habitation',  agent:'luc-simon',     statut:'devis_envoye' },
+  { id:'DAP-010', date: ago(10), client:'Charlotte Dupuis',  tel:'0498 90 12 34', email:'ch.dupuis@skynet.be',    type:'rcpro',       agent:'paul-lambert',  statut:'relance' },
+  { id:'DAP-011', date: ago(8),  client:'Kevin Maes',        tel:'0470 01 23 45', email:'k.maes@gmail.com',       type:'auto',        agent:'sarah-lecomte', statut:'relance' },
+  { id:'DAP-012', date: ago(9),  client:'Eric Lambert',      tel:'0476 12 34 99', email:'e.lambert@proximus.be',  type:'habitation',  agent:'jean-dupont',   statut:'souscrit' },
+  { id:'DAP-013', date: ago(15), client:'François Leroy',    tel:'0468 34 56 22', email:'f.leroy@hotmail.be',     type:'copropriete', agent:'luc-simon',     statut:'souscrit' },
+  { id:'DAP-014', date: ago(12), client:'Valérie Simon',     tel:'0493 23 45 11', email:'v.simon@gmail.com',      type:'auto',        agent:'sarah-lecomte', statut:'perdu' },
+];
+
+// ── STATE ────────────────────────────────────────────────────────
+let dossiers  = [];
+let filterType  = 'all';
+let filterAgent = 'all';
+let liveMode    = false;
+let scriptUrl   = '';
+let nextId      = 15;
+
+function load() {
+  const saved = localStorage.getItem('dap_pipeline_v2');
+  const savedUrl = localStorage.getItem('dap_pipeline_url');
+  if (saved) {
+    dossiers = JSON.parse(saved);
+    nextId = dossiers.reduce((m, d) => {
+      const n = parseInt(d.id.replace('DAP-', '')) || 0;
+      return Math.max(m, n);
+    }, 14) + 1;
+  } else {
+    dossiers = JSON.parse(JSON.stringify(DEMO));
+  }
+  if (savedUrl) {
+    scriptUrl = savedUrl;
+    document.getElementById('scriptUrlInput').value = savedUrl;
+    liveMode = true;
+    updateModeUI();
+  }
+}
+
+function save() {
+  localStorage.setItem('dap_pipeline_v2', JSON.stringify(dossiers));
+}
+
+function resetDemo() {
+  if (!confirm('Réinitialiser les données démo ?')) return;
+  dossiers = JSON.parse(JSON.stringify(DEMO));
+  nextId = 15;
+  save();
+  render();
+  toast('Données réinitialisées');
+}
+
+// ── LIVE MODE ────────────────────────────────────────────────────
+function toggleConnect() {
+  document.getElementById('connectPanel').classList.toggle('open');
+}
+
+function connectLive() {
+  const url = document.getElementById('scriptUrlInput').value.trim();
+  if (!url.startsWith('https://script.google.com')) {
+    toast('URL invalide — elle doit commencer par https://script.google.com');
+    return;
+  }
+  scriptUrl = url;
+  liveMode = true;
+  localStorage.setItem('dap_pipeline_url', url);
+  updateModeUI();
+  fetchLive();
+  toast('Connecté au Google Sheet');
+}
+
+function disconnectLive() {
+  liveMode = false;
+  scriptUrl = '';
+  localStorage.removeItem('dap_pipeline_url');
+  document.getElementById('scriptUrlInput').value = '';
+  updateModeUI();
+  toast('Déconnecté — retour en mode démo');
+}
+
+function updateModeUI() {
+  const badge = document.getElementById('modeBadge');
+  const btn   = document.getElementById('btnDisconnect');
+  if (liveMode) {
+    badge.className = 'mode-badge live';
+    badge.textContent = '● Connecté';
+    btn.style.display = 'inline-block';
+  } else {
+    badge.className = 'mode-badge demo';
+    badge.textContent = '⚙ Mode démo';
+    btn.style.display = 'none';
+  }
+}
+
+async function fetchLive() {
+  try {
+    const res = await fetch(scriptUrl + '?action=getPipeline');
+    const data = await res.json();
+    if (data.success && data.dossiers) {
+      dossiers = data.dossiers;
+      save();
+      render();
+    }
+  } catch (e) {
+    toast('Erreur de connexion au Google Sheet');
+    console.error(e);
+  }
+}
+
+async function updateLive(id, statut) {
+  if (!liveMode) return;
+  try {
+    await fetch(scriptUrl + '?action=updateStatut&id=' + encodeURIComponent(id) + '&statut=' + encodeURIComponent(statut));
+  } catch (e) {
+    console.error('Erreur update live:', e);
+  }
+}
+
+// ── PROGRESS BAR ─────────────────────────────────────────────────
+const PROG_STEPS = ['recu', 'en_cours', 'devis_envoye', 'relance', 'cloture'];
+const PROG_TIPS  = ['Reçu', 'En traitement', 'Devis envoyé', 'Relancé', 'Clôturé'];
+
+function renderProgress(statut) {
+  let cur = PROG_STEPS.indexOf(statut);
+  if (statut === 'souscrit' || statut === 'perdu') cur = 4;
+  const finalCls = statut === 'souscrit' ? 'win' : statut === 'perdu' ? 'lose' : '';
+
+  let html = '<div class="card-progress">';
+  PROG_STEPS.forEach((s, i) => {
+    let cls = i < cur ? 'done' : i === cur ? (finalCls || 'current') : 'todo';
+    html += `<div class="prog-dot ${cls}" title="${PROG_TIPS[i]}"></div>`;
+    if (i < PROG_STEPS.length - 1) {
+      html += `<div class="prog-line ${i < cur ? 'done' : 'todo'}"></div>`;
+    }
+  });
+  return html + '</div>';
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────
+function daysSince(iso) {
+  return Math.floor((Date.now() - new Date(iso)) / 86400000);
+}
+
+function isUrgent(d) {
+  if (d.statut === 'souscrit' || d.statut === 'perdu') return false;
+  const n = daysSince(d.date);
+  if (d.statut === 'devis_envoye' || d.statut === 'relance') return n >= 5;
+  if (d.statut === 'en_cours') return n >= 7;
+  if (d.statut === 'recu') return n >= 3;
+  return false;
+}
+
+function daysClass(n, statut) {
+  if (statut === 'souscrit' || statut === 'perdu') return 'd-ok';
+  if (n >= 7) return 'd-hot';
+  if (n >= 4) return 'd-mid';
+  return 'd-ok';
+}
+
+function colStatuses(colId) {
+  if (colId === 'cloture') return ['souscrit', 'perdu'];
+  return [colId];
+}
+
+// ── ACTIONS ──────────────────────────────────────────────────────
+function mutate(id, newStatut) {
+  const d = dossiers.find(x => x.id === id);
+  if (!d) return;
+  d.statut = newStatut;
+  d.date_mouvement = new Date().toISOString();
+  save();
+  updateLive(id, newStatut);
+  render();
+  toast(d.client + ' → ' + STATUS_LABEL[newStatut]);
+}
+
+function advance(id) {
+  const d = dossiers.find(x => x.id === id);
+  if (!d) return;
+  const i = STATUS_ORDER.indexOf(d.statut);
+  if (i >= 0 && i < STATUS_ORDER.length - 1) mutate(id, STATUS_ORDER[i + 1]);
+}
+
+function retreat(id) {
+  const d = dossiers.find(x => x.id === id);
+  if (!d) return;
+  const i = STATUS_ORDER.indexOf(d.statut);
+  if (i > 0) mutate(id, STATUS_ORDER[i - 1]);
+}
+
+function winClose(id)    { mutate(id, 'souscrit'); }
+function loseClose(id)   { mutate(id, 'perdu'); }
+function reopen(id)      { mutate(id, 'relance'); }
+
+// ── ADD MODAL ────────────────────────────────────────────────────
+function openAddModal() {
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('f-client').focus();
+}
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+}
+function closeOnBg(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+function saveNewDossier() {
+  const client = document.getElementById('f-client').value.trim();
+  if (!client) { toast('Renseignez le nom du client'); return; }
+  const id = 'DAP-' + String(nextId++).padStart(3, '0');
+  dossiers.unshift({
+    id,
+    date: new Date().toISOString(),
+    client,
+    tel:   document.getElementById('f-tel').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
+    type:  document.getElementById('f-type').value,
+    agent: document.getElementById('f-agent').value,
+    statut: 'recu',
+  });
+  save();
+  closeModal();
+  render();
+  toast('Dossier ' + id + ' créé — ' + client);
+  // Clear fields
+  ['f-client','f-tel','f-email'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── FILTERS ──────────────────────────────────────────────────────
+function setTab(btn, type) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterType = type;
+  render();
+}
+
+// ── RENDER ───────────────────────────────────────────────────────
+function renderCard(d) {
+  const n   = daysSince(d.date);
+  const urg = isUrgent(d);
+  const dc  = daysClass(n, d.statut);
+  const pr  = PRODUCT[d.type] || { label: d.type, badge: '' };
+  const ag  = AGENTS[d.agent] || d.agent;
+  const idx = STATUS_ORDER.indexOf(d.statut);
+  const closed = d.statut === 'souscrit' || d.statut === 'perdu';
+
+  let actions = '';
+  if (d.statut === 'relance') {
+    actions = `
+      <button class="btn btn-back" onclick="retreat('${d.id}')" title="Retour">←</button>
+      <button class="btn btn-win"  onclick="winClose('${d.id}')">✓ Souscrit</button>
+      <button class="btn btn-lose" onclick="loseClose('${d.id}')">✗ Perdu</button>`;
+  } else if (closed) {
+    const fb = d.statut === 'souscrit'
+      ? `<span class="final-badge fb-win">✓ Souscrit</span>`
+      : `<span class="final-badge fb-lose">✗ Perdu</span>`;
+    actions = `${fb}<button class="btn btn-reopen" onclick="reopen('${d.id}')">↩ Réouvrir</button>`;
+  } else if (idx === 0) {
+    actions = `<button class="btn btn-main" style="width:100%" onclick="advance('${d.id}')">Prendre en charge →</button>`;
+  } else {
+    actions = `
+      <button class="btn btn-back" onclick="retreat('${d.id}')" title="Retour">←</button>
+      <button class="btn btn-main" onclick="advance('${d.id}')">Avancer →</button>`;
+  }
+
+  return `
+    <div class="card ${urg ? 'urgent' : ''} ${d.statut === 'perdu' ? 'c-perdu' : ''}">
+      ${urg ? '<div class="urgent-pulse"></div>' : ''}
+      <div class="card-top">
+        <span class="badge ${pr.badge}">${pr.label}</span>
+        <span class="card-ref">${d.id}</span>
+      </div>
+      <div class="card-name">${d.client}</div>
+      ${d.tel   ? `<div class="card-phone">📞 ${d.tel}</div>` : ''}
+      ${d.email ? `<div class="card-email">${d.email}</div>` : ''}
+      <div class="card-footer">
+        <span class="card-agent">${ag}</span>
+        <span class="days-badge ${dc}">J+${n}</span>
+      </div>
+      ${renderProgress(d.statut)}
+      <div class="card-actions">${actions}</div>
+    </div>`;
+}
+
+function render() {
+  const ag   = document.getElementById('agentFilter').value;
+  const type = filterType;
+
+  const visible = dossiers.filter(d => {
+    if (ag   !== 'all' && d.agent !== ag)   return false;
+    if (type !== 'all' && d.type  !== type) return false;
+    return true;
+  });
+
+  // Stats (toutes données, sans filtre)
+  const active   = dossiers.filter(d => d.statut !== 'souscrit' && d.statut !== 'perdu');
+  const attente  = dossiers.filter(d => d.statut === 'devis_envoye' || d.statut === 'relance');
+  const urgents  = dossiers.filter(d => isUrgent(d));
+  const souscrits= dossiers.filter(d => d.statut === 'souscrit');
+  document.getElementById('s-total').textContent   = active.length;
+  document.getElementById('s-attente').textContent = attente.length;
+  document.getElementById('s-urgent').textContent  = urgents.length;
+  document.getElementById('s-win').textContent     = souscrits.length;
+
+  // Board
+  document.getElementById('board').innerHTML = COLUMNS.map(col => {
+    const statuses = colStatuses(col.id);
+    const cards    = visible.filter(d => statuses.includes(d.statut));
+    const body     = cards.length
+      ? cards.map(renderCard).join('')
+      : '<div class="col-empty">Aucun dossier</div>';
+    return `
+      <div class="col ${col.css}">
+        <div class="col-head">
+          <div class="col-dot"></div>
+          <span class="col-name">${col.label}</span>
+          <span class="col-cnt">${cards.length}</span>
+        </div>
+        <div class="col-body">${body}</div>
+      </div>`;
+  }).join('');
+}
+
+// ── TOAST ────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+load();
+render();
+</script>
+</body>
+</html>

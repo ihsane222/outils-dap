@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  TwiML d'accueil initial pour le Voice Bot DAP
+  Ce fichier est retourné par n8n lors du premier appel entrant.
+  Il joue le message d'accueil bilingue puis écoute la réponse de l'appelant.
+-->
+<Response>
+  <!-- Message d'accueil bilingue (FR puis NL) -->
+  <!-- En production, remplacer <Say> par <Play> avec l'audio ElevenLabs -->
+  <Say language="fr-FR" voice="alice">
+    Bonjour et bienvenue chez DAP, votre courtier en assurances.
+    Nos bureaux sont actuellement fermés.
+    Je suis l'assistant vocal de DAP.
+  </Say>
+  <Pause length="1"/>
+  <Say language="nl-NL" voice="alice">
+    Goedendag en welkom bij DAP, uw verzekeringsmakelaar.
+    Onze kantoren zijn momenteel gesloten.
+    Ik ben de spraakassistent van DAP.
+  </Say>
+  <Pause length="1"/>
+
+  <!-- Demande de choix de langue -->
+  <Gather input="speech" language="fr-FR" speechTimeout="3" action="/webhook/voicebot-dap" method="POST">
+    <Say language="fr-FR" voice="alice">
+      Pour continuer en français, parlez maintenant.
+    </Say>
+    <Pause length="1"/>
+    <Say language="nl-NL" voice="alice">
+      Om verder te gaan in het Nederlands, spreek nu.
+    </Say>
+  </Gather>
+
+  <!-- Fallback si aucune réponse détectée -->
+  <Say language="fr-FR" voice="alice">
+    Je n'ai pas compris votre réponse. Au revoir.
+  </Say>
+</Response>

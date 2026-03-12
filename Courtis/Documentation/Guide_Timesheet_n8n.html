@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Guide — Timesheet Automatique Microsoft 365</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1a1a1a; background: #fff; }
+    .page { max-width: 800px; margin: 0 auto; padding: 40px; }
+
+    .header { background: #1a3c5e; color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; }
+    .header h1 { font-size: 22px; margin-bottom: 6px; }
+    .header p { font-size: 13px; opacity: 0.8; }
+    .header .badge { display: inline-block; background: #2ecc71; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-top: 8px; }
+
+    h2 { font-size: 15px; color: #1a3c5e; border-bottom: 2px solid #1a3c5e; padding-bottom: 6px; margin: 28px 0 14px 0; }
+
+    .intro-box { background: #f0f7ff; border-left: 4px solid #1a3c5e; padding: 14px 16px; border-radius: 0 6px 6px 0; margin-bottom: 20px; }
+
+    .step { display: flex; gap: 14px; margin-bottom: 16px; align-items: flex-start; }
+    .step-num { background: #1a3c5e; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+    .step-content { flex: 1; }
+    .step-content strong { display: block; margin-bottom: 4px; font-size: 13px; }
+    .step-content p { color: #444; line-height: 1.5; }
+
+    .code { background: #f4f4f4; border: 1px solid #ddd; border-radius: 4px; padding: 8px 12px; font-family: 'Courier New', monospace; font-size: 11px; word-break: break-all; margin: 6px 0; }
+
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+    th { background: #1a3c5e; color: white; padding: 8px 10px; text-align: left; }
+    td { padding: 7px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+    tr:nth-child(even) td { background: #f9f9f9; }
+    td.label { font-weight: bold; width: 35%; color: #333; }
+    td.val { font-family: 'Courier New', monospace; font-size: 11px; word-break: break-all; }
+
+    .warning { background: #fff8e1; border-left: 4px solid #f39c12; padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 10px 0; font-size: 12px; }
+    .success { background: #e8f8f0; border-left: 4px solid #2ecc71; padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 10px 0; font-size: 12px; }
+    .info { background: #f0f7ff; border-left: 4px solid #3498db; padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 10px 0; font-size: 12px; }
+
+    .flow { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0; align-items: center; }
+    .flow-item { background: #e8f0fb; border: 1px solid #1a3c5e; border-radius: 20px; padding: 4px 12px; font-size: 11px; color: #1a3c5e; }
+    .flow-arrow { color: #999; font-size: 16px; }
+
+    .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #eee; font-size: 11px; color: #999; text-align: center; }
+
+    @media print {
+      .header, th, .step-num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .page { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <h1>Guide d'installation — Timesheet Automatique</h1>
+    <p>Outil de génération automatique de timesheets via Microsoft 365 (Outlook, Teams, Calendrier)</p>
+    <span class="badge">Version 1.0 — Mars 2026 — DAP</span>
+  </div>
+
+  <div class="intro-box">
+    <p><strong>À quoi sert cet outil ?</strong></p>
+    <p style="margin-top:6px;">Vous tapez le nom d'un client ou d'un dossier. L'outil fouille automatiquement vos mails, messages Teams et réunions sur la période choisie. Vous sélectionnez ce que vous voulez facturer, saisissez vos heures et votre tarif. Un fichier Excel est généré automatiquement et sauvegardé dans votre OneDrive.</p>
+  </div>
+
+  <div class="flow">
+    <span class="flow-item">Saisie du pivot</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-item">Recherche M365</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-item">Revue des interactions</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-item">Heures + tarif</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-item">Export Excel OneDrive</span>
+  </div>
+
+  <!-- ÉTAPE 1 -->
+  <h2>Étape 1 — Créer un compte n8n gratuit</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <strong>Aller sur n8n.cloud</strong>
+      <p>Ouvrez votre navigateur et accédez à <strong>https://n8n.io</strong>, cliquez sur <em>Get started free</em> et créez un compte avec votre adresse email professionnelle.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <strong>Accéder à votre espace n8n</strong>
+      <p>Une fois connecté, vous arrivez sur votre tableau de bord. Le plan gratuit est suffisant pour cet outil.</p>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 2 -->
+  <h2>Étape 2 — Importer le workflow</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <strong>Récupérer le fichier workflow</strong>
+      <p>Demandez le fichier <strong>Timesheet_Automatique_Microsoft365.json</strong> à votre collègue.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <strong>Importer dans n8n</strong>
+      <p>Dans n8n, cliquez sur <em>+ New workflow</em>, puis sur les trois points <em>(...)</em> en haut à droite → <em>Import from file</em>. Sélectionnez le fichier JSON reçu.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <strong>Sauvegarder</strong>
+      <p>Cliquez sur <em>Save</em> en haut à droite.</p>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 3 -->
+  <h2>Étape 3 — Connecter votre compte Microsoft 365</h2>
+
+  <div class="info">
+    ℹ️ L'application Azure AD a déjà été configurée par l'administrateur DAP. Vous n'avez rien à faire sur Azure — utilisez simplement les identifiants ci-dessous.
+  </div>
+
+  <div class="step" style="margin-top:14px;">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <strong>Créer la credential dans n8n</strong>
+      <p>Dans n8n : <em>Settings → Credentials → New</em>, cherchez <strong>Microsoft OAuth2 API</strong> et cliquez dessus.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <strong>Remplir les champs exactement comme indiqué</strong>
+      <table style="margin-top:8px;">
+        <tr><th>Champ</th><th>Valeur à copier-coller</th></tr>
+        <tr>
+          <td class="label">Client ID</td>
+          <td class="val">958f1bfb-1716-4264-b814-cde3c1e2bbec</td>
+        </tr>
+        <tr>
+          <td class="label">Client Secret</td>
+          <td class="val">mzg8Q~HcB50d4Hiai9IZqDvn_ToQVHcbfIBPZa_A</td>
+        </tr>
+        <tr>
+          <td class="label">Authorization URL</td>
+          <td class="val">https://login.microsoftonline.com/88766c1a-5d87-4af3-b107-b34eecdce443/oauth2/v2.0/authorize</td>
+        </tr>
+        <tr>
+          <td class="label">Token URL</td>
+          <td class="val">https://login.microsoftonline.com/88766c1a-5d87-4af3-b107-b34eecdce443/oauth2/v2.0/token</td>
+        </tr>
+        <tr>
+          <td class="label">Scope</td>
+          <td class="val">Mail.Read Calendars.Read Files.ReadWrite Chat.Read offline_access</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <strong>Autoriser la connexion</strong>
+      <p>Cliquez sur <em>Connect</em>. Une fenêtre Microsoft s'ouvre — connectez-vous avec votre compte professionnel DAP et acceptez les permissions.</p>
+      <div class="success">✅ Si vous voyez "Session connectée", c'est bon !</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <strong>Assigner la credential aux 4 nœuds HTTP</strong>
+      <p>Dans le workflow, cliquez sur chacun de ces nœuds et sélectionnez la credential que vous venez de créer :</p>
+      <ul style="margin-top:6px; margin-left:18px; line-height:2;">
+        <li>Recherche Emails</li>
+        <li>Recherche Teams</li>
+        <li>Recherche Réunions</li>
+        <li>Upload OneDrive</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ÉTAPE 4 -->
+  <h2>Étape 4 — Utiliser l'outil au quotidien</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <strong>Activer le workflow</strong>
+      <p>Cliquez sur <em>Publish</em> en haut à droite. Le workflow est maintenant actif en permanence avec un lien fixe.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <strong>Ouvrir le formulaire</strong>
+      <p>Cliquez sur le nœud <em>Saisie Pivot</em> pour récupérer l'URL du formulaire. Mettez-la en favori dans votre navigateur.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <strong>Remplir le formulaire de recherche</strong>
+      <table style="margin-top:8px;">
+        <tr><th>Champ</th><th>Exemple</th></tr>
+        <tr><td>Pivot de recherche</td><td>Jean Dupont / POL-2024-001 / RC Pro</td></tr>
+        <tr><td>Date de début</td><td>01/01/2026</td></tr>
+        <tr><td>Date de fin</td><td>28/02/2026</td></tr>
+        <tr><td>Fenêtre Teams ± heures</td><td>72 (laisser vide = 72h par défaut)</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <strong>Sélectionner les interactions à facturer</strong>
+      <p>Une liste chronologique s'affiche avec tous les emails, messages Teams et réunions trouvés. Cochez uniquement ceux liés au dossier client.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <strong>Saisir la facturation</strong>
+      <p>Renseignez le nombre d'heures facturées, le tarif horaire (€/h) et une description optionnelle.</p>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-content">
+      <strong>Récupérer le fichier Excel</strong>
+      <p>Le fichier est automatiquement sauvegardé dans votre <strong>OneDrive → dossier Timesheets/</strong>. Il est prêt à être envoyé au client ou importé en comptabilité.</p>
+      <div class="success">✅ Timesheet généré avec succès !</div>
+    </div>
+  </div>
+
+  <div class="warning" style="margin-top:20px;">
+    ⚠️ <strong>Important :</strong> Ne partagez pas les identifiants de connexion (Client Secret) en dehors de l'équipe DAP. Ce document est à usage interne uniquement.
+  </div>
+
+  <div class="footer">
+    DAP — Outil Timesheet Automatique Microsoft 365 — Guide v1.0 — Mars 2026 — Usage interne confidentiel
+  </div>
+
+</div>
+</body>
+</html>
