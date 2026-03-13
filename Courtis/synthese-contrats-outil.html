@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthèse Contrats — DAP</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2F5496, #1a3a6e);
+            color: white;
+            padding: 24px 40px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .header svg { width: 40px; height: 40px; flex-shrink: 0; }
+        .header h1 { font-size: 22px; font-weight: 600; }
+        .header p { font-size: 13px; opacity: 0.8; margin-top: 2px; }
+
+        .container { max-width: 900px; margin: 32px auto; padding: 0 20px; }
+
+        /* Drop zone */
+        .dropzone {
+            border: 3px dashed #b0b8c8;
+            border-radius: 16px;
+            padding: 48px 32px;
+            text-align: center;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .dropzone:hover, .dropzone.dragover {
+            border-color: #2F5496;
+            background: #eef3fb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(47,84,150,0.12);
+        }
+        .dropzone svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
+        .dropzone h2 { font-size: 18px; color: #2F5496; margin-bottom: 8px; }
+        .dropzone p { font-size: 14px; color: #666; }
+        .dropzone input { display: none; }
+
+        /* File list */
+        .file-list {
+            margin-top: 24px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .file-list-header {
+            background: #f7f8fa;
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            gap: 10px;
+        }
+        .file-item:last-child { border-bottom: none; }
+        .file-item .icon { color: #e74c3c; font-size: 18px; flex-shrink: 0; }
+        .file-item .name { flex: 1; color: #333; }
+        .file-item .size { color: #999; font-size: 12px; }
+        .file-item .status { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+        .file-item .status.pending { background: #fff3cd; color: #856404; }
+        .file-item .status.done { background: #d4edda; color: #155724; }
+        .file-item .status.error { background: #f8d7da; color: #721c24; }
+        .file-item .remove {
+            cursor: pointer; color: #ccc; font-size: 16px;
+            transition: color 0.2s;
+        }
+        .file-item .remove:hover { color: #e74c3c; }
+
+        /* Buttons */
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary {
+            background: linear-gradient(135deg, #2F5496, #1a3a6e);
+            color: white;
+            box-shadow: 0 4px 12px rgba(47,84,150,0.3);
+        }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(47,84,150,0.4); }
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 2px solid #ddd;
+        }
+        .btn-secondary:hover:not(:disabled) { border-color: #999; color: #333; }
+
+        /* Progress */
+        .progress-container {
+            margin-top: 20px;
+            display: none;
+        }
+        .progress-container.active { display: block; }
+        .progress-bar-bg {
+            background: #e8e8e8;
+            border-radius: 8px;
+            height: 8px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #2F5496, #4a7fd4);
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        .progress-text {
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        /* Results */
+        .results {
+            margin-top: 24px;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: none;
+        }
+        .results.active { display: block; }
+        .results h3 { color: #2F5496; margin-bottom: 12px; }
+        .stat { display: inline-block; margin-right: 24px; font-size: 14px; }
+        .stat strong { color: #2F5496; font-size: 20px; }
+
+        .footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <div>
+            <h1>Synthese Contrats</h1>
+            <p>Deposez vos exports Brio (PDF) pour generer automatiquement la synthese Excel</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dropzone" id="dropzone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2F5496" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <h2>Deposez vos fichiers PDF ici</h2>
+            <p>ou cliquez pour selectionner des fichiers</p>
+            <input type="file" id="fileInput" multiple accept=".pdf">
+        </div>
+
+        <div class="file-list" id="fileList" style="display:none">
+            <div class="file-list-header">
+                <span id="fileCount">0 fichier(s)</span>
+                <span class="remove" id="clearAll" title="Tout supprimer" style="cursor:pointer;color:#999">Tout effacer</span>
+            </div>
+            <div id="fileItems"></div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-secondary" id="btnClear" disabled>Effacer</button>
+            <button class="btn btn-primary" id="btnGenerate" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Generer la synthese Excel
+            </button>
+        </div>
+
+        <div class="progress-container" id="progress">
+            <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+            <p class="progress-text" id="progressText">Traitement en cours...</p>
+        </div>
+
+        <div class="results" id="results">
+            <h3>Synthese generee avec succes !</h3>
+            <div style="margin: 12px 0">
+                <span class="stat"><strong id="statSocietes">0</strong> societes</span>
+                <span class="stat"><strong id="statContrats">0</strong> contrats</span>
+                <span class="stat"><strong id="statTotal">0</strong> total primes</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">DAP SA — Outil interne — Synthese automatique des exports Brio</div>
+
+    <script>
+        // Configure PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let pdfFiles = [];
+
+        // ===== UI Elements =====
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const fileItems = document.getElementById('fileItems');
+        const fileCount = document.getElementById('fileCount');
+        const btnGenerate = document.getElementById('btnGenerate');
+        const btnClear = document.getElementById('btnClear');
+        const clearAll = document.getElementById('clearAll');
+        const progress = document.getElementById('progress');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const results = document.getElementById('results');
+
+        // ===== Drag & Drop =====
+        dropzone.addEventListener('click', () => fileInput.click());
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            addFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', (e) => addFiles(e.target.files));
+
+        function addFiles(files) {
+            for (const f of files) {
+                if (f.type === 'application/pdf' && !pdfFiles.some(p => p.name === f.name)) {
+                    pdfFiles.push(f);
+                }
+            }
+            renderFileList();
+        }
+
+        function removeFile(index) {
+            pdfFiles.splice(index, 1);
+            renderFileList();
+        }
+
+        function renderFileList() {
+            if (pdfFiles.length === 0) {
+                fileList.style.display = 'none';
+                btnGenerate.disabled = true;
+                btnClear.disabled = true;
+                results.classList.remove('active');
+                return;
+            }
+            fileList.style.display = 'block';
+            btnGenerate.disabled = false;
+            btnClear.disabled = false;
+            fileCount.textContent = `${pdfFiles.length} fichier(s)`;
+
+            fileItems.innerHTML = pdfFiles.map((f, i) => `
+                <div class="file-item" id="file-${i}">
+                    <span class="icon">&#128196;</span>
+                    <span class="name">${f.name}</span>
+                    <span class="size">${(f.size / 1024).toFixed(0)} Ko</span>
+                    <span class="status pending" id="status-${i}">En attente</span>
+                    <span class="remove" onclick="removeFile(${i})">&times;</span>
+                </div>
+            `).join('');
+        }
+
+        btnClear.addEventListener('click', () => { pdfFiles = []; renderFileList(); });
+        clearAll.addEventListener('click', () => { pdfFiles = []; renderFileList(); });
+
+        // ===== PDF Parsing =====
+        async function extractTextFromPdf(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            let text = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                text += content.items.map(item => item.str).join(' ') + '\n';
+            }
+            return text;
+        }
+
+        function cleanBrioHeaders(text) {
+            text = text.replace(/Votre dossier assurances[^\n]*\n(?:[\s\S]*?Num.ro d.entreprise:\s*\d+)\s*/g, '\n');
+            text = text.replace(/\d+ \w+ \d{4}\s+Contrat\(s\)\s*/g, '\n');
+            return text;
+        }
+
+        function extractSociete(text) {
+            const m = text.match(/Donn.es personnelles\s*\n?([\s\S]*?)Num.ro d.entreprise/);
+            if (m) {
+                let name = m[1].trim();
+                name = name.replace(/^A la direction de\s+/i, '');
+                name = name.replace(/^(Monsieur|Madame|M\.|Mme)\s+/i, '');
+                name = name.replace(/^et (Monsieur|Madame|M\.|Mme)\s+/i, '');
+                const lines = name.split('\n').map(l => l.trim()).filter(l => l);
+                if (lines.length > 0) return lines[0];
+            }
+            return null;
+        }
+
+        function extractContrats(text) {
+            const contrats = [];
+            const starts = [];
+
+            const regex = /(?:^|\n|\s)(\d+)\.\s+[A-Z]/g;
+            let match;
+            while ((match = regex.exec(text)) !== null) {
+                const lookahead = text.substring(match.index, match.index + 800);
+                if (/Etat:/.test(lookahead)) {
+                    starts.push(match.index);
+                }
+            }
+
+            for (let i = 0; i < starts.length; i++) {
+                const end = i + 1 < starts.length ? starts[i + 1] : text.length;
+                const section = text.substring(starts[i], end);
+
+                const headerMatch = section.match(/(\d+)\.\s+([\s\S]+?)(?=\s*Etat:)/);
+                if (!headerMatch) continue;
+
+                const headerRaw = headerMatch[2].replace(/\n/g, ' ').trim();
+                const parts = headerRaw.split(/\s+-\s+/).map(p => p.trim());
+                if (parts.length < 3) continue;
+
+                const branche = parts[0];
+                const compagnie = parts[1];
+
+                let nPolice = '';
+                const descParts = [];
+                for (let j = 2; j < parts.length; j++) {
+                    if (/^\d[\d\s/]+$/.test(parts[j].trim()) && !nPolice) {
+                        nPolice = parts[j].trim();
+                    } else {
+                        descParts.push(parts[j]);
+                    }
+                }
+                const description = descParts.join(' - ');
+                const objet = description ? `${branche} — ${description}` : branche;
+
+                const echMatch = section.match(/Ech[ée]ance:\s*(\d{2}\/\d{2})/);
+                const echeance = echMatch ? echMatch[1] : '';
+
+                const perMatch = section.match(/P[ée]riodicit[ée]:\s*(\w+)/);
+                const periodicite = perMatch ? perMatch[1] : '';
+
+                const primeMatch = section.match(/Derni[eè]re prime annuelle:\s*€\s*([\d\s.,]+)/);
+                let primeStr = '';
+                let primeVal = null;
+                if (primeMatch) {
+                    primeStr = primeMatch[1].trim();
+                    try {
+                        primeVal = parseFloat(primeStr.replace(/\s/g, '').replace(/\./g, '').replace(',', '.'));
+                        if (isNaN(primeVal)) primeVal = null;
+                    } catch(e) { primeVal = null; }
+                }
+
+                contrats.push({ compagnie, objet_risque: objet, n_police: nPolice, echeance, periodicite, prime_str: primeStr, prime_val: primeVal });
+            }
+            return contrats;
+        }
+
+        // ===== Excel Generation =====
+        async function generateExcel(allData) {
+            const wb = new ExcelJS.Workbook();
+            const colors = ['D6E4F0', 'E2EFDA', 'FCE4D6', 'D9E2F3', 'EDEDED', 'FFF2CC', 'D5E8D4', 'F8CECC'];
+            const headerStyle = {
+                font: { name: 'Calibri', bold: true, size: 11, color: { argb: 'FFFFFFFF' } },
+                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2F5496' } },
+                alignment: { horizontal: 'center', vertical: 'middle', wrapText: true },
+                border: { top: {style:'thin'}, bottom: {style:'thin'}, left: {style:'thin'}, right: {style:'thin'} }
+            };
+            const thinBorder = { top: {style:'thin'}, bottom: {style:'thin'}, left: {style:'thin'}, right: {style:'thin'} };
+
+            // === Recap sheet ===
+            const ws = wb.addWorksheet('Recapitulatif');
+            const headers = ['Societe', 'Compagnie', 'Objet du risque', 'N° Police', 'Echeance', 'Periodicite', 'Prime annuelle'];
+            const headerRow = ws.addRow(headers);
+            headerRow.eachCell(cell => { Object.assign(cell, headerStyle); cell.font = headerStyle.font; cell.fill = headerStyle.fill; cell.alignment = headerStyle.alignment; cell.border = thinBorder; });
+
+            ws.columns = [
+                { width: 30 }, { width: 25 }, { width: 45 }, { width: 18 }, { width: 12 }, { width: 14 }, { width: 18 }
+            ];
+
+            let grandTotal = 0;
+
+            allData.forEach(({ societe, contrats }, idx) => {
+                const color = colors[idx % colors.length];
+                const fillStyle = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + color } };
+                let subTotal = 0;
+
+                contrats.forEach(c => {
+                    const row = ws.addRow([
+                        societe, c.compagnie, c.objet_risque, c.n_police, c.echeance, c.periodicite,
+                        c.prime_val !== null ? c.prime_val : (c.prime_str || '')
+                    ]);
+                    row.eachCell(cell => {
+                        cell.fill = fillStyle;
+                        cell.border = thinBorder;
+                        cell.alignment = { vertical: 'middle', wrapText: true };
+                    });
+                    row.getCell(1).font = { name: 'Calibri', bold: true, size: 10 };
+                    if (c.prime_val !== null) {
+                        row.getCell(7).numFmt = '#,##0.00 "€"';
+                        subTotal += c.prime_val;
+                    }
+                });
+
+                // Sous-total
+                const stRow = ws.addRow([`Sous-total ${societe}`, '', '', '', '', '', subTotal]);
+                stRow.eachCell(cell => {
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
+                    cell.font = { name: 'Calibri', bold: true, size: 10 };
+                    cell.border = thinBorder;
+                });
+                stRow.getCell(7).numFmt = '#,##0.00 "€"';
+                grandTotal += subTotal;
+            });
+
+            // Total general
+            const totalRow = ws.addRow(['TOTAL GENERAL', '', '', '', '', '', grandTotal]);
+            totalRow.eachCell(cell => {
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2F5496' } };
+                cell.font = { name: 'Calibri', bold: true, size: 11, color: { argb: 'FFFFFFFF' } };
+                cell.border = thinBorder;
+            });
+            totalRow.getCell(7).numFmt = '#,##0.00 "€"';
+
+            ws.views = [{ state: 'frozen', ySplit: 1 }];
+
+            // === Onglets par societe ===
+            allData.forEach(({ societe, contrats }, idx) => {
+                const sheetName = societe.replace(/[\\/*?\[\]:]/g, '').substring(0, 31);
+                const wsSoc = wb.addWorksheet(sheetName);
+                const color = colors[idx % colors.length];
+                const fillStyle = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + color } };
+
+                // Titre
+                wsSoc.mergeCells('A1:F1');
+                const titleCell = wsSoc.getCell('A1');
+                titleCell.value = societe;
+                titleCell.font = { name: 'Calibri', bold: true, size: 14, color: { argb: 'FF2F5496' } };
+
+                // Headers row 3
+                const headSoc = ['Compagnie', 'Objet du risque', 'N° Police', 'Echeance', 'Periodicite', 'Prime annuelle'];
+                const hRow = wsSoc.getRow(3);
+                headSoc.forEach((h, i) => {
+                    const cell = hRow.getCell(i + 1);
+                    cell.value = h;
+                    cell.font = headerStyle.font;
+                    cell.fill = headerStyle.fill;
+                    cell.alignment = headerStyle.alignment;
+                    cell.border = thinBorder;
+                });
+
+                wsSoc.columns = [
+                    { width: 25 }, { width: 45 }, { width: 18 }, { width: 12 }, { width: 14 }, { width: 18 }
+                ];
+
+                let subTotal = 0;
+                let rowNum = 4;
+                contrats.forEach(c => {
+                    const row = wsSoc.getRow(rowNum);
+                    [c.compagnie, c.objet_risque, c.n_police, c.echeance, c.periodicite,
+                     c.prime_val !== null ? c.prime_val : (c.prime_str || '')].forEach((val, i) => {
+                        const cell = row.getCell(i + 1);
+                        cell.value = val;
+                        cell.fill = fillStyle;
+                        cell.border = thinBorder;
+                        cell.alignment = { vertical: 'middle', wrapText: true };
+                    });
+                    if (c.prime_val !== null) {
+                        row.getCell(6).numFmt = '#,##0.00 "€"';
+                        subTotal += c.prime_val;
+                    }
+                    rowNum++;
+                });
+
+                // Total
+                const stRow = wsSoc.getRow(rowNum);
+                [`Total ${societe}`, '', '', '', '', subTotal].forEach((val, i) => {
+                    const cell = stRow.getCell(i + 1);
+                    cell.value = val;
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
+                    cell.font = { name: 'Calibri', bold: true, size: 10 };
+                    cell.border = thinBorder;
+                });
+                stRow.getCell(6).numFmt = '#,##0.00 "€"';
+
+                wsSoc.views = [{ state: 'frozen', ySplit: 3 }];
+            });
+
+            return wb;
+        }
+
+        // ===== Main Process =====
+        btnGenerate.addEventListener('click', async () => {
+            if (pdfFiles.length === 0) return;
+
+            btnGenerate.disabled = true;
+            btnClear.disabled = true;
+            progress.classList.add('active');
+            results.classList.remove('active');
+
+            const allData = [];
+            let totalContrats = 0;
+            let grandTotal = 0;
+
+            for (let i = 0; i < pdfFiles.length; i++) {
+                const file = pdfFiles[i];
+                const statusEl = document.getElementById(`status-${i}`);
+                progressBar.style.width = `${((i) / pdfFiles.length) * 100}%`;
+                progressText.textContent = `Traitement: ${file.name} (${i + 1}/${pdfFiles.length})`;
+
+                try {
+                    const rawText = await extractTextFromPdf(file);
+                    let societe = extractSociete(rawText);
+                    if (!societe) {
+                        societe = file.name.replace('.pdf', '').replace(/^synth[eé]s[eé]\s+/i, '').trim().toUpperCase();
+                    }
+
+                    const cleanText = cleanBrioHeaders(rawText);
+                    const contrats = extractContrats(cleanText);
+
+                    allData.push({ societe, contrats });
+                    totalContrats += contrats.length;
+                    contrats.forEach(c => { if (c.prime_val) grandTotal += c.prime_val; });
+
+                    statusEl.className = 'status done';
+                    statusEl.textContent = `${contrats.length} contrat(s)`;
+                } catch (err) {
+                    console.error(`Erreur ${file.name}:`, err);
+                    statusEl.className = 'status error';
+                    statusEl.textContent = 'Erreur';
+                }
+            }
+
+            progressBar.style.width = '90%';
+            progressText.textContent = 'Generation du fichier Excel...';
+
+            try {
+                const wb = await generateExcel(allData);
+                const buffer = await wb.xlsx.writeBuffer();
+                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                saveAs(blob, 'Synthese_Contrats_Groupe_Nonet.xlsx');
+
+                progressBar.style.width = '100%';
+                progressText.textContent = 'Termine !';
+
+                document.getElementById('statSocietes').textContent = allData.length;
+                document.getElementById('statContrats').textContent = totalContrats;
+                document.getElementById('statTotal').textContent = grandTotal.toLocaleString('fr-BE', { style: 'currency', currency: 'EUR' });
+                results.classList.add('active');
+            } catch (err) {
+                console.error('Erreur generation Excel:', err);
+                progressText.textContent = 'Erreur lors de la generation Excel';
+            }
+
+            btnGenerate.disabled = false;
+            btnClear.disabled = false;
+        });
+    </script>
+</body>
+</html>
