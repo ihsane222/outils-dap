@@ -3,318 +3,666 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synthèse Contrats — DAP</title>
+    <title>Synthese Contrats — DAP</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            color: #1a1a2e;
-            min-height: 100vh;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --dap-blue: #2F5496;
+            --dap-blue-dark: #1a3a6e;
+            --dap-blue-light: #4a7fd4;
+            --dap-blue-bg: #eef3fb;
+            --accent: #e8a838;
+            --accent-light: #fdf3e0;
+            --success: #10b981;
+            --success-bg: #d1fae5;
+            --error: #ef4444;
+            --error-bg: #fee2e2;
+            --warning: #f59e0b;
+            --warning-bg: #fef3c7;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --radius: 12px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== HEADER ===== */
         .header {
-            background: linear-gradient(135deg, #2F5496, #1a3a6e);
-            color: white;
-            padding: 24px 40px;
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 16px 40px;
             display: flex;
             align-items: center;
             gap: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
         }
-        .header svg { width: 40px; height: 40px; flex-shrink: 0; }
-        .header h1 { font-size: 22px; font-weight: 600; }
-        .header p { font-size: 13px; opacity: 0.8; margin-top: 2px; }
+        .header img {
+            height: 42px;
+            width: auto;
+        }
+        .header-divider {
+            width: 1px;
+            height: 32px;
+            background: var(--gray-200);
+        }
+        .header-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.3px;
+        }
+        .header-text p {
+            font-size: 12px;
+            color: var(--gray-400);
+            font-weight: 400;
+            margin-top: 1px;
+        }
+        .header-badge {
+            margin-left: auto;
+            background: var(--dap-blue-bg);
+            color: var(--dap-blue);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
 
-        .container { max-width: 900px; margin: 32px auto; padding: 0 20px; }
+        /* ===== MAIN CONTAINER ===== */
+        .container {
+            max-width: 820px;
+            margin: 40px auto;
+            padding: 0 24px;
+            flex: 1;
+            width: 100%;
+        }
 
-        /* Drop zone */
+        /* ===== HERO ===== */
+        .hero {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .hero h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        .hero p {
+            font-size: 15px;
+            color: var(--gray-500);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* ===== STEPS ===== */
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 36px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--gray-400);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .step.active { color: var(--dap-blue); }
+        .step.done { color: var(--success); }
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            color: var(--gray-400);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .step.active .step-num {
+            background: var(--dap-blue);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(47,84,150,0.15);
+        }
+        .step.done .step-num {
+            background: var(--success);
+            color: white;
+        }
+        .step-connector {
+            width: 40px;
+            height: 2px;
+            background: var(--gray-200);
+            border-radius: 1px;
+            transition: background 0.3s;
+        }
+        .step-connector.done { background: var(--success); }
+
+        /* ===== DROPZONE ===== */
         .dropzone {
-            border: 3px dashed #b0b8c8;
-            border-radius: 16px;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
             padding: 48px 32px;
             text-align: center;
             background: white;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             position: relative;
         }
         .dropzone:hover, .dropzone.dragover {
-            border-color: #2F5496;
-            background: #eef3fb;
+            border-color: var(--dap-blue);
+            background: var(--dap-blue-bg);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(47,84,150,0.12);
+            box-shadow: var(--shadow-md);
         }
-        .dropzone svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
-        .dropzone h2 { font-size: 18px; color: #2F5496; margin-bottom: 8px; }
-        .dropzone p { font-size: 14px; color: #666; }
+        .dropzone-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--dap-blue-bg);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .dropzone-icon svg { width: 28px; height: 28px; color: var(--dap-blue); }
+        .dropzone h3 { font-size: 16px; color: var(--gray-800); margin-bottom: 4px; font-weight: 600; }
+        .dropzone p { font-size: 13px; color: var(--gray-400); }
+        .dropzone p strong { color: var(--dap-blue); cursor: pointer; }
         .dropzone input { display: none; }
 
-        /* File list */
+        /* ===== FILE LIST ===== */
         .file-list {
-            margin-top: 24px;
+            margin-top: 20px;
             background: white;
-            border-radius: 12px;
+            border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .file-list-header {
-            background: #f7f8fa;
-            padding: 12px 20px;
+            background: var(--gray-50);
+            padding: 10px 16px;
             font-weight: 600;
-            font-size: 14px;
-            color: #444;
+            font-size: 13px;
+            color: var(--gray-600);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #e8e8e8;
+            border-bottom: 1px solid var(--gray-200);
         }
+        .file-list-header .clear-btn {
+            font-size: 12px;
+            color: var(--gray-400);
+            cursor: pointer;
+            font-weight: 500;
+            transition: color 0.2s;
+            background: none;
+            border: none;
+        }
+        .file-list-header .clear-btn:hover { color: var(--error); }
+
         .file-item {
             display: flex;
             align-items: center;
-            padding: 10px 20px;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--gray-100);
             font-size: 13px;
             gap: 10px;
+            transition: background 0.15s;
         }
         .file-item:last-child { border-bottom: none; }
-        .file-item .icon { color: #e74c3c; font-size: 18px; flex-shrink: 0; }
-        .file-item .name { flex: 1; color: #333; }
-        .file-item .size { color: #999; font-size: 12px; }
-        .file-item .status { font-size: 12px; padding: 2px 8px; border-radius: 10px; }
-        .file-item .status.pending { background: #fff3cd; color: #856404; }
-        .file-item .status.done { background: #d4edda; color: #155724; }
-        .file-item .status.error { background: #f8d7da; color: #721c24; }
-        .file-item .remove {
-            cursor: pointer; color: #ccc; font-size: 16px;
-            transition: color 0.2s;
+        .file-item:hover { background: var(--gray-50); }
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            background: #fee2e2;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
-        .file-item .remove:hover { color: #e74c3c; }
+        .file-icon svg { width: 16px; height: 16px; color: var(--error); }
+        .file-name { flex: 1; color: var(--gray-700); font-weight: 500; }
+        .file-size { color: var(--gray-400); font-size: 12px; }
+        .file-status {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .file-status.pending { background: var(--warning-bg); color: var(--warning); }
+        .file-status.done { background: var(--success-bg); color: var(--success); }
+        .file-status.error { background: var(--error-bg); color: var(--error); }
+        .file-remove {
+            cursor: pointer;
+            color: var(--gray-300);
+            font-size: 18px;
+            transition: color 0.2s;
+            line-height: 1;
+            background: none;
+            border: none;
+        }
+        .file-remove:hover { color: var(--error); }
 
-        /* Buttons */
+        /* ===== ACTIONS ===== */
         .actions {
-            margin-top: 20px;
+            margin-top: 24px;
             display: flex;
             gap: 12px;
             justify-content: center;
         }
         .btn {
-            padding: 12px 32px;
+            padding: 11px 28px;
             border: none;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
+            font-family: inherit;
         }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn-primary {
-            background: linear-gradient(135deg, #2F5496, #1a3a6e);
+            background: var(--dap-blue);
             color: white;
-            box-shadow: 0 4px 12px rgba(47,84,150,0.3);
+            box-shadow: 0 2px 8px rgba(47,84,150,0.3);
         }
-        .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(47,84,150,0.4); }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--dap-blue-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(47,84,150,0.4);
+        }
         .btn-secondary {
             background: white;
-            color: #666;
-            border: 2px solid #ddd;
+            color: var(--gray-500);
+            border: 1px solid var(--gray-200);
         }
-        .btn-secondary:hover:not(:disabled) { border-color: #999; color: #333; }
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+            color: var(--gray-700);
+        }
+        .btn svg { width: 16px; height: 16px; }
 
-        /* Progress */
+        /* ===== PROGRESS ===== */
         .progress-container {
-            margin-top: 20px;
+            margin-top: 24px;
             display: none;
+            animation: slideUp 0.3s ease;
         }
         .progress-container.active { display: block; }
+        .progress-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--gray-200);
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .progress-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+        .progress-pct {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--dap-blue);
+        }
         .progress-bar-bg {
-            background: #e8e8e8;
-            border-radius: 8px;
-            height: 8px;
+            background: var(--gray-100);
+            border-radius: 6px;
+            height: 6px;
             overflow: hidden;
         }
         .progress-bar {
-            background: linear-gradient(90deg, #2F5496, #4a7fd4);
+            background: linear-gradient(90deg, var(--dap-blue), var(--dap-blue-light));
             height: 100%;
-            border-radius: 8px;
-            transition: width 0.3s ease;
+            border-radius: 6px;
+            transition: width 0.4s ease;
             width: 0%;
         }
-        .progress-text {
+        .progress-detail {
             text-align: center;
-            font-size: 13px;
-            color: #666;
-            margin-top: 8px;
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-top: 10px;
         }
 
-        /* Results */
+        /* ===== RESULTS ===== */
         .results {
             margin-top: 24px;
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             display: none;
+            animation: slideUp 0.4s ease;
         }
         .results.active { display: block; }
-        .results h3 { color: #2F5496; margin-bottom: 12px; }
-        .stat { display: inline-block; margin-right: 24px; font-size: 14px; }
-        .stat strong { color: #2F5496; font-size: 20px; }
+        .results-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 28px;
+            border: 1px solid var(--success);
+            position: relative;
+            overflow: hidden;
+        }
+        .results-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--success), #34d399);
+        }
+        .results-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--success-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .results-icon svg { width: 24px; height: 24px; color: var(--success); }
+        .results h3 {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+        }
+        .stat-item { text-align: center; }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--dap-blue);
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-400);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .results-action {
+            text-align: center;
+            margin-top: 20px;
+        }
 
+        /* ===== FOOTER ===== */
         .footer {
             text-align: center;
-            padding: 24px;
-            font-size: 12px;
-            color: #999;
+            padding: 20px;
+            font-size: 11px;
+            color: var(--gray-400);
+            border-top: 1px solid var(--gray-100);
+            margin-top: auto;
+        }
+        .footer span { color: var(--dap-blue); font-weight: 600; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .header { padding: 12px 16px; }
+            .container { margin: 24px auto; }
+            .hero h2 { font-size: 22px; }
+            .steps { gap: 16px; }
+            .step span:not(.step-num) { display: none; }
+            .stats { gap: 16px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- HEADER -->
     <div class="header">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/>
-            <line x1="16" y1="17" x2="8" y2="17"/>
-            <polyline points="10 9 9 9 8 9"/>
-        </svg>
-        <div>
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZwAAABeCAYAAAAXFqIyAAAMTGlDQ1BJQ0MgUHJvZmlsZQAASImVVwdYU1cbPndkQggQiICMsJcgIiOAjBBW2BtBVEISIIwYE4KKGymtYN0ighOtMhStVkCKC7UuiuLexYGKUou1uJX/hABa+o/n//Kce9+857vv+b7vnnvvOQDQu/hSaS6qCUCeJF8WG+zPmpycwiI9Awj80YEVMOIL5FJOdHQ4gDZ8/ru9vgZ9oV12UGr9s/+/mpZQJBcAgERDnC6UC/Ig/gkAvFUgleUDQJRC3nxWvlSJ10KsI4MBQlyjxJkq3KrE6Sp8cdAnPpYL8SMAyOp8viwTAI0+yLMKBJlQhw6zBU4SoVgCsR/EPnl5M4QQL4LYBvrAMelKfXb6VzqZf9NMH9Hk8zNHsCqXQSMHiOXSXP6c/7Mc/9vychXDY1jDpp4lC4lV5gzr9ihnRpgSq0P8VpIeGQWxNgAoLhYO+isxM0sRkqDyR20Eci6sGWBCPEmeG8cb4mOF/IAwiA0hzpDkRoYP+RRviIOUPrB+aIU4nxcPsR7ENSJ5YNyQzzHZjNjhca9lyLicIf4pXzYYg1L/syIngaPSx7SzRLwhfcyxMCs+CWIqxAEF4sRIiDUgjpTnxIUN+aQWZnEjhca9lyLicIf4pXzYYg1L/syIngaPSx7SzRLwhfcyxMCs+CWIqxAEF4sRIiDUgjpTnxIUN+aQWZnEjhca9lyLicIf4pXzYYg1L/syIngaPSx7SzRLwhfcyxMCs+CWIqxAEF4sRIiDUgjpTnxIUN+aQWZnEjhca9l..." alt="DAP" />
+        <div class="header-divider"></div>
+        <div class="header-text">
             <h1>Synthese Contrats</h1>
-            <p>Deposez vos exports Brio (PDF) pour generer automatiquement la synthese Excel</p>
+            <p>Outil de generation automatique</p>
         </div>
+        <div class="header-badge">Outil interne</div>
     </div>
 
+    <!-- MAIN -->
     <div class="container">
+        <div class="hero">
+            <h2>Generez votre synthese Excel</h2>
+            <p>Deposez vos exports Brio au format PDF et obtenez un fichier Excel complet en quelques secondes.</p>
+        </div>
+
+        <!-- STEPS -->
+        <div class="steps">
+            <div class="step active" id="step1">
+                <span class="step-num">1</span>
+                <span>Importer les PDF</span>
+            </div>
+            <div class="step-connector" id="conn1"></div>
+            <div class="step" id="step2">
+                <span class="step-num">2</span>
+                <span>Extraction</span>
+            </div>
+            <div class="step-connector" id="conn2"></div>
+            <div class="step" id="step3">
+                <span class="step-num">3</span>
+                <span>Telechargement</span>
+            </div>
+        </div>
+
+        <!-- DROPZONE -->
         <div class="dropzone" id="dropzone">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#2F5496" stroke-width="1.5">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-            <h2>Deposez vos fichiers PDF ici</h2>
-            <p>ou cliquez pour selectionner des fichiers</p>
+            <div class="dropzone-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+            </div>
+            <h3>Glissez vos fichiers PDF ici</h3>
+            <p>ou <strong>parcourez vos fichiers</strong> pour les selectionner</p>
             <input type="file" id="fileInput" multiple accept=".pdf">
         </div>
 
+        <!-- FILE LIST -->
         <div class="file-list" id="fileList" style="display:none">
             <div class="file-list-header">
                 <span id="fileCount">0 fichier(s)</span>
-                <span class="remove" id="clearAll" title="Tout supprimer" style="cursor:pointer;color:#999">Tout effacer</span>
+                <button class="clear-btn" id="clearAll">Tout effacer</button>
             </div>
             <div id="fileItems"></div>
         </div>
 
+        <!-- ACTIONS -->
         <div class="actions">
-            <button class="btn btn-secondary" id="btnClear" disabled>Effacer</button>
+            <button class="btn btn-secondary" id="btnClear" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                Effacer
+            </button>
             <button class="btn btn-primary" id="btnGenerate" disabled>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
                 </svg>
-                Generer la synthese Excel
+                Generer la synthese
             </button>
         </div>
 
+        <!-- PROGRESS -->
         <div class="progress-container" id="progress">
-            <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
-            <p class="progress-text" id="progressText">Traitement en cours...</p>
+            <div class="progress-card">
+                <div class="progress-header">
+                    <span class="progress-label" id="progressText">Traitement en cours...</span>
+                    <span class="progress-pct" id="progressPct">0%</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar" id="progressBar"></div></div>
+                <div class="progress-detail" id="progressDetail"></div>
+            </div>
         </div>
 
+        <!-- RESULTS -->
         <div class="results" id="results">
-            <h3>Synthese generee avec succes !</h3>
-            <div style="margin: 12px 0">
-                <span class="stat"><strong id="statSocietes">0</strong> societes</span>
-                <span class="stat"><strong id="statContrats">0</strong> contrats</span>
-                <span class="stat"><strong id="statTotal">0</strong> total primes</span>
+            <div class="results-card">
+                <div class="results-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h3>Synthese generee avec succes</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statSocietes">0</div>
+                        <div class="stat-label">Societes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statContrats">0</div>
+                        <div class="stat-label">Contrats</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statTotal">0</div>
+                        <div class="stat-label">Total primes</div>
+                    </div>
+                </div>
+                <div class="results-action">
+                    <button class="btn btn-primary" id="btnNewSession">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        Nouvelle synthese
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="footer">DAP SA — Outil interne — Synthese automatique des exports Brio</div>
+    <!-- FOOTER -->
+    <div class="footer">
+        <span>DAP SA</span> &mdash; Rue du Bergeant 10, 7900 Leuze-en-Hainaut &mdash; Outil interne &mdash; Donnees traitees localement
+    </div>
 
     <script>
-        // Configure PDF.js worker
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
         let pdfFiles = [];
 
-        // ===== UI Elements =====
-        const dropzone = document.getElementById('dropzone');
-        const fileInput = document.getElementById('fileInput');
-        const fileList = document.getElementById('fileList');
-        const fileItems = document.getElementById('fileItems');
-        const fileCount = document.getElementById('fileCount');
-        const btnGenerate = document.getElementById('btnGenerate');
-        const btnClear = document.getElementById('btnClear');
-        const clearAll = document.getElementById('clearAll');
-        const progress = document.getElementById('progress');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
-        const results = document.getElementById('results');
+        const $ = id => document.getElementById(id);
+        const dropzone = $('dropzone'), fileInput = $('fileInput'), fileList = $('fileList'),
+              fileItems = $('fileItems'), fileCount = $('fileCount'),
+              btnGenerate = $('btnGenerate'), btnClear = $('btnClear'), clearAll = $('clearAll'),
+              progress = $('progress'), progressBar = $('progressBar'), progressText = $('progressText'),
+              progressPct = $('progressPct'), progressDetail = $('progressDetail'), results = $('results');
 
-        // ===== Drag & Drop =====
+        // Steps
+        function setStep(n) {
+            for (let i = 1; i <= 3; i++) {
+                const s = $('step' + i);
+                s.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+            }
+            for (let i = 1; i <= 2; i++) {
+                $('conn' + i).className = 'step-connector' + (i < n ? ' done' : '');
+            }
+        }
+
+        // Drag & Drop
         dropzone.addEventListener('click', () => fileInput.click());
-        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+        dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
         dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropzone.classList.remove('dragover');
-            addFiles(e.dataTransfer.files);
-        });
-        fileInput.addEventListener('change', (e) => addFiles(e.target.files));
+        dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); addFiles(e.dataTransfer.files); });
+        fileInput.addEventListener('change', e => { addFiles(e.target.files); fileInput.value = ''; });
 
         function addFiles(files) {
             for (const f of files) {
-                if (f.type === 'application/pdf' && !pdfFiles.some(p => p.name === f.name)) {
-                    pdfFiles.push(f);
-                }
+                if (f.type === 'application/pdf' && !pdfFiles.some(p => p.name === f.name)) pdfFiles.push(f);
             }
             renderFileList();
         }
-
-        function removeFile(index) {
-            pdfFiles.splice(index, 1);
-            renderFileList();
-        }
+        function removeFile(i) { pdfFiles.splice(i, 1); renderFileList(); }
 
         function renderFileList() {
-            if (pdfFiles.length === 0) {
+            if (!pdfFiles.length) {
                 fileList.style.display = 'none';
-                btnGenerate.disabled = true;
-                btnClear.disabled = true;
+                btnGenerate.disabled = btnClear.disabled = true;
                 results.classList.remove('active');
+                setStep(1);
                 return;
             }
             fileList.style.display = 'block';
-            btnGenerate.disabled = false;
-            btnClear.disabled = false;
-            fileCount.textContent = `${pdfFiles.length} fichier(s)`;
-
+            btnGenerate.disabled = btnClear.disabled = false;
+            fileCount.textContent = pdfFiles.length + ' fichier(s)';
             fileItems.innerHTML = pdfFiles.map((f, i) => `
-                <div class="file-item" id="file-${i}">
-                    <span class="icon">&#128196;</span>
-                    <span class="name">${f.name}</span>
-                    <span class="size">${(f.size / 1024).toFixed(0)} Ko</span>
-                    <span class="status pending" id="status-${i}">En attente</span>
-                    <span class="remove" onclick="removeFile(${i})">&times;</span>
+                <div class="file-item">
+                    <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                    <span class="file-name">${f.name}</span>
+                    <span class="file-size">${(f.size / 1024).toFixed(0)} Ko</span>
+                    <span class="file-status pending" id="status-${i}">En attente</span>
+                    <button class="file-remove" onclick="removeFile(${i})">&times;</button>
                 </div>
             `).join('');
         }
 
         btnClear.addEventListener('click', () => { pdfFiles = []; renderFileList(); });
         clearAll.addEventListener('click', () => { pdfFiles = []; renderFileList(); });
+        $('btnNewSession').addEventListener('click', () => { pdfFiles = []; renderFileList(); results.classList.remove('active'); progress.classList.remove('active'); setStep(1); });
 
-        // ===== PDF Parsing =====
+        // PDF Parsing
         async function extractTextFromPdf(file) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const buf = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
             let text = '';
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
@@ -344,264 +692,154 @@
         }
 
         function extractContrats(text) {
-            const contrats = [];
-            const starts = [];
-
+            const contrats = [], starts = [];
             const regex = /(?:^|\n|\s)(\d+)\.\s+[A-Z]/g;
             let match;
             while ((match = regex.exec(text)) !== null) {
-                const lookahead = text.substring(match.index, match.index + 800);
-                if (/Etat:/.test(lookahead)) {
-                    starts.push(match.index);
-                }
+                if (/Etat:/.test(text.substring(match.index, match.index + 800))) starts.push(match.index);
             }
-
             for (let i = 0; i < starts.length; i++) {
-                const end = i + 1 < starts.length ? starts[i + 1] : text.length;
-                const section = text.substring(starts[i], end);
-
-                const headerMatch = section.match(/(\d+)\.\s+([\s\S]+?)(?=\s*Etat:)/);
-                if (!headerMatch) continue;
-
-                const headerRaw = headerMatch[2].replace(/\n/g, ' ').trim();
-                const parts = headerRaw.split(/\s+-\s+/).map(p => p.trim());
+                const section = text.substring(starts[i], i + 1 < starts.length ? starts[i + 1] : text.length);
+                const hm = section.match(/(\d+)\.\s+([\s\S]+?)(?=\s*Etat:)/);
+                if (!hm) continue;
+                const parts = hm[2].replace(/\n/g, ' ').trim().split(/\s+-\s+/).map(p => p.trim());
                 if (parts.length < 3) continue;
-
-                const branche = parts[0];
-                const compagnie = parts[1];
-
-                let nPolice = '';
-                const descParts = [];
+                const branche = parts[0], compagnie = parts[1];
+                let nPolice = ''; const descParts = [];
                 for (let j = 2; j < parts.length; j++) {
-                    if (/^\d[\d\s/]+$/.test(parts[j].trim()) && !nPolice) {
-                        nPolice = parts[j].trim();
-                    } else {
-                        descParts.push(parts[j]);
-                    }
+                    if (/^\d[\d\s/]+$/.test(parts[j].trim()) && !nPolice) nPolice = parts[j].trim();
+                    else descParts.push(parts[j]);
                 }
-                const description = descParts.join(' - ');
-                const objet = description ? `${branche} — ${description}` : branche;
-
-                const echMatch = section.match(/Ech[ée]ance:\s*(\d{2}\/\d{2})/);
-                const echeance = echMatch ? echMatch[1] : '';
-
-                const perMatch = section.match(/P[ée]riodicit[ée]:\s*(\w+)/);
-                const periodicite = perMatch ? perMatch[1] : '';
-
-                const primeMatch = section.match(/Derni[eè]re prime annuelle:\s*€\s*([\d\s.,]+)/);
-                let primeStr = '';
-                let primeVal = null;
-                if (primeMatch) {
-                    primeStr = primeMatch[1].trim();
-                    try {
-                        primeVal = parseFloat(primeStr.replace(/\s/g, '').replace(/\./g, '').replace(',', '.'));
-                        if (isNaN(primeVal)) primeVal = null;
-                    } catch(e) { primeVal = null; }
+                const desc = descParts.join(' - ');
+                const objet = desc ? `${branche} — ${desc}` : branche;
+                const echM = section.match(/Ech[ée]ance:\s*(\d{2}\/\d{2})/);
+                const perM = section.match(/P[ée]riodicit[ée]:\s*(\w+)/);
+                const priM = section.match(/Derni[eè]re prime annuelle:\s*€\s*([\d\s.,]+)/);
+                let primeStr = '', primeVal = null;
+                if (priM) {
+                    primeStr = priM[1].trim();
+                    try { primeVal = parseFloat(primeStr.replace(/\s/g, '').replace(/\./g, '').replace(',', '.')); if (isNaN(primeVal)) primeVal = null; } catch(e) {}
                 }
-
-                contrats.push({ compagnie, objet_risque: objet, n_police: nPolice, echeance, periodicite, prime_str: primeStr, prime_val: primeVal });
+                contrats.push({ compagnie, objet_risque: objet, n_police: nPolice, echeance: echM?echM[1]:'', periodicite: perM?perM[1]:'', prime_str: primeStr, prime_val: primeVal });
             }
             return contrats;
         }
 
-        // ===== Excel Generation =====
+        // Excel Generation
         async function generateExcel(allData) {
             const wb = new ExcelJS.Workbook();
-            const colors = ['D6E4F0', 'E2EFDA', 'FCE4D6', 'D9E2F3', 'EDEDED', 'FFF2CC', 'D5E8D4', 'F8CECC'];
-            const headerStyle = {
-                font: { name: 'Calibri', bold: true, size: 11, color: { argb: 'FFFFFFFF' } },
-                fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2F5496' } },
-                alignment: { horizontal: 'center', vertical: 'middle', wrapText: true },
-                border: { top: {style:'thin'}, bottom: {style:'thin'}, left: {style:'thin'}, right: {style:'thin'} }
-            };
-            const thinBorder = { top: {style:'thin'}, bottom: {style:'thin'}, left: {style:'thin'}, right: {style:'thin'} };
+            const colors = ['D6E4F0','E2EFDA','FCE4D6','D9E2F3','EDEDED','FFF2CC','D5E8D4','F8CECC'];
+            const hs = { font:{name:'Calibri',bold:true,size:11,color:{argb:'FFFFFFFF'}}, fill:{type:'pattern',pattern:'solid',fgColor:{argb:'FF2F5496'}}, alignment:{horizontal:'center',vertical:'middle',wrapText:true} };
+            const tb = {top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}};
 
-            // === Recap sheet ===
             const ws = wb.addWorksheet('Recapitulatif');
-            const headers = ['Societe', 'Compagnie', 'Objet du risque', 'N° Police', 'Echeance', 'Periodicite', 'Prime annuelle'];
-            const headerRow = ws.addRow(headers);
-            headerRow.eachCell(cell => { Object.assign(cell, headerStyle); cell.font = headerStyle.font; cell.fill = headerStyle.fill; cell.alignment = headerStyle.alignment; cell.border = thinBorder; });
-
-            ws.columns = [
-                { width: 30 }, { width: 25 }, { width: 45 }, { width: 18 }, { width: 12 }, { width: 14 }, { width: 18 }
-            ];
+            const headers = ['Societe','Compagnie','Objet du risque','N° Police','Echeance','Periodicite','Prime annuelle'];
+            const hr = ws.addRow(headers);
+            hr.eachCell(c => { c.font=hs.font; c.fill=hs.fill; c.alignment=hs.alignment; c.border=tb; });
+            ws.columns = [{width:30},{width:25},{width:45},{width:18},{width:12},{width:14},{width:18}];
 
             let grandTotal = 0;
-
-            allData.forEach(({ societe, contrats }, idx) => {
-                const color = colors[idx % colors.length];
-                const fillStyle = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + color } };
-                let subTotal = 0;
-
+            allData.forEach(({societe,contrats},idx) => {
+                const fs = {type:'pattern',pattern:'solid',fgColor:{argb:'FF'+colors[idx%colors.length]}};
+                let sub = 0;
                 contrats.forEach(c => {
-                    const row = ws.addRow([
-                        societe, c.compagnie, c.objet_risque, c.n_police, c.echeance, c.periodicite,
-                        c.prime_val !== null ? c.prime_val : (c.prime_str || '')
-                    ]);
-                    row.eachCell(cell => {
-                        cell.fill = fillStyle;
-                        cell.border = thinBorder;
-                        cell.alignment = { vertical: 'middle', wrapText: true };
-                    });
-                    row.getCell(1).font = { name: 'Calibri', bold: true, size: 10 };
-                    if (c.prime_val !== null) {
-                        row.getCell(7).numFmt = '#,##0.00 "€"';
-                        subTotal += c.prime_val;
-                    }
+                    const r = ws.addRow([societe,c.compagnie,c.objet_risque,c.n_police,c.echeance,c.periodicite, c.prime_val!==null?c.prime_val:(c.prime_str||'')]);
+                    r.eachCell(cell => { cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
+                    r.getCell(1).font = {name:'Calibri',bold:true,size:10};
+                    if (c.prime_val!==null) { r.getCell(7).numFmt='#,##0.00 "€"'; sub+=c.prime_val; }
                 });
-
-                // Sous-total
-                const stRow = ws.addRow([`Sous-total ${societe}`, '', '', '', '', '', subTotal]);
-                stRow.eachCell(cell => {
-                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
-                    cell.font = { name: 'Calibri', bold: true, size: 10 };
-                    cell.border = thinBorder;
-                });
-                stRow.getCell(7).numFmt = '#,##0.00 "€"';
-                grandTotal += subTotal;
+                const st = ws.addRow([`Sous-total ${societe}`,'','','','','',sub]);
+                st.eachCell(c => { c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9D9D9'}}; c.font={name:'Calibri',bold:true,size:10}; c.border=tb; });
+                st.getCell(7).numFmt='#,##0.00 "€"';
+                grandTotal += sub;
             });
+            const tr = ws.addRow(['TOTAL GENERAL','','','','','',grandTotal]);
+            tr.eachCell(c => { c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF2F5496'}}; c.font={name:'Calibri',bold:true,size:11,color:{argb:'FFFFFFFF'}}; c.border=tb; });
+            tr.getCell(7).numFmt='#,##0.00 "€"';
+            ws.views = [{state:'frozen',ySplit:1}];
 
-            // Total general
-            const totalRow = ws.addRow(['TOTAL GENERAL', '', '', '', '', '', grandTotal]);
-            totalRow.eachCell(cell => {
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2F5496' } };
-                cell.font = { name: 'Calibri', bold: true, size: 11, color: { argb: 'FFFFFFFF' } };
-                cell.border = thinBorder;
-            });
-            totalRow.getCell(7).numFmt = '#,##0.00 "€"';
-
-            ws.views = [{ state: 'frozen', ySplit: 1 }];
-
-            // === Onglets par societe ===
-            allData.forEach(({ societe, contrats }, idx) => {
-                const sheetName = societe.replace(/[\\/*?\[\]:]/g, '').substring(0, 31);
-                const wsSoc = wb.addWorksheet(sheetName);
-                const color = colors[idx % colors.length];
-                const fillStyle = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + color } };
-
-                // Titre
+            allData.forEach(({societe,contrats},idx) => {
+                const sn = societe.replace(/[\\/*?\[\]:]/g,'').substring(0,31);
+                const wsSoc = wb.addWorksheet(sn);
+                const fs = {type:'pattern',pattern:'solid',fgColor:{argb:'FF'+colors[idx%colors.length]}};
                 wsSoc.mergeCells('A1:F1');
-                const titleCell = wsSoc.getCell('A1');
-                titleCell.value = societe;
-                titleCell.font = { name: 'Calibri', bold: true, size: 14, color: { argb: 'FF2F5496' } };
-
-                // Headers row 3
-                const headSoc = ['Compagnie', 'Objet du risque', 'N° Police', 'Echeance', 'Periodicite', 'Prime annuelle'];
+                wsSoc.getCell('A1').value = societe;
+                wsSoc.getCell('A1').font = {name:'Calibri',bold:true,size:14,color:{argb:'FF2F5496'}};
+                const hds = ['Compagnie','Objet du risque','N° Police','Echeance','Periodicite','Prime annuelle'];
                 const hRow = wsSoc.getRow(3);
-                headSoc.forEach((h, i) => {
-                    const cell = hRow.getCell(i + 1);
-                    cell.value = h;
-                    cell.font = headerStyle.font;
-                    cell.fill = headerStyle.fill;
-                    cell.alignment = headerStyle.alignment;
-                    cell.border = thinBorder;
-                });
-
-                wsSoc.columns = [
-                    { width: 25 }, { width: 45 }, { width: 18 }, { width: 12 }, { width: 14 }, { width: 18 }
-                ];
-
-                let subTotal = 0;
-                let rowNum = 4;
+                hds.forEach((h,i) => { const c=hRow.getCell(i+1); c.value=h; c.font=hs.font; c.fill=hs.fill; c.alignment=hs.alignment; c.border=tb; });
+                wsSoc.columns = [{width:25},{width:45},{width:18},{width:12},{width:14},{width:18}];
+                let sub=0, rn=4;
                 contrats.forEach(c => {
-                    const row = wsSoc.getRow(rowNum);
-                    [c.compagnie, c.objet_risque, c.n_police, c.echeance, c.periodicite,
-                     c.prime_val !== null ? c.prime_val : (c.prime_str || '')].forEach((val, i) => {
-                        const cell = row.getCell(i + 1);
-                        cell.value = val;
-                        cell.fill = fillStyle;
-                        cell.border = thinBorder;
-                        cell.alignment = { vertical: 'middle', wrapText: true };
-                    });
-                    if (c.prime_val !== null) {
-                        row.getCell(6).numFmt = '#,##0.00 "€"';
-                        subTotal += c.prime_val;
-                    }
-                    rowNum++;
+                    const r=wsSoc.getRow(rn);
+                    [c.compagnie,c.objet_risque,c.n_police,c.echeance,c.periodicite,c.prime_val!==null?c.prime_val:(c.prime_str||'')].forEach((v,i) => { const cell=r.getCell(i+1); cell.value=v; cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
+                    if(c.prime_val!==null){r.getCell(6).numFmt='#,##0.00 "€"'; sub+=c.prime_val;}
+                    rn++;
                 });
-
-                // Total
-                const stRow = wsSoc.getRow(rowNum);
-                [`Total ${societe}`, '', '', '', '', subTotal].forEach((val, i) => {
-                    const cell = stRow.getCell(i + 1);
-                    cell.value = val;
-                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9D9D9' } };
-                    cell.font = { name: 'Calibri', bold: true, size: 10 };
-                    cell.border = thinBorder;
-                });
-                stRow.getCell(6).numFmt = '#,##0.00 "€"';
-
-                wsSoc.views = [{ state: 'frozen', ySplit: 3 }];
+                const st=wsSoc.getRow(rn);
+                [`Total ${societe}`,'','','','',sub].forEach((v,i) => { const c=st.getCell(i+1); c.value=v; c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9D9D9'}}; c.font={name:'Calibri',bold:true,size:10}; c.border=tb; });
+                st.getCell(6).numFmt='#,##0.00 "€"';
+                wsSoc.views = [{state:'frozen',ySplit:3}];
             });
-
             return wb;
         }
 
-        // ===== Main Process =====
+        // Main Process
         btnGenerate.addEventListener('click', async () => {
-            if (pdfFiles.length === 0) return;
-
-            btnGenerate.disabled = true;
-            btnClear.disabled = true;
+            if (!pdfFiles.length) return;
+            btnGenerate.disabled = btnClear.disabled = true;
             progress.classList.add('active');
             results.classList.remove('active');
+            setStep(2);
 
             const allData = [];
-            let totalContrats = 0;
-            let grandTotal = 0;
+            let totalContrats = 0, grandTotal = 0;
 
             for (let i = 0; i < pdfFiles.length; i++) {
-                const file = pdfFiles[i];
-                const statusEl = document.getElementById(`status-${i}`);
-                progressBar.style.width = `${((i) / pdfFiles.length) * 100}%`;
-                progressText.textContent = `Traitement: ${file.name} (${i + 1}/${pdfFiles.length})`;
+                const file = pdfFiles[i], statusEl = $('status-' + i);
+                const pct = Math.round((i / pdfFiles.length) * 100);
+                progressBar.style.width = pct + '%';
+                progressPct.textContent = pct + '%';
+                progressText.textContent = 'Extraction des donnees...';
+                progressDetail.textContent = file.name + ' (' + (i+1) + '/' + pdfFiles.length + ')';
 
                 try {
-                    const rawText = await extractTextFromPdf(file);
-                    let societe = extractSociete(rawText);
-                    if (!societe) {
-                        societe = file.name.replace('.pdf', '').replace(/^synth[eé]s[eé]\s+/i, '').trim().toUpperCase();
-                    }
-
-                    const cleanText = cleanBrioHeaders(rawText);
-                    const contrats = extractContrats(cleanText);
-
-                    allData.push({ societe, contrats });
+                    const raw = await extractTextFromPdf(file);
+                    let societe = extractSociete(raw);
+                    if (!societe) societe = file.name.replace('.pdf','').replace(/^synth[eé]s[eé]\s+/i,'').trim().toUpperCase();
+                    const contrats = extractContrats(cleanBrioHeaders(raw));
+                    allData.push({societe, contrats});
                     totalContrats += contrats.length;
-                    contrats.forEach(c => { if (c.prime_val) grandTotal += c.prime_val; });
-
-                    statusEl.className = 'status done';
-                    statusEl.textContent = `${contrats.length} contrat(s)`;
-                } catch (err) {
-                    console.error(`Erreur ${file.name}:`, err);
-                    statusEl.className = 'status error';
+                    contrats.forEach(c => { if(c.prime_val) grandTotal += c.prime_val; });
+                    statusEl.className = 'file-status done';
+                    statusEl.textContent = contrats.length + ' contrat(s)';
+                } catch(err) {
+                    console.error(file.name, err);
+                    statusEl.className = 'file-status error';
                     statusEl.textContent = 'Erreur';
                 }
             }
 
-            progressBar.style.width = '90%';
+            progressBar.style.width = '90%'; progressPct.textContent = '90%';
             progressText.textContent = 'Generation du fichier Excel...';
+            progressDetail.textContent = '';
 
             try {
                 const wb = await generateExcel(allData);
                 const buffer = await wb.xlsx.writeBuffer();
-                const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                saveAs(blob, 'Synthese_Contrats_Groupe_Nonet.xlsx');
-
-                progressBar.style.width = '100%';
+                saveAs(new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), 'Synthese_Contrats.xlsx');
+                progressBar.style.width = '100%'; progressPct.textContent = '100%';
                 progressText.textContent = 'Termine !';
-
-                document.getElementById('statSocietes').textContent = allData.length;
-                document.getElementById('statContrats').textContent = totalContrats;
-                document.getElementById('statTotal').textContent = grandTotal.toLocaleString('fr-BE', { style: 'currency', currency: 'EUR' });
+                setStep(3);
+                $('statSocietes').textContent = allData.length;
+                $('statContrats').textContent = totalContrats;
+                $('statTotal').textContent = grandTotal.toLocaleString('fr-BE', {style:'currency', currency:'EUR'});
                 results.classList.add('active');
-            } catch (err) {
-                console.error('Erreur generation Excel:', err);
-                progressText.textContent = 'Erreur lors de la generation Excel';
+            } catch(err) {
+                console.error(err);
+                progressText.textContent = 'Erreur lors de la generation';
             }
-
-            btnGenerate.disabled = false;
-            btnClear.disabled = false;
+            btnGenerate.disabled = btnClear.disabled = false;
         });
     </script>
 </body>
