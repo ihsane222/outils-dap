@@ -659,7 +659,7 @@
         clearAll.addEventListener('click', () => { pdfFiles = []; renderFileList(); });
         $('btnNewSession').addEventListener('click', () => { pdfFiles = []; renderFileList(); results.classList.remove('active'); progress.classList.remove('active'); setStep(1); });
 
-        // PDF Parsing
+        // PDF Parsing — reconstruit le texte avec des sauts de ligne entre les éléments
         async function extractTextFromPdf(file) {
             const buf = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
@@ -667,13 +667,28 @@
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const content = await page.getTextContent();
-                text += content.items.map(item => item.str).join(' ') + '\n';
+                // Reconstruit avec des newlines quand le Y change (comme PyPDF2)
+                let lastY = null;
+                let line = '';
+                for (const item of content.items) {
+                    const y = Math.round(item.transform[5]);
+                    if (lastY !== null && Math.abs(y - lastY) > 3) {
+                        text += line + '\n';
+                        line = '';
+                    }
+                    line += (line ? ' ' : '') + item.str;
+                    lastY = y;
+                }
+                if (line) text += line + '\n';
+                text += '\n'; // séparateur de page
             }
             return text;
         }
 
         function cleanBrioHeaders(text) {
+            // Supprime les blocs header Brio répétés — s'arrête juste après le numéro d'entreprise
             text = text.replace(/Votre dossier assurances[^\n]*\n(?:[\s\S]*?Num.ro d.entreprise:\s*\d+)\s*/g, '\n');
+            // Supprime les lignes "13 mars 2026  Contrat(s)"
             text = text.replace(/\d+ \w+ \d{4}\s+Contrat\(s\)\s*/g, '\n');
             return text;
         }
@@ -693,18 +708,23 @@
 
         function extractContrats(text) {
             const contrats = [], starts = [];
+            // Cherche les débuts de contrat: "N. Type..." suivi de "Etat:" dans les 800 chars
             const regex = /(?:^|\n|\s)(\d+)\.\s+[A-Z]/g;
             let match;
             while ((match = regex.exec(text)) !== null) {
-                if (/Etat:/.test(text.substring(match.index, match.index + 800))) starts.push(match.index);
+                const lookahead = text.substring(match.index, match.index + 1200);
+                if (/Etat:/.test(lookahead)) starts.push(match.index);
             }
             for (let i = 0; i < starts.length; i++) {
                 const section = text.substring(starts[i], i + 1 < starts.length ? starts[i + 1] : text.length);
                 const hm = section.match(/(\d+)\.\s+([\s\S]+?)(?=\s*Etat:)/);
                 if (!hm) continue;
-                const parts = hm[2].replace(/\n/g, ' ').trim().split(/\s+-\s+/).map(p => p.trim());
-                if (parts.length < 3) continue;
-                const branche = parts[0], compagnie = parts[1];
+                const headerRaw = hm[2].replace(/\n/g, ' ').trim();
+                const parts = headerRaw.split(/\s+-\s+/).map(p => p.trim());
+                if (parts.length < 2) continue; // au minimum branche + compagnie
+
+                const branche = parts[0];
+                const compagnie = parts.length >= 2 ? parts[1] : '';
                 let nPolice = ''; const descParts = [];
                 for (let j = 2; j < parts.length; j++) {
                     if (/^\d[\d\s/]+$/.test(parts[j].trim()) && !nPolice) nPolice = parts[j].trim();
@@ -712,73 +732,136 @@
                 }
                 const desc = descParts.join(' - ');
                 const objet = desc ? `${branche} — ${desc}` : branche;
+
+                // Échéance
                 const echM = section.match(/Ech[ée]ance:\s*(\d{2}\/\d{2})/);
+                // Périodicité
                 const perM = section.match(/P[ée]riodicit[ée]:\s*(\w+)/);
-                const priM = section.match(/Derni[eè]re prime annuelle:\s*€\s*([\d\s.,]+)/);
+
+                // Prime — plusieurs patterns possibles
                 let primeStr = '', primeVal = null;
+                const priM = section.match(/Derni[eè]re prime annuelle:\s*(?:€|EUR)?\s*([\d\s.,]+)/);
                 if (priM) {
                     primeStr = priM[1].trim();
-                    try { primeVal = parseFloat(primeStr.replace(/\s/g, '').replace(/\./g, '').replace(',', '.')); if (isNaN(primeVal)) primeVal = null; } catch(e) {}
+                    try {
+                        primeVal = parseFloat(primeStr.replace(/\s/g, '').replace(/\./g, '').replace(',', '.'));
+                        if (isNaN(primeVal)) primeVal = null;
+                    } catch(e) {}
                 }
-                contrats.push({ compagnie, objet_risque: objet, n_police: nPolice, echeance: echM?echM[1]:'', periodicite: perM?perM[1]:'', prime_str: primeStr, prime_val: primeVal });
+
+                // Numéro de chantier (TRC)
+                let chantier = '';
+                const chM = section.match(/[Cc]hantier\s*:\s*([^\n]+)/);
+                if (chM) chantier = chM[1].trim();
+                // Aussi chercher dans les risques assurés
+                if (!chantier) {
+                    const rM = section.match(/Risque\(s\) assur[ée]\(s\)\s*:\s*([\s\S]*?)(?=(?:\d+\.\s+[A-Z])|Derni[eè]re|Preneur|$)/);
+                    if (rM) {
+                        const chM2 = rM[1].match(/\b(N\d{5,})\b/);
+                        if (chM2) chantier = chM2[1];
+                    }
+                }
+
+                contrats.push({
+                    compagnie,
+                    objet_risque: objet,
+                    n_police: nPolice,
+                    echeance: echM ? echM[1] : '',
+                    periodicite: perM ? perM[1] : '',
+                    prime_str: primeStr,
+                    prime_val: primeVal,
+                    chantier: chantier
+                });
             }
             return contrats;
         }
 
-        // Excel Generation
+        // Excel Generation — avec colonne N° Chantier conditionnelle
         async function generateExcel(allData) {
             const wb = new ExcelJS.Workbook();
             const colors = ['D6E4F0','E2EFDA','FCE4D6','D9E2F3','EDEDED','FFF2CC','D5E8D4','F8CECC'];
             const hs = { font:{name:'Calibri',bold:true,size:11,color:{argb:'FFFFFFFF'}}, fill:{type:'pattern',pattern:'solid',fgColor:{argb:'FF2F5496'}}, alignment:{horizontal:'center',vertical:'middle',wrapText:true} };
             const tb = {top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}};
 
+            // Détecte si au moins un contrat a un numéro de chantier
+            const hasChantier = allData.some(d => d.contrats.some(c => c.chantier));
+
             const ws = wb.addWorksheet('Recapitulatif');
-            const headers = ['Societe','Compagnie','Objet du risque','N° Police','Echeance','Periodicite','Prime annuelle'];
+            const headers = hasChantier
+                ? ['Societe','Compagnie','Objet du risque','N° Police','N° Chantier','Echeance','Periodicite','Prime annuelle']
+                : ['Societe','Compagnie','Objet du risque','N° Police','Echeance','Periodicite','Prime annuelle'];
+            const primeCol = headers.length;
             const hr = ws.addRow(headers);
             hr.eachCell(c => { c.font=hs.font; c.fill=hs.fill; c.alignment=hs.alignment; c.border=tb; });
-            ws.columns = [{width:30},{width:25},{width:45},{width:18},{width:12},{width:14},{width:18}];
+            ws.columns = hasChantier
+                ? [{width:30},{width:25},{width:45},{width:18},{width:16},{width:12},{width:14},{width:18}]
+                : [{width:30},{width:25},{width:45},{width:18},{width:12},{width:14},{width:18}];
 
             let grandTotal = 0;
             allData.forEach(({societe,contrats},idx) => {
                 const fs = {type:'pattern',pattern:'solid',fgColor:{argb:'FF'+colors[idx%colors.length]}};
                 let sub = 0;
                 contrats.forEach(c => {
-                    const r = ws.addRow([societe,c.compagnie,c.objet_risque,c.n_police,c.echeance,c.periodicite, c.prime_val!==null?c.prime_val:(c.prime_str||'')]);
+                    const rowData = hasChantier
+                        ? [societe,c.compagnie,c.objet_risque,c.n_police,c.chantier||'',c.echeance,c.periodicite, c.prime_val!==null?c.prime_val:(c.prime_str||'')]
+                        : [societe,c.compagnie,c.objet_risque,c.n_police,c.echeance,c.periodicite, c.prime_val!==null?c.prime_val:(c.prime_str||'')];
+                    const r = ws.addRow(rowData);
                     r.eachCell(cell => { cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
                     r.getCell(1).font = {name:'Calibri',bold:true,size:10};
-                    if (c.prime_val!==null) { r.getCell(7).numFmt='#,##0.00 "€"'; sub+=c.prime_val; }
+                    if (c.prime_val!==null) { r.getCell(primeCol).numFmt='#,##0.00 "€"'; sub+=c.prime_val; }
                 });
-                const st = ws.addRow([`Sous-total ${societe}`,'','','','','',sub]);
+                const stData = new Array(primeCol).fill('');
+                stData[0] = `Sous-total ${societe}`;
+                stData[primeCol - 1] = sub;
+                const st = ws.addRow(stData);
                 st.eachCell(c => { c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9D9D9'}}; c.font={name:'Calibri',bold:true,size:10}; c.border=tb; });
-                st.getCell(7).numFmt='#,##0.00 "€"';
+                st.getCell(primeCol).numFmt='#,##0.00 "€"';
                 grandTotal += sub;
             });
-            const tr = ws.addRow(['TOTAL GENERAL','','','','','',grandTotal]);
+            const trData = new Array(primeCol).fill('');
+            trData[0] = 'TOTAL GENERAL';
+            trData[primeCol - 1] = grandTotal;
+            const tr = ws.addRow(trData);
             tr.eachCell(c => { c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF2F5496'}}; c.font={name:'Calibri',bold:true,size:11,color:{argb:'FFFFFFFF'}}; c.border=tb; });
-            tr.getCell(7).numFmt='#,##0.00 "€"';
+            tr.getCell(primeCol).numFmt='#,##0.00 "€"';
             ws.views = [{state:'frozen',ySplit:1}];
 
+            // Onglets par société
             allData.forEach(({societe,contrats},idx) => {
                 const sn = societe.replace(/[\\/*?\[\]:]/g,'').substring(0,31);
                 const wsSoc = wb.addWorksheet(sn);
                 const fs = {type:'pattern',pattern:'solid',fgColor:{argb:'FF'+colors[idx%colors.length]}};
-                wsSoc.mergeCells('A1:F1');
+
+                const socHeaders = hasChantier
+                    ? ['Compagnie','Objet du risque','N° Police','N° Chantier','Echeance','Periodicite','Prime annuelle']
+                    : ['Compagnie','Objet du risque','N° Police','Echeance','Periodicite','Prime annuelle'];
+                const socPrimeCol = socHeaders.length;
+
+                wsSoc.mergeCells(1, 1, 1, socPrimeCol);
                 wsSoc.getCell('A1').value = societe;
                 wsSoc.getCell('A1').font = {name:'Calibri',bold:true,size:14,color:{argb:'FF2F5496'}};
-                const hds = ['Compagnie','Objet du risque','N° Police','Echeance','Periodicite','Prime annuelle'];
                 const hRow = wsSoc.getRow(3);
-                hds.forEach((h,i) => { const c=hRow.getCell(i+1); c.value=h; c.font=hs.font; c.fill=hs.fill; c.alignment=hs.alignment; c.border=tb; });
-                wsSoc.columns = [{width:25},{width:45},{width:18},{width:12},{width:14},{width:18}];
+                socHeaders.forEach((h,i) => { const c=hRow.getCell(i+1); c.value=h; c.font=hs.font; c.fill=hs.fill; c.alignment=hs.alignment; c.border=tb; });
+                wsSoc.columns = hasChantier
+                    ? [{width:25},{width:45},{width:18},{width:16},{width:12},{width:14},{width:18}]
+                    : [{width:25},{width:45},{width:18},{width:12},{width:14},{width:18}];
+
                 let sub=0, rn=4;
                 contrats.forEach(c => {
                     const r=wsSoc.getRow(rn);
-                    [c.compagnie,c.objet_risque,c.n_police,c.echeance,c.periodicite,c.prime_val!==null?c.prime_val:(c.prime_str||'')].forEach((v,i) => { const cell=r.getCell(i+1); cell.value=v; cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
-                    if(c.prime_val!==null){r.getCell(6).numFmt='#,##0.00 "€"'; sub+=c.prime_val;}
+                    const vals = hasChantier
+                        ? [c.compagnie,c.objet_risque,c.n_police,c.chantier||'',c.echeance,c.periodicite,c.prime_val!==null?c.prime_val:(c.prime_str||'')]
+                        : [c.compagnie,c.objet_risque,c.n_police,c.echeance,c.periodicite,c.prime_val!==null?c.prime_val:(c.prime_str||'')];
+                    vals.forEach((v,i) => { const cell=r.getCell(i+1); cell.value=v; cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
+                    if(c.prime_val!==null){r.getCell(socPrimeCol).numFmt='#,##0.00 "€"'; sub+=c.prime_val;}
                     rn++;
                 });
                 const st=wsSoc.getRow(rn);
-                [`Total ${societe}`,'','','','',sub].forEach((v,i) => { const c=st.getCell(i+1); c.value=v; c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9D9D9'}}; c.font={name:'Calibri',bold:true,size:10}; c.border=tb; });
-                st.getCell(6).numFmt='#,##0.00 "€"';
+                const stVals = new Array(socPrimeCol).fill('');
+                stVals[0] = `Total ${societe}`;
+                stVals[socPrimeCol - 1] = sub;
+                stVals.forEach((v,i) => { const c=st.getCell(i+1); c.value=v; c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFD9D9D9'}}; c.font={name:'Calibri',bold:true,size:10}; c.border=tb; });
+                st.getCell(socPrimeCol).numFmt='#,##0.00 "€"';
                 wsSoc.views = [{state:'frozen',ySplit:3}];
             });
             return wb;
