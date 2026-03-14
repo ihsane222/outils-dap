@@ -901,6 +901,14 @@
         // Logo DAP en base64 pour le PDF (petite version)
         const DAP_LOGO_B64 = document.querySelector('.header img').src;
 
+        // Formateur de monnaie compatible jsPDF (pas de caractères Unicode invisibles)
+        function fmtEur(val) {
+            if (val === null || val === undefined || isNaN(val)) return '—';
+            const parts = val.toFixed(2).split('.');
+            const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return intPart + ',' + parts[1] + ' EUR';
+        }
+
         async function generatePdfReport(allData) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'A4' });
@@ -909,7 +917,9 @@
             const margin = 15;
             const dapBlue = [47, 84, 150];
             const dapBlueDark = [26, 58, 110];
-            const today = new Date().toLocaleDateString('fr-BE', { day: '2-digit', month: 'long', year: 'numeric' });
+            const months = ['janvier','fevrier','mars','avril','mai','juin','juillet','aout','septembre','octobre','novembre','decembre'];
+            const d = new Date();
+            const today = d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
             const hasChantier = allData.some(d => d.contrats.some(c => c.chantier));
 
             function addHeader(doc) {
@@ -951,7 +961,7 @@
             doc.setFontSize(10);
             doc.setTextColor(80, 80, 80);
             doc.setFont('helvetica', 'normal');
-            doc.text(`${allData.length} societe(s) — ${totalContrats} contrat(s) — Total: ${grandTotal.toLocaleString('fr-BE', {style:'currency', currency:'EUR'})}`, margin, 26);
+            doc.text(allData.length + ' societe(s) - ' + totalContrats + ' contrat(s) - Total: ' + fmtEur(grandTotal), margin, 26);
 
             let startY = 32;
             const bgColors = [[214,228,240],[226,239,218],[252,228,214],[217,226,243],[237,237,237],[255,242,204],[213,232,212],[248,206,204]];
@@ -974,7 +984,7 @@
                 doc.setTextColor(255, 255, 255);
                 doc.text(societe, margin + 4, startY + 5.5);
                 const subTotal = contrats.reduce((s, c) => s + (c.prime_val || 0), 0);
-                doc.text(`${contrats.length} contrat(s) — ${subTotal.toLocaleString('fr-BE', {style:'currency', currency:'EUR'})}`, pageW - margin - 4, startY + 5.5, { align: 'right' });
+                doc.text(contrats.length + ' contrat(s) - ' + fmtEur(subTotal), pageW - margin - 4, startY + 5.5, { align: 'right' });
 
                 startY += 11;
 
@@ -983,7 +993,7 @@
                     : [['Compagnie', 'Objet du risque', 'N° Police', 'Echeance', 'Period.', 'Prime annuelle']];
 
                 const body = contrats.map(c => {
-                    const prime = c.prime_val !== null ? c.prime_val.toLocaleString('fr-BE', {minimumFractionDigits:2}) + ' €' : (c.prime_str || '—');
+                    const prime = c.prime_val !== null ? fmtEur(c.prime_val) : (c.prime_str || '—');
                     return hasChantier
                         ? [c.compagnie, c.objet_risque, c.n_police, c.chantier || '', c.echeance || '—', c.periodicite || '', prime]
                         : [c.compagnie, c.objet_risque, c.n_police, c.echeance || '—', c.periodicite || '', prime];
@@ -992,7 +1002,7 @@
                 // Ligne sous-total
                 const stRow = new Array(hasChantier ? 7 : 6).fill('');
                 stRow[0] = 'Sous-total';
-                stRow[stRow.length - 1] = subTotal.toLocaleString('fr-BE', {minimumFractionDigits:2}) + ' €';
+                stRow[stRow.length - 1] = fmtEur(subTotal);
 
                 body.push(stRow);
 
@@ -1054,7 +1064,7 @@
             doc.setFontSize(12);
             doc.setTextColor(255, 255, 255);
             doc.text('TOTAL GENERAL', margin + 4, startY + 7);
-            doc.text(grandTotal.toLocaleString('fr-BE', {style:'currency', currency:'EUR'}), pageW - margin - 4, startY + 7, { align: 'right' });
+            doc.text(fmtEur(grandTotal), pageW - margin - 4, startY + 7, { align: 'right' });
 
             // Re-numéroter toutes les pages (footer fix)
             const totalPages = doc.internal.getNumberOfPages();
