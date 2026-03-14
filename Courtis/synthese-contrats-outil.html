@@ -7,6 +7,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
@@ -329,6 +331,26 @@
             border-color: var(--gray-300);
             color: var(--gray-700);
         }
+        .btn-excel {
+            background: #217346;
+            color: white;
+            box-shadow: 0 2px 8px rgba(33,115,70,0.3);
+        }
+        .btn-excel:hover:not(:disabled) {
+            background: #1a5c38;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(33,115,70,0.4);
+        }
+        .btn-pdf {
+            background: #c0392b;
+            color: white;
+            box-shadow: 0 2px 8px rgba(192,57,43,0.3);
+        }
+        .btn-pdf:hover:not(:disabled) {
+            background: #a93226;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(192,57,43,0.4);
+        }
         .btn svg { width: 16px; height: 16px; }
 
         /* ===== PROGRESS ===== */
@@ -483,8 +505,8 @@
     <!-- MAIN -->
     <div class="container">
         <div class="hero">
-            <h2>Generez votre synthese Excel</h2>
-            <p>Deposez vos exports Brio au format PDF et obtenez un fichier Excel complet en quelques secondes.</p>
+            <h2>Generez votre synthese</h2>
+            <p>Deposez vos exports Brio au format PDF et obtenez un fichier Excel ou un rapport PDF professionnel en quelques secondes.</p>
         </div>
 
         <!-- STEPS -->
@@ -534,14 +556,22 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                 Effacer
             </button>
-            <button class="btn btn-primary" id="btnGenerate" disabled>
+            <button class="btn btn-excel" id="btnExcel" disabled>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14 2 14 8 20 8"/>
                     <line x1="16" y1="13" x2="8" y2="13"/>
                     <line x1="16" y1="17" x2="8" y2="17"/>
                 </svg>
-                Generer la synthese
+                Synthese Excel
+            </button>
+            <button class="btn btn-pdf" id="btnPdf" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <path d="M9 15l2 2 4-4"/>
+                </svg>
+                Rapport PDF
             </button>
         </div>
 
@@ -603,7 +633,7 @@
         const $ = id => document.getElementById(id);
         const dropzone = $('dropzone'), fileInput = $('fileInput'), fileList = $('fileList'),
               fileItems = $('fileItems'), fileCount = $('fileCount'),
-              btnGenerate = $('btnGenerate'), btnClear = $('btnClear'), clearAll = $('clearAll'),
+              btnExcel = $('btnExcel'), btnPdf = $('btnPdf'), btnClear = $('btnClear'), clearAll = $('clearAll'),
               progress = $('progress'), progressBar = $('progressBar'), progressText = $('progressText'),
               progressPct = $('progressPct'), progressDetail = $('progressDetail'), results = $('results');
 
@@ -636,13 +666,13 @@
         function renderFileList() {
             if (!pdfFiles.length) {
                 fileList.style.display = 'none';
-                btnGenerate.disabled = btnClear.disabled = true;
+                btnExcel.disabled = btnPdf.disabled = btnClear.disabled = true;
                 results.classList.remove('active');
                 setStep(1);
                 return;
             }
             fileList.style.display = 'block';
-            btnGenerate.disabled = btnClear.disabled = false;
+            btnExcel.disabled = btnPdf.disabled = btnClear.disabled = false;
             fileCount.textContent = pdfFiles.length + ' fichier(s)';
             fileItems.innerHTML = pdfFiles.map((f, i) => `
                 <div class="file-item">
@@ -867,10 +897,183 @@
             return wb;
         }
 
-        // Main Process
-        btnGenerate.addEventListener('click', async () => {
+        // ===== PDF Generation =====
+        // Logo DAP en base64 pour le PDF (petite version)
+        const DAP_LOGO_B64 = document.querySelector('.header img').src;
+
+        async function generatePdfReport(allData) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'A4' });
+            const pageW = doc.internal.pageSize.getWidth();
+            const pageH = doc.internal.pageSize.getHeight();
+            const margin = 15;
+            const dapBlue = [47, 84, 150];
+            const dapBlueDark = [26, 58, 110];
+            const today = new Date().toLocaleDateString('fr-BE', { day: '2-digit', month: 'long', year: 'numeric' });
+            const hasChantier = allData.some(d => d.contrats.some(c => c.chantier));
+
+            function addHeader(doc) {
+                // Barre bleue en haut
+                doc.setFillColor(...dapBlue);
+                doc.rect(0, 0, pageW, 18, 'F');
+                // Logo
+                try { doc.addImage(DAP_LOGO_B64, 'PNG', margin, 2.5, 28, 13); } catch(e) {}
+                // Titre
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor(255, 255, 255);
+                doc.text('Synthese des contrats d\'assurance', margin + 34, 11);
+                // Date
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'normal');
+                doc.text(today, pageW - margin, 11, { align: 'right' });
+            }
+
+            function addFooter(doc, pageNum) {
+                doc.setFillColor(245, 245, 245);
+                doc.rect(0, pageH - 10, pageW, 10, 'F');
+                doc.setFontSize(7);
+                doc.setTextColor(150, 150, 150);
+                doc.setFont('helvetica', 'normal');
+                doc.text('DAP SA — Rue du Bergeant 10, 7900 Leuze-en-Hainaut — Document genere automatiquement', margin, pageH - 4);
+                doc.text('Page ' + pageNum, pageW - margin, pageH - 4, { align: 'right' });
+            }
+
+            let pageNum = 1;
+            addHeader(doc);
+            addFooter(doc, pageNum);
+
+            // Récap global
+            let grandTotal = 0;
+            let totalContrats = 0;
+            allData.forEach(d => { d.contrats.forEach(c => { totalContrats++; if(c.prime_val) grandTotal += c.prime_val; }); });
+
+            doc.setFontSize(10);
+            doc.setTextColor(80, 80, 80);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`${allData.length} societe(s) — ${totalContrats} contrat(s) — Total: ${grandTotal.toLocaleString('fr-BE', {style:'currency', currency:'EUR'})}`, margin, 26);
+
+            let startY = 32;
+            const bgColors = [[214,228,240],[226,239,218],[252,228,214],[217,226,243],[237,237,237],[255,242,204],[213,232,212],[248,206,204]];
+
+            allData.forEach(({societe, contrats}, idx) => {
+                // Vérifier s'il reste assez de place pour le titre + au moins 2 lignes
+                if (startY > pageH - 40) {
+                    doc.addPage();
+                    pageNum++;
+                    addHeader(doc);
+                    addFooter(doc, pageNum);
+                    startY = 26;
+                }
+
+                // Titre société
+                doc.setFillColor(...dapBlue);
+                doc.roundedRect(margin, startY, pageW - 2 * margin, 8, 1, 1, 'F');
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(10);
+                doc.setTextColor(255, 255, 255);
+                doc.text(societe, margin + 4, startY + 5.5);
+                const subTotal = contrats.reduce((s, c) => s + (c.prime_val || 0), 0);
+                doc.text(`${contrats.length} contrat(s) — ${subTotal.toLocaleString('fr-BE', {style:'currency', currency:'EUR'})}`, pageW - margin - 4, startY + 5.5, { align: 'right' });
+
+                startY += 11;
+
+                const head = hasChantier
+                    ? [['Compagnie', 'Objet du risque', 'N° Police', 'N° Chantier', 'Echeance', 'Period.', 'Prime annuelle']]
+                    : [['Compagnie', 'Objet du risque', 'N° Police', 'Echeance', 'Period.', 'Prime annuelle']];
+
+                const body = contrats.map(c => {
+                    const prime = c.prime_val !== null ? c.prime_val.toLocaleString('fr-BE', {minimumFractionDigits:2}) + ' €' : (c.prime_str || '—');
+                    return hasChantier
+                        ? [c.compagnie, c.objet_risque, c.n_police, c.chantier || '', c.echeance || '—', c.periodicite || '', prime]
+                        : [c.compagnie, c.objet_risque, c.n_police, c.echeance || '—', c.periodicite || '', prime];
+                });
+
+                // Ligne sous-total
+                const stRow = new Array(hasChantier ? 7 : 6).fill('');
+                stRow[0] = 'Sous-total';
+                stRow[stRow.length - 1] = subTotal.toLocaleString('fr-BE', {minimumFractionDigits:2}) + ' €';
+
+                body.push(stRow);
+
+                const colWidths = hasChantier
+                    ? { 0: {cellWidth:38}, 1: {cellWidth:72}, 2: {cellWidth:28}, 3: {cellWidth:24}, 4: {cellWidth:20}, 5: {cellWidth:20}, 6: {cellWidth:28} }
+                    : { 0: {cellWidth:42}, 1: {cellWidth:90}, 2: {cellWidth:30}, 3: {cellWidth:22}, 4: {cellWidth:22}, 5: {cellWidth:30} };
+
+                const bgCol = bgColors[idx % bgColors.length];
+                doc.autoTable({
+                    head: head,
+                    body: body,
+                    startY: startY,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 8, cellPadding: 2, lineColor: [200, 200, 200], lineWidth: 0.2, font: 'helvetica' },
+                    headStyles: { fillColor: dapBlueDark, textColor: [255,255,255], fontStyle: 'bold', fontSize: 7.5 },
+                    bodyStyles: { fillColor: [255,255,255], textColor: [50,50,50] },
+                    alternateRowStyles: { fillColor: bgCol },
+                    columnStyles: colWidths,
+                    didParseCell: function(data) {
+                        // Style sous-total row (dernière ligne du body)
+                        if (data.section === 'body' && data.row.index === body.length - 1) {
+                            data.cell.styles.fillColor = [217, 217, 217];
+                            data.cell.styles.fontStyle = 'bold';
+                            data.cell.styles.textColor = [30, 30, 30];
+                        }
+                        // Aligner primes à droite
+                        const lastCol = hasChantier ? 6 : 5;
+                        if (data.column.index === lastCol) {
+                            data.cell.styles.halign = 'right';
+                        }
+                    },
+                    didDrawPage: function(data) {
+                        // Header/footer sur chaque nouvelle page créée par autoTable
+                        if (data.pageNumber > 1) {
+                            pageNum++;
+                            addHeader(doc);
+                            addFooter(doc, pageNum);
+                        }
+                    }
+                });
+
+                startY = doc.lastAutoTable.finalY + 8;
+            });
+
+            // TOTAL GENERAL — sur la dernière page
+            if (startY > pageH - 25) {
+                doc.addPage();
+                pageNum++;
+                addHeader(doc);
+                addFooter(doc, pageNum);
+                startY = 26;
+            }
+            doc.setFillColor(...dapBlue);
+            doc.roundedRect(margin, startY, pageW - 2 * margin, 10, 1, 1, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(255, 255, 255);
+            doc.text('TOTAL GENERAL', margin + 4, startY + 7);
+            doc.text(grandTotal.toLocaleString('fr-BE', {style:'currency', currency:'EUR'}), pageW - margin - 4, startY + 7, { align: 'right' });
+
+            // Re-numéroter toutes les pages (footer fix)
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let p = 1; p <= totalPages; p++) {
+                doc.setPage(p);
+                // Redessiner le footer avec le bon numéro
+                doc.setFillColor(245, 245, 245);
+                doc.rect(0, pageH - 10, pageW, 10, 'F');
+                doc.setFontSize(7);
+                doc.setTextColor(150, 150, 150);
+                doc.setFont('helvetica', 'normal');
+                doc.text('DAP SA — Rue du Bergeant 10, 7900 Leuze-en-Hainaut — Document genere automatiquement', margin, pageH - 4);
+                doc.text(`Page ${p}/${totalPages}`, pageW - margin, pageH - 4, { align: 'right' });
+            }
+
+            doc.save('Synthese_Contrats_DAP.pdf');
+        }
+
+        // ===== Main Process =====
+        async function processFiles(outputType) {
             if (!pdfFiles.length) return;
-            btnGenerate.disabled = btnClear.disabled = true;
+            btnExcel.disabled = btnPdf.disabled = btnClear.disabled = true;
             progress.classList.add('active');
             results.classList.remove('active');
             setStep(2);
@@ -904,13 +1107,17 @@
             }
 
             progressBar.style.width = '90%'; progressPct.textContent = '90%';
-            progressText.textContent = 'Generation du fichier Excel...';
+            progressText.textContent = outputType === 'pdf' ? 'Generation du rapport PDF...' : 'Generation du fichier Excel...';
             progressDetail.textContent = '';
 
             try {
-                const wb = await generateExcel(allData);
-                const buffer = await wb.xlsx.writeBuffer();
-                saveAs(new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), 'Synthese_Contrats.xlsx');
+                if (outputType === 'pdf') {
+                    await generatePdfReport(allData);
+                } else {
+                    const wb = await generateExcel(allData);
+                    const buffer = await wb.xlsx.writeBuffer();
+                    saveAs(new Blob([buffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}), 'Synthese_Contrats.xlsx');
+                }
                 progressBar.style.width = '100%'; progressPct.textContent = '100%';
                 progressText.textContent = 'Termine !';
                 setStep(3);
@@ -922,8 +1129,11 @@
                 console.error(err);
                 progressText.textContent = 'Erreur lors de la generation';
             }
-            btnGenerate.disabled = btnClear.disabled = false;
-        });
+            btnExcel.disabled = btnPdf.disabled = btnClear.disabled = false;
+        }
+
+        btnExcel.addEventListener('click', () => processFiles('excel'));
+        btnPdf.addEventListener('click', () => processFiles('pdf'));
     </script>
 </body>
 </html>
