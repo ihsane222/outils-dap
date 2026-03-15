@@ -906,6 +906,121 @@
             tr.getCell(primeCol).numFmt='#,##0.00 "€"';
             ws.views = [{state:'frozen',ySplit:1}];
 
+            // ===== Onglet Graphiques (2e position, après Récapitulatif) =====
+            try {
+                const chartColors = [
+                    '#2F5496','#ED7D31','#70AD47','#FFC000',
+                    '#5B9BD5','#C00000','#7030A0','#44546A',
+                    '#4472C4','#F4B183','#A9D18E','#FF6F61',
+                    '#BDD7EE','#92D050','#D6DCE4','#F8CBAD'
+                ];
+
+                // Agrégation par compagnie (hors doublons)
+                const byCompagnie = {};
+                allData.forEach(d => d.contrats.forEach(c => {
+                    if (c.isDuplicate || !c.prime_val) return;
+                    const key = c.compagnie || 'Inconnu';
+                    byCompagnie[key] = (byCompagnie[key] || 0) + c.prime_val;
+                }));
+                const compLabels = Object.keys(byCompagnie).sort((a,b) => byCompagnie[b] - byCompagnie[a]);
+                const compValues = compLabels.map(k => byCompagnie[k]);
+                const compTotal = compValues.reduce((a,b) => a+b, 0);
+
+                // Agrégation par branche (hors doublons)
+                const byBranche = {};
+                allData.forEach(d => d.contrats.forEach(c => {
+                    if (c.isDuplicate || !c.prime_val) return;
+                    const br = c.objet_risque.split('—')[0].split('-')[0].trim() || 'Autre';
+                    byBranche[br] = (byBranche[br] || 0) + c.prime_val;
+                }));
+                const brLabels = Object.keys(byBranche).sort((a,b) => byBranche[b] - byBranche[a]);
+                const brValues = brLabels.map(k => byBranche[k]);
+
+                // Render charts sur canvas offscreen
+                if (typeof Chart === 'undefined') throw new Error('Chart.js non chargé');
+                async function renderChart(config, w, h) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w * 2; canvas.height = h * 2;
+                    canvas.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:'+w+'px;height:'+h+'px;';
+                    document.body.appendChild(canvas);
+                    const ctx = canvas.getContext('2d');
+                    config.options = config.options || {};
+                    config.options.devicePixelRatio = 2;
+                    const chart = new Chart(ctx, config);
+                    await new Promise(r => setTimeout(r, 300));
+                    chart.update('none');
+                    await new Promise(r => setTimeout(r, 100));
+                    const img = canvas.toDataURL('image/png');
+                    chart.destroy();
+                    document.body.removeChild(canvas);
+                    return img;
+                }
+
+                // Labels avec pourcentage pour le camembert
+                const compLabelsWithPct = compLabels.map((l,i) => {
+                    const pct = ((compValues[i] / compTotal) * 100).toFixed(1);
+                    return l + ' (' + pct + '%)';
+                });
+
+                const pie1 = await renderChart({
+                    type: 'pie',
+                    data: {
+                        labels: compLabelsWithPct,
+                        datasets: [{ data: compValues, backgroundColor: chartColors.slice(0, compLabels.length), borderWidth: 2, borderColor: '#fff' }]
+                    },
+                    options: {
+                        responsive: false, animation: false,
+                        layout: { padding: 10 },
+                        plugins: {
+                            title: { display: true, text: 'Repartition des primes par compagnie', font: { size: 20, weight: 'bold' }, color: '#2F5496', padding: { bottom: 15 } },
+                            legend: { position: 'bottom', labels: { font: { size: 13 }, padding: 10, usePointStyle: true, pointStyle: 'rectRounded' } }
+                        }
+                    }
+                }, 750, 600);
+
+                // Labels avec montant pour les barres
+                const brLabelsWithAmount = brLabels.map((l,i) => {
+                    const val = brValues[i];
+                    const fmt = val.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' EUR';
+                    return l + '  —  ' + fmt;
+                });
+
+                const barH = Math.max(400, brLabels.length * 38 + 120);
+                const bar1 = await renderChart({
+                    type: 'bar',
+                    data: {
+                        labels: brLabelsWithAmount,
+                        datasets: [{ data: brValues, backgroundColor: chartColors.slice(0, brLabels.length), borderRadius: 6, barThickness: 22 }]
+                    },
+                    options: {
+                        indexAxis: 'y', responsive: false, animation: false,
+                        layout: { padding: { right: 20 } },
+                        plugins: {
+                            title: { display: true, text: 'Primes annuelles par branche', font: { size: 20, weight: 'bold' }, color: '#2F5496', padding: { bottom: 15 } },
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { display: false },
+                            y: { ticks: { font: { size: 13, weight: '500' }, color: '#333' }, grid: { display: false } }
+                        }
+                    }
+                }, 800, barH);
+
+                const wsChart = wb.addWorksheet('Graphiques');
+                wsChart.getColumn(1).width = 120;
+
+                wsChart.getCell('A1').value = 'Analyse du portefeuille';
+                wsChart.getCell('A1').font = { name: 'Calibri', bold: true, size: 16, color: { argb: 'FF2F5496' } };
+
+                const imgId1 = wb.addImage({ base64: pie1.split(',')[1], extension: 'png' });
+                wsChart.addImage(imgId1, { tl: { col: 0, row: 1 }, ext: { width: 560, height: 450 } });
+
+                const barRow = Math.ceil(450 / 20) + 4;
+                const imgId2 = wb.addImage({ base64: bar1.split(',')[1], extension: 'png' });
+                wsChart.addImage(imgId2, { tl: { col: 0, row: barRow }, ext: { width: 600, height: Math.max(300, brLabels.length * 28 + 90) } });
+
+            } catch(e) { console.error('Charts generation failed:', e); }
+
             // Onglets par société
             allData.forEach(({societe,contrats},idx) => {
                 const sn = societe.replace(/[\\/*?\[\]:]/g,'').substring(0,31);
@@ -954,106 +1069,6 @@
                 st.getCell(socPrimeCol).numFmt='#,##0.00 "€"';
                 wsSoc.views = [{state:'frozen',ySplit:3}];
             });
-
-            // ===== Onglet Graphiques =====
-            try {
-                const chartColors = [
-                    '#2F5496','#4472C4','#5B9BD5','#A5C8E1',
-                    '#ED7D31','#FFC000','#70AD47','#44546A',
-                    '#9DC3E6','#F4B183','#A9D18E','#D6DCE4',
-                    '#BDD7EE','#F8CBAD','#C5E0B4','#8FAADC'
-                ];
-
-                // Agrégation par compagnie (hors doublons)
-                const byCompagnie = {};
-                allData.forEach(d => d.contrats.forEach(c => {
-                    if (c.isDuplicate || !c.prime_val) return;
-                    const key = c.compagnie || 'Inconnu';
-                    byCompagnie[key] = (byCompagnie[key] || 0) + c.prime_val;
-                }));
-                const compLabels = Object.keys(byCompagnie).sort((a,b) => byCompagnie[b] - byCompagnie[a]);
-                const compValues = compLabels.map(k => byCompagnie[k]);
-
-                // Agrégation par branche (hors doublons)
-                const byBranche = {};
-                allData.forEach(d => d.contrats.forEach(c => {
-                    if (c.isDuplicate || !c.prime_val) return;
-                    // Extraire la branche depuis objet_risque (avant le tiret)
-                    const br = c.objet_risque.split('—')[0].split('-')[0].trim() || 'Autre';
-                    byBranche[br] = (byBranche[br] || 0) + c.prime_val;
-                }));
-                const brLabels = Object.keys(byBranche).sort((a,b) => byBranche[b] - byBranche[a]);
-                const brValues = brLabels.map(k => byBranche[k]);
-
-                // Render charts sur canvas offscreen
-                if (typeof Chart === 'undefined') throw new Error('Chart.js non chargé');
-                async function renderChart(config, w, h) {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = w * 2; canvas.height = h * 2;
-                    canvas.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:'+w+'px;height:'+h+'px;';
-                    document.body.appendChild(canvas);
-                    const ctx = canvas.getContext('2d');
-                    config.options = config.options || {};
-                    config.options.devicePixelRatio = 2;
-                    const chart = new Chart(ctx, config);
-                    await new Promise(r => setTimeout(r, 300));
-                    chart.update('none');
-                    await new Promise(r => setTimeout(r, 100));
-                    const img = canvas.toDataURL('image/png');
-                    chart.destroy();
-                    document.body.removeChild(canvas);
-                    return img;
-                }
-
-                const pie1 = await renderChart({
-                    type: 'doughnut',
-                    data: {
-                        labels: compLabels,
-                        datasets: [{ data: compValues, backgroundColor: chartColors.slice(0, compLabels.length), borderWidth: 2, borderColor: '#fff' }]
-                    },
-                    options: {
-                        responsive: false, animation: false,
-                        plugins: {
-                            title: { display: true, text: 'Repartition des primes par compagnie', font: { size: 18, weight: 'bold' }, color: '#2F5496' },
-                            legend: { position: 'right', labels: { font: { size: 12 }, padding: 12 } }
-                        }
-                    }
-                }, 900, 500);
-
-                const bar1 = await renderChart({
-                    type: 'bar',
-                    data: {
-                        labels: brLabels,
-                        datasets: [{ data: brValues, backgroundColor: chartColors.slice(0, brLabels.length), borderRadius: 4 }]
-                    },
-                    options: {
-                        indexAxis: 'y', responsive: false, animation: false,
-                        plugins: {
-                            title: { display: true, text: 'Primes annuelles par branche', font: { size: 18, weight: 'bold' }, color: '#2F5496' },
-                            legend: { display: false }
-                        },
-                        scales: {
-                            x: { ticks: { callback: v => v.toLocaleString('fr-BE') + ' EUR' } },
-                            y: { ticks: { font: { size: 11 } } }
-                        }
-                    }
-                }, 900, Math.max(350, brLabels.length * 32 + 80));
-
-                const wsChart = wb.addWorksheet('Graphiques');
-                wsChart.getCell('A1').value = 'Repartition des primes par compagnie';
-                wsChart.getCell('A1').font = { name: 'Calibri', bold: true, size: 14, color: { argb: 'FF2F5496' } };
-
-                const imgId1 = wb.addImage({ base64: pie1.split(',')[1], extension: 'png' });
-                wsChart.addImage(imgId1, { tl: { col: 0, row: 1 }, ext: { width: 680, height: 380 } });
-
-                const barRow = Math.ceil(380 / 20) + 3;
-                wsChart.getCell('A' + barRow).value = 'Primes annuelles par branche';
-                wsChart.getCell('A' + barRow).font = { name: 'Calibri', bold: true, size: 14, color: { argb: 'FF2F5496' } };
-
-                const imgId2 = wb.addImage({ base64: bar1.split(',')[1], extension: 'png' });
-                wsChart.addImage(imgId2, { tl: { col: 0, row: barRow }, ext: { width: 680, height: Math.max(260, brLabels.length * 24 + 60) } });
-
-            } catch(e) { console.error('⚠️ Charts generation failed:', e); alert('Erreur graphiques: ' + e.message); }
 
             return wb;
         }
