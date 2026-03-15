@@ -986,14 +986,19 @@
                 const brValues = brLabels.map(k => byBranche[k]);
 
                 // Render charts sur canvas offscreen
+                if (typeof Chart === 'undefined') throw new Error('Chart.js non chargé');
                 async function renderChart(config, w, h) {
                     const canvas = document.createElement('canvas');
-                    canvas.width = w; canvas.height = h;
-                    canvas.style.cssText = 'position:fixed;left:-9999px;';
+                    canvas.width = w * 2; canvas.height = h * 2;
+                    canvas.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:'+w+'px;height:'+h+'px;';
                     document.body.appendChild(canvas);
-                    const chart = new Chart(canvas.getContext('2d'), config);
-                    // Attendre le rendu
-                    await new Promise(r => setTimeout(r, 150));
+                    const ctx = canvas.getContext('2d');
+                    config.options = config.options || {};
+                    config.options.devicePixelRatio = 2;
+                    const chart = new Chart(ctx, config);
+                    await new Promise(r => setTimeout(r, 300));
+                    chart.update('none');
+                    await new Promise(r => setTimeout(r, 100));
                     const img = canvas.toDataURL('image/png');
                     chart.destroy();
                     document.body.removeChild(canvas);
@@ -1048,7 +1053,7 @@
                 const imgId2 = wb.addImage({ base64: bar1.split(',')[1], extension: 'png' });
                 wsChart.addImage(imgId2, { tl: { col: 0, row: barRow }, ext: { width: 680, height: Math.max(260, brLabels.length * 24 + 60) } });
 
-            } catch(e) { console.warn('Charts generation failed:', e); }
+            } catch(e) { console.error('⚠️ Charts generation failed:', e); alert('Erreur graphiques: ' + e.message); }
 
             return wb;
         }
