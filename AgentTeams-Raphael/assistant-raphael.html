@@ -120,8 +120,8 @@
 
         .orb-wrapper {
             position: relative;
-            width: 220px;
-            height: 220px;
+            width: 340px;
+            height: 340px;
             flex-shrink: 0;
         }
 
@@ -605,7 +605,7 @@
 
         /* ===== MOBILE ===== */
         @media (max-width: 768px) {
-            .orb-wrapper { width: 160px; height: 160px; }
+            .orb-wrapper { width: 240px; height: 240px; }
             .response-area { max-height: 30vh; padding: 0 16px; }
             .response-text { font-size: 13px; }
             .input-area { padding: 12px 16px 20px; }
@@ -754,6 +754,7 @@
 <script>
 // ===== ORB ANIMATION =====
 const canvas = document.getElementById('orbCanvas');
+canvas.width = 680; canvas.height = 680;
 const ctx = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 const cx = W/2, cy = H/2;
@@ -764,28 +765,28 @@ let particles = [];
 let rings = [];
 
 // Create particles
-for (let i = 0; i < 60; i++) {
+for (let i = 0; i < 90; i++) {
     particles.push({
         angle: Math.random() * Math.PI * 2,
-        radius: 60 + Math.random() * 50,
+        radius: 95 + Math.random() * 80,
         speed: 0.002 + Math.random() * 0.008,
-        size: 1 + Math.random() * 2.5,
+        size: 1.5 + Math.random() * 3,
         opacity: 0.2 + Math.random() * 0.6,
         drift: Math.random() * 0.02 - 0.01
     });
 }
 
 // Create ring waves
-for (let i = 0; i < 3; i++) {
-    rings.push({ radius: 70 + i * 25, opacity: 0.15 - i * 0.04, speed: 0.5 + i * 0.3 });
+for (let i = 0; i < 4; i++) {
+    rings.push({ radius: 110 + i * 35, opacity: 0.15 - i * 0.03, speed: 0.5 + i * 0.3 });
 }
 
 function getOrbParams() {
     switch (orbState) {
-        case 'listening': return { coreSize: 55, pulseAmp: 8, speed: 1.5, glow: 0.6, color: [0, 212, 255] };
-        case 'thinking': return { coreSize: 50, pulseAmp: 12, speed: 3, glow: 0.8, color: [91, 155, 213] };
-        case 'speaking': return { coreSize: 58, pulseAmp: 6, speed: 1.2, glow: 0.5, color: [68, 114, 196] };
-        default: return { coreSize: 50, pulseAmp: 4, speed: 0.7, glow: 0.35, color: [68, 114, 196] };
+        case 'listening': return { coreSize: 85, pulseAmp: 12, speed: 1.5, glow: 0.6, color: [0, 212, 255] };
+        case 'thinking': return { coreSize: 78, pulseAmp: 18, speed: 3, glow: 0.8, color: [91, 155, 213] };
+        case 'speaking': return { coreSize: 90, pulseAmp: 8, speed: 1.2, glow: 0.5, color: [68, 114, 196] };
+        default: return { coreSize: 80, pulseAmp: 6, speed: 0.7, glow: 0.35, color: [68, 114, 196] };
     }
 }
 
@@ -819,8 +820,8 @@ function drawOrb() {
     particles.forEach(pt => {
         pt.angle += pt.speed * pSpeed;
         pt.radius += pt.drift;
-        if (pt.radius > 120) pt.drift = -Math.abs(pt.drift);
-        if (pt.radius < 55) pt.drift = Math.abs(pt.drift);
+        if (pt.radius > 190) pt.drift = -Math.abs(pt.drift);
+        if (pt.radius < 85) pt.drift = Math.abs(pt.drift);
 
         const x = cx + Math.cos(pt.angle) * pt.radius;
         const y = cy + Math.sin(pt.angle) * pt.radius;
