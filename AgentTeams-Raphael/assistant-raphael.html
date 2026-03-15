@@ -191,30 +191,62 @@
 
         .contact-add {
             display: flex;
-            gap: 6px;
+            flex-direction: column;
+            gap: 8px;
             margin-bottom: 12px;
+            background: #f8f9fb;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .contact-add-row {
+            display: flex;
+            gap: 8px;
         }
 
         .contact-add input {
             flex: 1;
-            padding: 10px;
+            padding: 10px 12px;
             border: 1px solid var(--border);
             border-radius: 10px;
-            font-size: 12px;
+            font-size: 13px;
             font-family: inherit;
             outline: none;
+            background: #fff;
         }
 
         .contact-add input:focus { border-color: var(--dap-blue); }
-        .contact-add button {
-            padding: 10px 12px;
+
+        .contact-add-btn {
+            width: 100%;
+            padding: 10px;
             background: var(--dap-blue);
             color: #fff;
             border: none;
             border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .contact-add-btn:hover { background: var(--dap-blue-dark); }
+
+        .import-btn {
+            width: 100%;
+            padding: 10px;
+            background: #f0f0f0;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             font-size: 12px;
             cursor: pointer;
+            font-family: inherit;
+            margin-bottom: 12px;
         }
+
+        .import-btn:hover { background: #e4e4e4; }
 
         /* Réglages */
         .setting-group {
@@ -745,10 +777,15 @@
             <!-- CONTACTS -->
             <div class="sidebar-panel" id="panel-contacts">
                 <div class="contact-add">
-                    <input type="text" id="contactAlias" placeholder="Alias (ex: Sandrine)" />
-                    <input type="email" id="contactEmail" placeholder="Email" />
-                    <button onclick="addContact()">+</button>
+                    <div class="contact-add-row">
+                        <input type="text" id="contactAlias" placeholder="Alias (ex: Sandrine)" />
+                    </div>
+                    <div class="contact-add-row">
+                        <input type="email" id="contactEmail" placeholder="Email complet" />
+                    </div>
+                    <button class="contact-add-btn" onclick="addContact()">Ajouter le contact</button>
                 </div>
+                <button class="import-btn" onclick="importOutlookContacts()">Importer depuis Outlook</button>
                 <div id="contactList"></div>
                 <div class="empty-state" id="contactEmpty">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
@@ -901,7 +938,7 @@
                 confirmSensible: true,
                 blockDelete: true,
                 keywords: ['resiliation', 'licenciement', 'confidentiel', 'urgent', 'mise en demeure'],
-                webhook: ''
+                webhook: 'https://n8n.srv1387885.hstgr.cloud/webhook/assistant-raphael'
             },
             chatHistory: []
         };
@@ -912,9 +949,11 @@
             const raw = localStorage.getItem(STORAGE_KEY);
             if (raw) {
                 const s = JSON.parse(raw);
-                // Merge with defaults for new fields
                 const d = defaultState();
-                return { ...d, ...s, settings: { ...d.settings, ...(s.settings || {}) } };
+                const merged = { ...d, ...s, settings: { ...d.settings, ...(s.settings || {}) } };
+                // Si le webhook est vide, utiliser la valeur par défaut
+                if (!merged.settings.webhook) merged.settings.webhook = d.settings.webhook;
+                return merged;
             }
         } catch(e) {}
         return defaultState();
@@ -1071,6 +1110,46 @@
     }
 
     document.getElementById('keywordInput').addEventListener('keydown', e => { if (e.key === 'Enter') addKeyword(); });
+
+    // ===== IMPORT OUTLOOK CONTACTS =====
+    async function importOutlookContacts() {
+        const webhook = state.settings.webhook;
+        if (!webhook) {
+            alert('Configure d\'abord l\'URL du webhook dans les reglages.');
+            return;
+        }
+        showToast('Import en cours...');
+        try {
+            const resp = await fetch(webhook, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: '__IMPORT_CONTACTS__',
+                    context: '',
+                    sessionId: 'import_' + Date.now()
+                })
+            });
+            if (!resp.ok) throw new Error('Erreur ' + resp.status);
+            const data = await resp.json();
+            const contacts = data.contacts || [];
+            if (contacts.length === 0) {
+                alert('Aucun contact trouve ou la commande n\'est pas encore configuree dans n8n.');
+                return;
+            }
+            let added = 0;
+            contacts.forEach(c => {
+                if (c.name && c.email && !state.contacts.some(sc => sc.email === c.email)) {
+                    state.contacts.push({ alias: c.name, email: c.email });
+                    added++;
+                }
+            });
+            saveState();
+            renderContacts();
+            showToast(added + ' contact(s) importe(s)');
+        } catch(e) {
+            alert('Erreur import: ' + e.message);
+        }
+    }
 
     // ===== CHAT =====
     const chatMessages = document.getElementById('chatMessages');
