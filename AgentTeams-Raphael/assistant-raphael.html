@@ -1237,6 +1237,10 @@ async function sendMessage() {
     msgInput.value = ''; msgInput.style.height = 'auto'; btnSend.disabled = true;
     document.getElementById('quickActions').style.display = 'none';
 
+    // Remove old currentAnswer id to avoid duplicates
+    const oldAnswer = document.getElementById('currentAnswer');
+    if (oldAnswer) oldAnswer.removeAttribute('id');
+
     // Show question in history — prepend new, keep old
     const oldContent = responseText.innerHTML;
     const hist = `<div class="history-item"><div class="history-question">&gt; ${esc(text)}</div><div class="history-answer" id="currentAnswer"></div></div>`;
@@ -1277,6 +1281,8 @@ async function sendMessage() {
         }
         // Remove memo tags from visible reply
         reply = reply.replace(/<!--MEMO:.*?-->/g, '').trim();
+        // Convert markdown to HTML
+        reply = mdToHtml(reply);
 
         setOrbState('speaking');
         await typeWriter(document.getElementById('currentAnswer'), reply);
@@ -1378,6 +1384,21 @@ function toggleDictation() {
 
 // ===== HELPERS =====
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// Convert markdown + raw newlines to HTML
+function mdToHtml(text) {
+    // Convert \n to <br> where not already in HTML context
+    let h = text;
+    // Bold: **text** → <b>text</b>
+    h = h.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+    // Italic: *text* → <i>text</i> (but not inside tags)
+    h = h.replace(/(?<![<\/\w])\*(.+?)\*(?![>])/g, '<i>$1</i>');
+    // Convert newlines to <br> (but not if already followed by a tag)
+    h = h.replace(/\n/g, '<br>');
+    // Clean up excessive <br>
+    h = h.replace(/(<br>\s*){3,}/g, '<br><br>');
+    return h;
+}
 
 // ===== INIT =====
 renderMemos();
