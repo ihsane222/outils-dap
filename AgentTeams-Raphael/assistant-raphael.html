@@ -1049,7 +1049,19 @@ const btnSend = document.getElementById('btnSend');
 const responseText = document.getElementById('responseText');
 const responseArea = document.getElementById('responseArea');
 
-msgInput.addEventListener('input', () => { btnSend.disabled = !msgInput.value.trim(); });
+let typingTimer = null;
+msgInput.addEventListener('input', () => {
+    btnSend.disabled = !msgInput.value.trim();
+    if (msgInput.value.trim()) {
+        setOrbState('listening');
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => { if (orbState === 'listening') setOrbState('idle'); }, 1500);
+    } else {
+        setOrbState('idle');
+    }
+});
+msgInput.addEventListener('focus', () => { if (msgInput.value.trim()) setOrbState('listening'); });
+msgInput.addEventListener('blur', () => { if (orbState === 'listening') setOrbState('idle'); });
 
 function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
 function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
