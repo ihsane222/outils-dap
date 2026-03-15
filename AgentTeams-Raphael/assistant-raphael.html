@@ -1284,13 +1284,19 @@ async function sendMessage() {
         // Convert markdown to HTML
         reply = mdToHtml(reply);
 
+        const answerEl = document.getElementById('currentAnswer');
+        if (!answerEl) { alert('Bug: currentAnswer introuvable'); setOrbState('idle'); return; }
+
         setOrbState('speaking');
-        await typeWriter(document.getElementById('currentAnswer'), reply);
-        setOrbState('idle');
+        // Show response immediately, then animate cursor
+        answerEl.innerHTML = reply;
+        setTimeout(() => setOrbState('idle'), 800);
 
     } catch(err) {
         setOrbState('idle');
-        document.getElementById('currentAnswer').innerHTML = `<span style="color:#e74c3c">Erreur : ${esc(err.message)}</span>`;
+        const el = document.getElementById('currentAnswer');
+        if (el) el.innerHTML = `<span style="color:#e74c3c">Erreur : ${esc(err.message)}</span>`;
+        else alert('Erreur: ' + err.message);
     }
 }
 
@@ -1387,16 +1393,13 @@ function esc(s) { const d = document.createElement('div'); d.textContent = s; re
 
 // Convert markdown + raw newlines to HTML
 function mdToHtml(text) {
-    // Convert \n to <br> where not already in HTML context
     let h = text;
     // Bold: **text** → <b>text</b>
     h = h.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-    // Italic: *text* → <i>text</i> (but not inside tags)
-    h = h.replace(/(?<![<\/\w])\*(.+?)\*(?![>])/g, '<i>$1</i>');
-    // Convert newlines to <br> (but not if already followed by a tag)
+    // Convert newlines to <br>
     h = h.replace(/\n/g, '<br>');
     // Clean up excessive <br>
-    h = h.replace(/(<br>\s*){3,}/g, '<br><br>');
+    h = h.replace(/(<br\s*\/?\s*>\s*){3,}/gi, '<br><br>');
     return h;
 }
 
