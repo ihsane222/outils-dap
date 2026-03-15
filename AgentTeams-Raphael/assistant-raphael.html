@@ -1228,6 +1228,7 @@ function quickSend(t) { msgInput.value = t; sendMessage(); }
 function clearChat() {
     responseText.innerHTML = '';
     responseText.classList.remove('visible');
+    document.getElementById('quickActions').style.display = '';
     setOrbState('idle');
 }
 
@@ -1241,12 +1242,15 @@ async function sendMessage() {
     const oldAnswer = document.getElementById('currentAnswer');
     if (oldAnswer) oldAnswer.removeAttribute('id');
 
-    // Show question in history — prepend new, keep old
-    const oldContent = responseText.innerHTML;
-    const hist = `<div class="history-item"><div class="history-question">&gt; ${esc(text)}</div><div class="history-answer" id="currentAnswer"></div></div>`;
-    responseText.innerHTML = hist + oldContent;
+    // Append new message at bottom (chat order)
+    const hist = document.createElement('div');
+    hist.className = 'history-item';
+    hist.innerHTML = `<div class="history-question">&gt; ${esc(text)}</div><div class="history-answer" id="currentAnswer"></div>`;
+    responseText.appendChild(hist);
     responseText.classList.add('visible');
-    responseText.scrollTop = 0;
+    // Scroll response area to bottom
+    const ra = document.getElementById('responseArea');
+    ra.scrollTop = ra.scrollHeight;
 
     const webhook = state.settings.webhook;
     if (!webhook) {
@@ -1288,8 +1292,10 @@ async function sendMessage() {
         if (!answerEl) { alert('Bug: currentAnswer introuvable'); setOrbState('idle'); return; }
 
         setOrbState('speaking');
-        // Show response immediately, then animate cursor
         answerEl.innerHTML = reply;
+        // Scroll to bottom after response
+        const ra2 = document.getElementById('responseArea');
+        ra2.scrollTop = ra2.scrollHeight;
         setTimeout(() => setOrbState('idle'), 800);
 
     } catch(err) {
