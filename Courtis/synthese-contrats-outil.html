@@ -821,6 +821,26 @@
             return contrats;
         }
 
+        // Détection des doublons (même compagnie + même n° police)
+        function markDuplicates(allData) {
+            const seen = new Map(); // clé → {socIdx, cIdx}
+            let count = 0;
+            allData.forEach((d, si) => {
+                d.contrats.forEach((c, ci) => {
+                    c.isDuplicate = false;
+                    if (!c.n_police) return; // pas de n° police → pas de comparaison
+                    const key = (c.compagnie + '||' + c.n_police).toLowerCase().replace(/\s/g, '');
+                    if (seen.has(key)) {
+                        c.isDuplicate = true;
+                        count++;
+                    } else {
+                        seen.set(key, {si, ci});
+                    }
+                });
+            });
+            return count;
+        }
+
         // Excel Generation — avec colonne N° Chantier conditionnelle
         async function generateExcel(allData) {
             const wb = new ExcelJS.Workbook();
@@ -850,15 +870,22 @@
             allData.forEach(({societe,contrats},idx) => {
                 const fs = {type:'pattern',pattern:'solid',fgColor:{argb:'FF'+colors[idx%colors.length]}};
                 let sub = 0;
+                const dupFill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFFCE4EC'}};
+                const dupFont = {name:'Calibri',italic:true,size:10,color:{argb:'FFC62828'}};
                 contrats.forEach(c => {
-                    const rowData = [societe,c.compagnie,c.objet_risque,c.n_police];
+                    const label = c.isDuplicate ? '⚠ DOUBLON' : '';
+                    const rowData = [societe,c.compagnie,c.objet_risque, c.isDuplicate ? (c.n_police + ' ' + label) : c.n_police];
                     if (hasChantier) rowData.push(c.chantier||'');
                     if (hasTypeTRC) rowData.push(c.typeTRC||'');
                     rowData.push(c.echeance,c.periodicite, c.prime_val!==null?c.prime_val:(c.prime_str||''));
                     const r = ws.addRow(rowData);
-                    r.eachCell(cell => { cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
-                    r.getCell(1).font = {name:'Calibri',bold:true,size:10};
-                    if (c.prime_val!==null) { r.getCell(primeCol).numFmt='#,##0.00 "€"'; sub+=c.prime_val; }
+                    if (c.isDuplicate) {
+                        r.eachCell(cell => { cell.fill=dupFill; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; cell.font=dupFont; });
+                    } else {
+                        r.eachCell(cell => { cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
+                        r.getCell(1).font = {name:'Calibri',bold:true,size:10};
+                    }
+                    if (c.prime_val!==null) { r.getCell(primeCol).numFmt='#,##0.00 "€"'; if(!c.isDuplicate) sub+=c.prime_val; }
                 });
                 const stData = new Array(primeCol).fill('');
                 stData[0] = `Sous-total ${societe}`;
@@ -899,15 +926,21 @@
                 socColWidths.push({width:12},{width:14},{width:18});
                 wsSoc.columns = socColWidths;
 
+                const socDupFill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFFCE4EC'}};
+                const socDupFont = {name:'Calibri',italic:true,size:10,color:{argb:'FFC62828'}};
                 let sub=0, rn=4;
                 contrats.forEach(c => {
                     const r=wsSoc.getRow(rn);
-                    const vals = [c.compagnie,c.objet_risque,c.n_police];
+                    const vals = [c.compagnie,c.objet_risque, c.isDuplicate ? (c.n_police + ' ⚠ DOUBLON') : c.n_police];
                     if (hasChantier) vals.push(c.chantier||'');
                     if (hasTypeTRC) vals.push(c.typeTRC||'');
                     vals.push(c.echeance,c.periodicite,c.prime_val!==null?c.prime_val:(c.prime_str||''));
-                    vals.forEach((v,i) => { const cell=r.getCell(i+1); cell.value=v; cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
-                    if(c.prime_val!==null){r.getCell(socPrimeCol).numFmt='#,##0.00 "€"'; sub+=c.prime_val;}
+                    if (c.isDuplicate) {
+                        vals.forEach((v,i) => { const cell=r.getCell(i+1); cell.value=v; cell.fill=socDupFill; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; cell.font=socDupFont; });
+                    } else {
+                        vals.forEach((v,i) => { const cell=r.getCell(i+1); cell.value=v; cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
+                    }
+                    if(c.prime_val!==null){r.getCell(socPrimeCol).numFmt='#,##0.00 "€"'; if(!c.isDuplicate) sub+=c.prime_val;}
                     rn++;
                 });
                 const st=wsSoc.getRow(rn);
@@ -981,7 +1014,7 @@
             // Récap global
             let grandTotal = 0;
             let totalContrats = 0;
-            allData.forEach(d => { d.contrats.forEach(c => { totalContrats++; if(c.prime_val) grandTotal += c.prime_val; }); });
+            allData.forEach(d => { d.contrats.forEach(c => { totalContrats++; if(c.prime_val && !c.isDuplicate) grandTotal += c.prime_val; }); });
 
             doc.setFontSize(10);
             doc.setTextColor(80, 80, 80);
@@ -1008,7 +1041,7 @@
                 doc.setFontSize(10);
                 doc.setTextColor(255, 255, 255);
                 doc.text(societe, margin + 4, startY + 5.5);
-                const subTotal = contrats.reduce((s, c) => s + (c.prime_val || 0), 0);
+                const subTotal = contrats.reduce((s, c) => s + (c.isDuplicate ? 0 : (c.prime_val || 0)), 0);
                 doc.text(contrats.length + ' contrat(s) - ' + fmtEur(subTotal), pageW - margin - 4, startY + 5.5, { align: 'right' });
 
                 startY += 11;
@@ -1019,9 +1052,12 @@
                 headRow.push('Echeance', 'Period.', 'Prime annuelle');
                 const head = [headRow];
 
-                const body = contrats.map(c => {
+                // Garde trace des index doublons pour le style PDF
+                const dupRows = new Set();
+                const body = contrats.map((c, ri) => {
+                    if (c.isDuplicate) dupRows.add(ri);
                     const prime = c.prime_val !== null ? fmtEur(c.prime_val) : (c.prime_str || '—');
-                    const row = [c.compagnie, c.objet_risque, c.n_police];
+                    const row = [c.compagnie, c.objet_risque, c.isDuplicate ? (c.n_police + ' DOUBLON') : c.n_police];
                     if (hasChantier) row.push(c.chantier || '');
                     if (hasTypeTRC) row.push(c.typeTRC || '');
                     row.push(c.echeance || '—', c.periodicite || '', prime);
@@ -1059,6 +1095,12 @@
                     alternateRowStyles: { fillColor: bgCol },
                     columnStyles: colWidths,
                     didParseCell: function(data) {
+                        // Style doublons en rouge
+                        if (data.section === 'body' && dupRows.has(data.row.index)) {
+                            data.cell.styles.fillColor = [252, 228, 236];
+                            data.cell.styles.textColor = [198, 40, 40];
+                            data.cell.styles.fontStyle = 'italic';
+                        }
                         // Style sous-total row (dernière ligne du body)
                         if (data.section === 'body' && data.row.index === body.length - 1) {
                             data.cell.styles.fillColor = [217, 217, 217];
@@ -1153,6 +1195,13 @@
                 }
             }
 
+            // Détection des doublons
+            const nbDoublons = markDuplicates(allData);
+
+            // Recalculer totaux sans doublons
+            totalContrats = 0; grandTotal = 0;
+            allData.forEach(d => d.contrats.forEach(c => { totalContrats++; if(c.prime_val && !c.isDuplicate) grandTotal += c.prime_val; }));
+
             progressBar.style.width = '90%'; progressPct.textContent = '90%';
             progressText.textContent = outputType === 'pdf' ? 'Generation du rapport PDF...' : 'Generation du fichier Excel...';
             progressDetail.textContent = '';
@@ -1171,6 +1220,20 @@
                 $('statSocietes').textContent = allData.length;
                 $('statContrats').textContent = totalContrats;
                 $('statTotal').textContent = grandTotal.toLocaleString('fr-BE', {style:'currency', currency:'EUR'});
+                // Alerte doublons
+                let dupAlert = $('dupAlert');
+                if (!dupAlert) {
+                    dupAlert = document.createElement('div');
+                    dupAlert.id = 'dupAlert';
+                    dupAlert.style.cssText = 'background:#FFF3E0;border:1px solid #FF9800;border-radius:8px;padding:10px 16px;margin-top:12px;color:#E65100;font-size:0.9em;display:none;';
+                    document.querySelector('.stats').insertAdjacentElement('afterend', dupAlert);
+                }
+                if (nbDoublons > 0) {
+                    dupAlert.innerHTML = '⚠️ <b>' + nbDoublons + ' doublon(s) detecte(s)</b> (meme compagnie + n° police). Ces lignes sont surlignees en rouge et exclues des totaux.';
+                    dupAlert.style.display = 'block';
+                } else {
+                    dupAlert.style.display = 'none';
+                }
                 results.classList.add('active');
             } catch(err) {
                 console.error(err);
