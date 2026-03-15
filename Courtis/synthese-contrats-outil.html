@@ -765,8 +765,8 @@
 
                 // Échéance
                 const echM = section.match(/Ech[ée]ance:\s*(\d{2}\/\d{2})/);
-                // Périodicité (peut être multi-mots: "Prime unique", "Sur décompte")
-                const perM = section.match(/P[ée]riodicit[ée]:\s*([^\n]+)/);
+                // Périodicité (stoppe avant le prochain champ ou double espace)
+                const perM = section.match(/P[ée]riodicit[ée]:\s*([\wÀ-ÿ]+(?:\s[\wÀ-ÿ]+)?)/);
 
                 // Prime — plusieurs patterns possibles
                 let primeStr = '', primeVal = null;
@@ -796,10 +796,12 @@
 
                 // Type TRC : Abonnement vs One Shot
                 let typeTRC = '';
-                const isTRC = /\bTRC\b/i.test(branche) || /\bTous Risques Chantier\b/i.test(branche);
+                const isTRC = /\bTRC\b/i.test(headerRaw) || /\bTous Risques Chantier\b/i.test(headerRaw)
+                           || /\bTRC\b/i.test(branche) || /\bTous Risques Chantier\b/i.test(section);
                 if (isTRC) {
                     const perLower = periodicite.toLowerCase();
-                    if (/trc\s*abonnement/i.test(headerRaw) || (perLower === 'annuel' && !/prime unique|sur d[ée]compte/i.test(perLower))) {
+                    if (/trc\s*abonnement/i.test(headerRaw) || /abonnement/i.test(section.substring(0, 300))
+                        || (perLower.startsWith('annuel') && !/prime unique|sur d[ée]compte/i.test(perLower))) {
                         typeTRC = 'Abonnement';
                     } else {
                         typeTRC = 'One Shot';
