@@ -956,68 +956,87 @@
                     return img;
                 }
 
-                // Labels avec pourcentage pour le camembert
-                const compLabelsWithPct = compLabels.map((l,i) => {
-                    const pct = ((compValues[i] / compTotal) * 100).toFixed(1);
-                    return l + ' (' + pct + '%)';
+                // Regrouper les petites compagnies (< 4%) dans "Autres"
+                const threshold = compTotal * 0.04;
+                const pieLabels = [], pieValues = [], pieColors = [];
+                let autresVal = 0;
+                compLabels.forEach((l, i) => {
+                    if (compValues[i] < threshold) {
+                        autresVal += compValues[i];
+                    } else {
+                        const pct = ((compValues[i] / compTotal) * 100).toFixed(1);
+                        const fmt = compValues[i].toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' EUR';
+                        pieLabels.push(l + '  (' + pct + '% — ' + fmt + ')');
+                        pieValues.push(compValues[i]);
+                        pieColors.push(chartColors[pieLabels.length - 1]);
+                    }
                 });
+                if (autresVal > 0) {
+                    const pct = ((autresVal / compTotal) * 100).toFixed(1);
+                    const fmt = autresVal.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' EUR';
+                    pieLabels.push('Autres  (' + pct + '% — ' + fmt + ')');
+                    pieValues.push(autresVal);
+                    pieColors.push('#CCCCCC');
+                }
 
                 const pie1 = await renderChart({
                     type: 'pie',
                     data: {
-                        labels: compLabelsWithPct,
-                        datasets: [{ data: compValues, backgroundColor: chartColors.slice(0, compLabels.length), borderWidth: 2, borderColor: '#fff' }]
+                        labels: pieLabels,
+                        datasets: [{ data: pieValues, backgroundColor: pieColors, borderWidth: 2, borderColor: '#fff' }]
                     },
                     options: {
                         responsive: false, animation: false,
-                        layout: { padding: 10 },
+                        layout: { padding: 20 },
                         plugins: {
-                            title: { display: true, text: 'Repartition des primes par compagnie', font: { size: 20, weight: 'bold' }, color: '#2F5496', padding: { bottom: 15 } },
-                            legend: { position: 'bottom', labels: { font: { size: 13 }, padding: 10, usePointStyle: true, pointStyle: 'rectRounded' } }
+                            title: { display: true, text: 'Repartition des primes par compagnie', font: { size: 24, weight: 'bold' }, color: '#2F5496', padding: { bottom: 20 } },
+                            legend: { position: 'right', labels: { font: { size: 15 }, padding: 14, usePointStyle: true, pointStyle: 'rectRounded' } }
                         }
                     }
-                }, 750, 600);
+                }, 1100, 550);
 
-                // Labels avec montant pour les barres
+                // Barres par branche — labels avec montant
                 const brLabelsWithAmount = brLabels.map((l,i) => {
-                    const val = brValues[i];
-                    const fmt = val.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' EUR';
+                    const fmt = brValues[i].toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' EUR';
                     return l + '  —  ' + fmt;
                 });
 
-                const barH = Math.max(400, brLabels.length * 38 + 120);
+                const barH = Math.max(400, brLabels.length * 45 + 140);
                 const bar1 = await renderChart({
                     type: 'bar',
                     data: {
                         labels: brLabelsWithAmount,
-                        datasets: [{ data: brValues, backgroundColor: chartColors.slice(0, brLabels.length), borderRadius: 6, barThickness: 22 }]
+                        datasets: [{ data: brValues, backgroundColor: chartColors.slice(0, brLabels.length), borderRadius: 6, barThickness: 26 }]
                     },
                     options: {
                         indexAxis: 'y', responsive: false, animation: false,
-                        layout: { padding: { right: 20 } },
+                        layout: { padding: { right: 30, left: 10 } },
                         plugins: {
-                            title: { display: true, text: 'Primes annuelles par branche', font: { size: 20, weight: 'bold' }, color: '#2F5496', padding: { bottom: 15 } },
+                            title: { display: true, text: 'Primes annuelles par branche', font: { size: 24, weight: 'bold' }, color: '#2F5496', padding: { bottom: 20 } },
                             legend: { display: false }
                         },
                         scales: {
                             x: { display: false },
-                            y: { ticks: { font: { size: 13, weight: '500' }, color: '#333' }, grid: { display: false } }
+                            y: { ticks: { font: { size: 14, weight: '500' }, color: '#333' }, grid: { display: false } }
                         }
                     }
-                }, 800, barH);
+                }, 1000, barH);
+
+                // Stocker les images pour réutilisation dans le PDF
+                wb._chartImages = { pie: pie1, bar: bar1, barH };
 
                 const wsChart = wb.addWorksheet('Graphiques');
-                wsChart.getColumn(1).width = 120;
+                wsChart.getColumn(1).width = 140;
 
                 wsChart.getCell('A1').value = 'Analyse du portefeuille';
                 wsChart.getCell('A1').font = { name: 'Calibri', bold: true, size: 16, color: { argb: 'FF2F5496' } };
 
                 const imgId1 = wb.addImage({ base64: pie1.split(',')[1], extension: 'png' });
-                wsChart.addImage(imgId1, { tl: { col: 0, row: 1 }, ext: { width: 560, height: 450 } });
+                wsChart.addImage(imgId1, { tl: { col: 0, row: 1 }, ext: { width: 820, height: 410 } });
 
-                const barRow = Math.ceil(450 / 20) + 4;
+                const barRow = Math.ceil(410 / 20) + 4;
                 const imgId2 = wb.addImage({ base64: bar1.split(',')[1], extension: 'png' });
-                wsChart.addImage(imgId2, { tl: { col: 0, row: barRow }, ext: { width: 600, height: Math.max(300, brLabels.length * 28 + 90) } });
+                wsChart.addImage(imgId2, { tl: { col: 0, row: barRow }, ext: { width: 750, height: Math.max(300, brLabels.length * 34 + 100) } });
 
             } catch(e) { console.error('Charts generation failed:', e); }
 
@@ -1260,6 +1279,88 @@
             doc.setTextColor(255, 255, 255);
             doc.text('TOTAL GENERAL', margin + 4, startY + 7);
             doc.text(fmtEur(grandTotal), pageW - margin - 4, startY + 7, { align: 'right' });
+
+            // ===== Page Graphiques dans le PDF =====
+            try {
+                if (typeof Chart !== 'undefined') {
+                    const chartColors2 = [
+                        '#2F5496','#ED7D31','#70AD47','#FFC000',
+                        '#5B9BD5','#C00000','#7030A0','#44546A',
+                        '#4472C4','#F4B183','#A9D18E','#FF6F61',
+                        '#BDD7EE','#92D050','#D6DCE4','#F8CBAD'
+                    ];
+                    // Agrégation compagnies
+                    const byComp2 = {};
+                    allData.forEach(d => d.contrats.forEach(c => { if (!c.isDuplicate && c.prime_val) { byComp2[c.compagnie||'Inconnu'] = (byComp2[c.compagnie||'Inconnu']||0) + c.prime_val; }}));
+                    const cLabels2 = Object.keys(byComp2).sort((a,b) => byComp2[b]-byComp2[a]);
+                    const cValues2 = cLabels2.map(k => byComp2[k]);
+                    const cTotal2 = cValues2.reduce((a,b) => a+b, 0);
+                    // Regrouper < 4%
+                    const pL2=[], pV2=[], pC2=[];
+                    let aut2 = 0;
+                    cLabels2.forEach((l,i) => {
+                        if (cValues2[i] < cTotal2*0.04) { aut2 += cValues2[i]; }
+                        else { const p=((cValues2[i]/cTotal2)*100).toFixed(1); const f=cValues2[i].toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' EUR'; pL2.push(l+' ('+p+'% — '+f+')'); pV2.push(cValues2[i]); pC2.push(chartColors2[pL2.length-1]); }
+                    });
+                    if (aut2>0) { const p=((aut2/cTotal2)*100).toFixed(1); pL2.push('Autres ('+p+'%)'); pV2.push(aut2); pC2.push('#CCCCCC'); }
+                    // Agrégation branches
+                    const byBr2 = {};
+                    allData.forEach(d => d.contrats.forEach(c => { if (!c.isDuplicate && c.prime_val) { const br=c.objet_risque.split('—')[0].split('-')[0].trim()||'Autre'; byBr2[br]=(byBr2[br]||0)+c.prime_val; }}));
+                    const bL2 = Object.keys(byBr2).sort((a,b) => byBr2[b]-byBr2[a]);
+                    const bV2 = bL2.map(k => byBr2[k]);
+                    const bL2fmt = bL2.map((l,i) => { const f=bV2[i].toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' EUR'; return l+' — '+f; });
+
+                    async function renderChartPdf(config, w, h) {
+                        const cv = document.createElement('canvas');
+                        cv.width = w*2; cv.height = h*2;
+                        cv.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:'+w+'px;height:'+h+'px;';
+                        document.body.appendChild(cv);
+                        config.options = config.options||{};
+                        config.options.devicePixelRatio = 2;
+                        const ch = new Chart(cv.getContext('2d'), config);
+                        await new Promise(r => setTimeout(r, 300));
+                        ch.update('none');
+                        await new Promise(r => setTimeout(r, 100));
+                        const img = cv.toDataURL('image/png');
+                        ch.destroy(); document.body.removeChild(cv);
+                        return img;
+                    }
+
+                    const pdfPie = await renderChartPdf({
+                        type: 'pie',
+                        data: { labels: pL2, datasets: [{ data: pV2, backgroundColor: pC2, borderWidth: 2, borderColor: '#fff' }] },
+                        options: { responsive:false, animation:false, layout:{padding:15},
+                            plugins: { title:{display:true,text:'Repartition des primes par compagnie',font:{size:22,weight:'bold'},color:'#2F5496',padding:{bottom:15}},
+                                legend:{position:'right',labels:{font:{size:14},padding:12,usePointStyle:true,pointStyle:'rectRounded'}} } }
+                    }, 1000, 480);
+
+                    const pdfBarH = Math.max(350, bL2.length*40+100);
+                    const pdfBar = await renderChartPdf({
+                        type: 'bar',
+                        data: { labels: bL2fmt, datasets: [{ data: bV2, backgroundColor: chartColors2.slice(0,bL2.length), borderRadius:5, barThickness:22 }] },
+                        options: { indexAxis:'y', responsive:false, animation:false, layout:{padding:{right:20,left:10}},
+                            plugins: { title:{display:true,text:'Primes annuelles par branche',font:{size:22,weight:'bold'},color:'#2F5496',padding:{bottom:15}}, legend:{display:false} },
+                            scales: { x:{display:false}, y:{ticks:{font:{size:13,weight:'500'},color:'#333'},grid:{display:false}} } }
+                    }, 900, pdfBarH);
+
+                    // Page camembert
+                    doc.addPage();
+                    pageNum++;
+                    addHeader(doc);
+                    addFooter(doc, pageNum);
+                    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(47,84,150);
+                    doc.text('Analyse du portefeuille', margin, 26);
+                    try { doc.addImage(pdfPie, 'PNG', margin, 30, pageW - 2*margin, (pageW - 2*margin)*0.45); } catch(e){}
+
+                    // Page barres
+                    doc.addPage();
+                    pageNum++;
+                    addHeader(doc);
+                    addFooter(doc, pageNum);
+                    const barImgH = Math.min(pageH - 45, (pageW - 2*margin) * pdfBarH/900);
+                    try { doc.addImage(pdfBar, 'PNG', margin, 24, pageW - 2*margin, barImgH); } catch(e){}
+                }
+            } catch(e) { console.error('PDF charts failed:', e); }
 
             // Re-numéroter toutes les pages (footer fix)
             const totalPages = doc.internal.getNumberOfPages();
