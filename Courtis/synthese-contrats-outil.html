@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
@@ -953,6 +954,102 @@
                 st.getCell(socPrimeCol).numFmt='#,##0.00 "€"';
                 wsSoc.views = [{state:'frozen',ySplit:3}];
             });
+
+            // ===== Onglet Graphiques =====
+            try {
+                const chartColors = [
+                    '#2F5496','#4472C4','#5B9BD5','#A5C8E1',
+                    '#ED7D31','#FFC000','#70AD47','#44546A',
+                    '#9DC3E6','#F4B183','#A9D18E','#D6DCE4',
+                    '#BDD7EE','#F8CBAD','#C5E0B4','#8FAADC'
+                ];
+
+                // Agrégation par compagnie (hors doublons)
+                const byCompagnie = {};
+                allData.forEach(d => d.contrats.forEach(c => {
+                    if (c.isDuplicate || !c.prime_val) return;
+                    const key = c.compagnie || 'Inconnu';
+                    byCompagnie[key] = (byCompagnie[key] || 0) + c.prime_val;
+                }));
+                const compLabels = Object.keys(byCompagnie).sort((a,b) => byCompagnie[b] - byCompagnie[a]);
+                const compValues = compLabels.map(k => byCompagnie[k]);
+
+                // Agrégation par branche (hors doublons)
+                const byBranche = {};
+                allData.forEach(d => d.contrats.forEach(c => {
+                    if (c.isDuplicate || !c.prime_val) return;
+                    // Extraire la branche depuis objet_risque (avant le tiret)
+                    const br = c.objet_risque.split('—')[0].split('-')[0].trim() || 'Autre';
+                    byBranche[br] = (byBranche[br] || 0) + c.prime_val;
+                }));
+                const brLabels = Object.keys(byBranche).sort((a,b) => byBranche[b] - byBranche[a]);
+                const brValues = brLabels.map(k => byBranche[k]);
+
+                // Render charts sur canvas offscreen
+                async function renderChart(config, w, h) {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    canvas.style.cssText = 'position:fixed;left:-9999px;';
+                    document.body.appendChild(canvas);
+                    const chart = new Chart(canvas.getContext('2d'), config);
+                    // Attendre le rendu
+                    await new Promise(r => setTimeout(r, 150));
+                    const img = canvas.toDataURL('image/png');
+                    chart.destroy();
+                    document.body.removeChild(canvas);
+                    return img;
+                }
+
+                const pie1 = await renderChart({
+                    type: 'doughnut',
+                    data: {
+                        labels: compLabels,
+                        datasets: [{ data: compValues, backgroundColor: chartColors.slice(0, compLabels.length), borderWidth: 2, borderColor: '#fff' }]
+                    },
+                    options: {
+                        responsive: false, animation: false,
+                        plugins: {
+                            title: { display: true, text: 'Repartition des primes par compagnie', font: { size: 18, weight: 'bold' }, color: '#2F5496' },
+                            legend: { position: 'right', labels: { font: { size: 12 }, padding: 12 } }
+                        }
+                    }
+                }, 900, 500);
+
+                const bar1 = await renderChart({
+                    type: 'bar',
+                    data: {
+                        labels: brLabels,
+                        datasets: [{ data: brValues, backgroundColor: chartColors.slice(0, brLabels.length), borderRadius: 4 }]
+                    },
+                    options: {
+                        indexAxis: 'y', responsive: false, animation: false,
+                        plugins: {
+                            title: { display: true, text: 'Primes annuelles par branche', font: { size: 18, weight: 'bold' }, color: '#2F5496' },
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: { ticks: { callback: v => v.toLocaleString('fr-BE') + ' EUR' } },
+                            y: { ticks: { font: { size: 11 } } }
+                        }
+                    }
+                }, 900, Math.max(350, brLabels.length * 32 + 80));
+
+                const wsChart = wb.addWorksheet('Graphiques');
+                wsChart.getCell('A1').value = 'Repartition des primes par compagnie';
+                wsChart.getCell('A1').font = { name: 'Calibri', bold: true, size: 14, color: { argb: 'FF2F5496' } };
+
+                const imgId1 = wb.addImage({ base64: pie1.split(',')[1], extension: 'png' });
+                wsChart.addImage(imgId1, { tl: { col: 0, row: 1 }, ext: { width: 680, height: 380 } });
+
+                const barRow = Math.ceil(380 / 20) + 3;
+                wsChart.getCell('A' + barRow).value = 'Primes annuelles par branche';
+                wsChart.getCell('A' + barRow).font = { name: 'Calibri', bold: true, size: 14, color: { argb: 'FF2F5496' } };
+
+                const imgId2 = wb.addImage({ base64: bar1.split(',')[1], extension: 'png' });
+                wsChart.addImage(imgId2, { tl: { col: 0, row: barRow }, ext: { width: 680, height: Math.max(260, brLabels.length * 24 + 60) } });
+
+            } catch(e) { console.warn('Charts generation failed:', e); }
+
             return wb;
         }
 
