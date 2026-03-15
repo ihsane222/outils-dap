@@ -765,8 +765,8 @@
 
                 // Échéance
                 const echM = section.match(/Ech[ée]ance:\s*(\d{2}\/\d{2})/);
-                // Périodicité
-                const perM = section.match(/P[ée]riodicit[ée]:\s*(\w+)/);
+                // Périodicité (peut être multi-mots: "Prime unique", "Sur décompte")
+                const perM = section.match(/P[ée]riodicit[ée]:\s*([^\n]+)/);
 
                 // Prime — plusieurs patterns possibles
                 let primeStr = '', primeVal = null;
@@ -778,6 +778,8 @@
                         if (isNaN(primeVal)) primeVal = null;
                     } catch(e) {}
                 }
+
+                const periodicite = perM ? perM[1].trim() : '';
 
                 // Numéro de chantier (TRC)
                 let chantier = '';
@@ -792,15 +794,28 @@
                     }
                 }
 
+                // Type TRC : Abonnement vs One Shot
+                let typeTRC = '';
+                const isTRC = /\bTRC\b/i.test(branche) || /\bTous Risques Chantier\b/i.test(branche);
+                if (isTRC) {
+                    const perLower = periodicite.toLowerCase();
+                    if (/trc\s*abonnement/i.test(headerRaw) || (perLower === 'annuel' && !/prime unique|sur d[ée]compte/i.test(perLower))) {
+                        typeTRC = 'Abonnement';
+                    } else {
+                        typeTRC = 'One Shot';
+                    }
+                }
+
                 contrats.push({
                     compagnie,
                     objet_risque: objet,
                     n_police: nPolice,
                     echeance: echM ? echM[1] : '',
-                    periodicite: perM ? perM[1] : '',
+                    periodicite,
                     prime_str: primeStr,
                     prime_val: primeVal,
-                    chantier: chantier
+                    chantier,
+                    typeTRC
                 });
             }
             return contrats;
@@ -813,28 +828,33 @@
             const hs = { font:{name:'Calibri',bold:true,size:11,color:{argb:'FFFFFFFF'}}, fill:{type:'pattern',pattern:'solid',fgColor:{argb:'FF2F5496'}}, alignment:{horizontal:'center',vertical:'middle',wrapText:true} };
             const tb = {top:{style:'thin'},bottom:{style:'thin'},left:{style:'thin'},right:{style:'thin'}};
 
-            // Détecte si au moins un contrat a un numéro de chantier
+            // Détecte si au moins un contrat a un numéro de chantier ou un type TRC
             const hasChantier = allData.some(d => d.contrats.some(c => c.chantier));
+            const hasTypeTRC = allData.some(d => d.contrats.some(c => c.typeTRC));
 
             const ws = wb.addWorksheet('Recapitulatif');
-            const headers = hasChantier
-                ? ['Societe','Compagnie','Objet du risque','N° Police','N° Chantier','Echeance','Periodicite','Prime annuelle']
-                : ['Societe','Compagnie','Objet du risque','N° Police','Echeance','Periodicite','Prime annuelle'];
+            const headers = ['Societe','Compagnie','Objet du risque','N° Police'];
+            if (hasChantier) headers.push('N° Chantier');
+            if (hasTypeTRC) headers.push('Type TRC');
+            headers.push('Echeance','Periodicite','Prime annuelle');
             const primeCol = headers.length;
             const hr = ws.addRow(headers);
             hr.eachCell(c => { c.font=hs.font; c.fill=hs.fill; c.alignment=hs.alignment; c.border=tb; });
-            ws.columns = hasChantier
-                ? [{width:30},{width:25},{width:45},{width:18},{width:16},{width:12},{width:14},{width:18}]
-                : [{width:30},{width:25},{width:45},{width:18},{width:12},{width:14},{width:18}];
+            const colWidths = [{width:30},{width:25},{width:45},{width:18}];
+            if (hasChantier) colWidths.push({width:16});
+            if (hasTypeTRC) colWidths.push({width:14});
+            colWidths.push({width:12},{width:14},{width:18});
+            ws.columns = colWidths;
 
             let grandTotal = 0;
             allData.forEach(({societe,contrats},idx) => {
                 const fs = {type:'pattern',pattern:'solid',fgColor:{argb:'FF'+colors[idx%colors.length]}};
                 let sub = 0;
                 contrats.forEach(c => {
-                    const rowData = hasChantier
-                        ? [societe,c.compagnie,c.objet_risque,c.n_police,c.chantier||'',c.echeance,c.periodicite, c.prime_val!==null?c.prime_val:(c.prime_str||'')]
-                        : [societe,c.compagnie,c.objet_risque,c.n_police,c.echeance,c.periodicite, c.prime_val!==null?c.prime_val:(c.prime_str||'')];
+                    const rowData = [societe,c.compagnie,c.objet_risque,c.n_police];
+                    if (hasChantier) rowData.push(c.chantier||'');
+                    if (hasTypeTRC) rowData.push(c.typeTRC||'');
+                    rowData.push(c.echeance,c.periodicite, c.prime_val!==null?c.prime_val:(c.prime_str||''));
                     const r = ws.addRow(rowData);
                     r.eachCell(cell => { cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
                     r.getCell(1).font = {name:'Calibri',bold:true,size:10};
@@ -862,9 +882,10 @@
                 const wsSoc = wb.addWorksheet(sn);
                 const fs = {type:'pattern',pattern:'solid',fgColor:{argb:'FF'+colors[idx%colors.length]}};
 
-                const socHeaders = hasChantier
-                    ? ['Compagnie','Objet du risque','N° Police','N° Chantier','Echeance','Periodicite','Prime annuelle']
-                    : ['Compagnie','Objet du risque','N° Police','Echeance','Periodicite','Prime annuelle'];
+                const socHeaders = ['Compagnie','Objet du risque','N° Police'];
+                if (hasChantier) socHeaders.push('N° Chantier');
+                if (hasTypeTRC) socHeaders.push('Type TRC');
+                socHeaders.push('Echeance','Periodicite','Prime annuelle');
                 const socPrimeCol = socHeaders.length;
 
                 wsSoc.mergeCells(1, 1, 1, socPrimeCol);
@@ -872,16 +893,19 @@
                 wsSoc.getCell('A1').font = {name:'Calibri',bold:true,size:14,color:{argb:'FF2F5496'}};
                 const hRow = wsSoc.getRow(3);
                 socHeaders.forEach((h,i) => { const c=hRow.getCell(i+1); c.value=h; c.font=hs.font; c.fill=hs.fill; c.alignment=hs.alignment; c.border=tb; });
-                wsSoc.columns = hasChantier
-                    ? [{width:25},{width:45},{width:18},{width:16},{width:12},{width:14},{width:18}]
-                    : [{width:25},{width:45},{width:18},{width:12},{width:14},{width:18}];
+                const socColWidths = [{width:25},{width:45},{width:18}];
+                if (hasChantier) socColWidths.push({width:16});
+                if (hasTypeTRC) socColWidths.push({width:14});
+                socColWidths.push({width:12},{width:14},{width:18});
+                wsSoc.columns = socColWidths;
 
                 let sub=0, rn=4;
                 contrats.forEach(c => {
                     const r=wsSoc.getRow(rn);
-                    const vals = hasChantier
-                        ? [c.compagnie,c.objet_risque,c.n_police,c.chantier||'',c.echeance,c.periodicite,c.prime_val!==null?c.prime_val:(c.prime_str||'')]
-                        : [c.compagnie,c.objet_risque,c.n_police,c.echeance,c.periodicite,c.prime_val!==null?c.prime_val:(c.prime_str||'')];
+                    const vals = [c.compagnie,c.objet_risque,c.n_police];
+                    if (hasChantier) vals.push(c.chantier||'');
+                    if (hasTypeTRC) vals.push(c.typeTRC||'');
+                    vals.push(c.echeance,c.periodicite,c.prime_val!==null?c.prime_val:(c.prime_str||''));
                     vals.forEach((v,i) => { const cell=r.getCell(i+1); cell.value=v; cell.fill=fs; cell.border=tb; cell.alignment={vertical:'middle',wrapText:true}; });
                     if(c.prime_val!==null){r.getCell(socPrimeCol).numFmt='#,##0.00 "€"'; sub+=c.prime_val;}
                     rn++;
@@ -921,6 +945,7 @@
             const d = new Date();
             const today = d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
             const hasChantier = allData.some(d => d.contrats.some(c => c.chantier));
+            const hasTypeTRC = allData.some(d => d.contrats.some(c => c.typeTRC));
 
             function addHeader(doc) {
                 // Barre bleue en haut
@@ -988,19 +1013,24 @@
 
                 startY += 11;
 
-                const head = hasChantier
-                    ? [['Compagnie', 'Objet du risque', 'N° Police', 'N° Chantier', 'Echeance', 'Period.', 'Prime annuelle']]
-                    : [['Compagnie', 'Objet du risque', 'N° Police', 'Echeance', 'Period.', 'Prime annuelle']];
+                const headRow = ['Compagnie', 'Objet du risque', 'N° Police'];
+                if (hasChantier) headRow.push('N° Chantier');
+                if (hasTypeTRC) headRow.push('Type TRC');
+                headRow.push('Echeance', 'Period.', 'Prime annuelle');
+                const head = [headRow];
 
                 const body = contrats.map(c => {
                     const prime = c.prime_val !== null ? fmtEur(c.prime_val) : (c.prime_str || '—');
-                    return hasChantier
-                        ? [c.compagnie, c.objet_risque, c.n_police, c.chantier || '', c.echeance || '—', c.periodicite || '', prime]
-                        : [c.compagnie, c.objet_risque, c.n_police, c.echeance || '—', c.periodicite || '', prime];
+                    const row = [c.compagnie, c.objet_risque, c.n_police];
+                    if (hasChantier) row.push(c.chantier || '');
+                    if (hasTypeTRC) row.push(c.typeTRC || '');
+                    row.push(c.echeance || '—', c.periodicite || '', prime);
+                    return row;
                 });
 
                 // Ligne sous-total
-                const stRow = new Array(hasChantier ? 7 : 6).fill('');
+                const nbCols = headRow.length;
+                const stRow = new Array(nbCols).fill('');
                 stRow[0] = 'Sous-total';
                 stRow[stRow.length - 1] = fmtEur(subTotal);
 
@@ -1008,9 +1038,13 @@
 
                 // Largeurs auto — on laisse autoTable gérer, sauf pour les colonnes fixes
                 const tableWidth = pageW - 2 * margin;
-                const colWidths = hasChantier
-                    ? { 0: {cellWidth:35}, 1: {cellWidth:'auto'}, 2: {cellWidth:25}, 3: {cellWidth:22}, 4: {cellWidth:18}, 5: {cellWidth:18}, 6: {cellWidth:25} }
-                    : { 0: {cellWidth:40}, 1: {cellWidth:'auto'}, 2: {cellWidth:28}, 3: {cellWidth:20}, 4: {cellWidth:20}, 5: {cellWidth:28} };
+                const colWidths = { 0: {cellWidth:35}, 1: {cellWidth:'auto'}, 2: {cellWidth:25} };
+                let ci = 3;
+                if (hasChantier) { colWidths[ci] = {cellWidth:22}; ci++; }
+                if (hasTypeTRC) { colWidths[ci] = {cellWidth:18}; ci++; }
+                colWidths[ci] = {cellWidth:18}; ci++;   // Echeance
+                colWidths[ci] = {cellWidth:18}; ci++;   // Period.
+                colWidths[ci] = {cellWidth:25};         // Prime
 
                 const bgCol = bgColors[idx % bgColors.length];
                 doc.autoTable({
@@ -1032,7 +1066,7 @@
                             data.cell.styles.textColor = [30, 30, 30];
                         }
                         // Aligner primes à droite
-                        const lastCol = hasChantier ? 6 : 5;
+                        const lastCol = nbCols - 1;
                         if (data.column.index === lastCol) {
                             data.cell.styles.halign = 'right';
                         }
