@@ -717,10 +717,12 @@
         }
 
         function cleanBrioHeaders(text) {
-            // Supprime les blocs header Brio répétés — s'arrête juste après le numéro d'entreprise
-            text = text.replace(/Votre dossier assurances[^\n]*\n(?:[\s\S]*?Num.ro d.entreprise:\s*\d+)\s*/g, '\n');
-            // Supprime les lignes "13 mars 2026  Contrat(s)"
-            text = text.replace(/\d+ \w+ \d{4}\s+Contrat\(s\)\s*/g, '\n');
+            // Supprime les blocs header Brio — s'arrête après Numéro d'entreprise OU FSMA (CU n'ont pas toujours Num. d'entreprise dans les headers)
+            text = text.replace(/Votre dossier assurances[^\n]*\n(?:[\s\S]*?Num[ée]ro d.entreprise:\s*[\d.]+)\s*/g, '\n');
+            // Headers CU/sinistres sans numéro d'entreprise — s'arrête après FSMA
+            text = text.replace(/Votre dossier assurances[^\n]*\n(?:[\s\S]*?FSMA:\s*\d+)\s*/g, '\n');
+            // Supprime les lignes "13 mars 2026  Contrat(s)" ou dates seules avant contrats
+            text = text.replace(/\d+ \w+ \d{4}\s+(?:Contrat\(s\)|Vos donn[ée]es|Sinistre\(s\))\s*/g, '\n');
             return text;
         }
 
@@ -739,27 +741,65 @@
 
         function extractContrats(text) {
             const contrats = [], starts = [];
-            // Cherche les débuts de contrat: "N. Type..." suivi de "Etat:" dans les 800 chars
+            // Cherche les débuts de contrat: "N. Type..." suivi de "Etat:" ou "Echéance:" dans les 1200 chars
             const regex = /(?:^|\n|\s)(\d+)\.\s+[A-Z]/g;
             let match;
             while ((match = regex.exec(text)) !== null) {
                 const lookahead = text.substring(match.index, match.index + 1200);
-                if (/Etat:/.test(lookahead)) starts.push(match.index);
+                if (/(?:Etat:|Ech[ée]ance:)/.test(lookahead)) starts.push(match.index);
             }
             for (let i = 0; i < starts.length; i++) {
                 const section = text.substring(starts[i], i + 1 < starts.length ? starts[i + 1] : text.length);
-                const hm = section.match(/(\d+)\.\s+([\s\S]+?)(?=\s*Etat:)/);
+                const hm = section.match(/(\d+)\.\s+([\s\S]+?)(?=\s*(?:Etat:|Ech[ée]ance:))/);
                 if (!hm) continue;
                 const headerRaw = hm[2].replace(/\n/g, ' ').trim();
                 const parts = headerRaw.split(/\s+-\s+/).map(p => p.trim());
-                if (parts.length < 2) continue; // au minimum branche + compagnie
 
-                const branche = parts[0];
-                const compagnie = parts.length >= 2 ? parts[1] : '';
-                let nPolice = ''; const descParts = [];
-                for (let j = 2; j < parts.length; j++) {
-                    if (/^\d[\d\s/]+$/.test(parts[j].trim()) && !nPolice) nPolice = parts[j].trim();
-                    else descParts.push(parts[j]);
+                // Liste des compagnies connues pour détecter le format "Branche Compagnie - N°Police"
+                const COMPAGNIES = ['AXA Belgium', 'AXA ASSISTANCE', 'BALOISE INSURANCE', 'BALOISE',
+                    'VIVIUM', 'ETHIAS', 'AG Insurance', 'Allianz', 'BDM', 'HDI GERLING', 'HDI',
+                    'Assurances Fédérales', 'AMLIN', 'GENERALI', 'FIDEA', 'P&V', 'KBC'];
+
+                let branche, compagnie = '', nPolice = '';
+                const descParts = [];
+
+                // Cas "collé": parts[0] contient branche+compagnie, parts[1] est un numéro
+                if (parts.length >= 2 && /^[\d\s/]+$/.test(parts[1].trim())) {
+                    // Cherche une compagnie connue dans parts[0]
+                    let found = false;
+                    for (const comp of COMPAGNIES) {
+                        const idx = parts[0].toUpperCase().indexOf(comp.toUpperCase());
+                        if (idx > 0) {
+                            branche = parts[0].substring(0, idx).trim();
+                            compagnie = parts[0].substring(idx).trim();
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) { branche = parts[0]; compagnie = ''; }
+                    nPolice = parts[1].trim();
+                    for (let j = 2; j < parts.length; j++) descParts.push(parts[j]);
+                } else if (parts.length < 2) {
+                    // Essaie quand même avec compagnie connue dans parts[0]
+                    let found = false;
+                    for (const comp of COMPAGNIES) {
+                        const idx = parts[0].toUpperCase().indexOf(comp.toUpperCase());
+                        if (idx > 0) {
+                            branche = parts[0].substring(0, idx).trim();
+                            compagnie = parts[0].substring(idx).trim();
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) continue; // pas assez d'info
+                } else {
+                    // Format standard: Branche - Compagnie - N°Police - Desc
+                    branche = parts[0];
+                    compagnie = parts[1];
+                    for (let j = 2; j < parts.length; j++) {
+                        if (/^[\d\s/]+$/.test(parts[j].trim()) && !nPolice) nPolice = parts[j].trim();
+                        else descParts.push(parts[j]);
+                    }
                 }
                 const desc = descParts.join(' - ');
                 const objet = desc ? `${branche} — ${desc}` : branche;
