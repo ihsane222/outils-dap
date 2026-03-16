@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur Filtre Leads — DAP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2b6cb0;
+            --accent: #ed8936;
+            --accent-hover: #dd6b20;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --success: #48bb78;
+            --warning: #ecc94b;
+            --danger: #fc8181;
+            --info: #63b3ed;
+            --autonome: #48bb78;
+            --transversal: #ed8936;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white; padding: 1.5rem; text-align: center;
+        }
+        .header h1 { font-size: 1.6rem; font-weight: 700; }
+        .header h1 span { color: var(--accent); }
+        .header p { font-size: 0.9rem; opacity: 0.85; margin-top: 0.3rem; }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 1.5rem; }
+
+        /* Service selector */
+        .service-select { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .service-btn {
+            background: var(--card-bg); border: 2px solid var(--border); border-radius: 12px;
+            padding: 1.2rem; text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .service-btn:hover { border-color: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .service-btn.active { border-color: var(--accent); background: #fffaf0; }
+        .service-btn .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .service-btn .name { font-weight: 700; color: var(--primary); font-size: 0.95rem; }
+        .service-btn .desc { font-size: 0.78rem; color: var(--text-light); margin-top: 0.2rem; }
+
+        /* Editor */
+        .editor-section { display: none; }
+        .editor-section.active { display: block; }
+
+        .editor-header {
+            background: var(--card-bg); border-radius: 12px; padding: 1.2rem 1.5rem;
+            border: 1px solid var(--border); margin-bottom: 1.5rem;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem;
+        }
+        .editor-header h2 { font-size: 1.2rem; color: var(--primary); }
+        .editor-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+        .btn {
+            padding: 0.5rem 1.2rem; border-radius: 8px; border: none;
+            font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 0.4rem;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-light); }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { background: var(--accent-hover); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #38a169; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { border-color: var(--primary-light); background: #f0f7ff; }
+        .btn-danger { background: white; border: 1px solid var(--danger); color: #e53e3e; }
+        .btn-danger:hover { background: #fff5f5; }
+        .btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; }
+
+        /* Node cards */
+        .node-card {
+            background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border);
+            margin-bottom: 1.5rem; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .node-header {
+            background: #f0f4f8; padding: 0.8rem 1.2rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .node-badge {
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            padding: 0.2rem 0.6rem; border-radius: 20px; letter-spacing: 0.5px;
+        }
+        .node-badge.step { background: #ebf4ff; color: var(--primary-light); }
+        .node-header-actions { display: flex; gap: 0.3rem; }
+
+        .node-body { padding: 1.2rem; }
+
+        .question-edit {
+            width: 100%; border: 2px dashed transparent; border-radius: 8px;
+            padding: 0.6rem; font-size: 1.05rem; font-weight: 600; color: var(--primary);
+            background: transparent; resize: none; font-family: inherit; line-height: 1.4;
+            transition: border-color 0.2s;
+        }
+        .question-edit:hover { border-color: #cbd5e0; }
+        .question-edit:focus { border-color: var(--primary-light); outline: none; background: #f0f7ff; }
+
+        /* Options */
+        .options-list { margin-top: 1rem; }
+        .option-item {
+            border: 1px solid var(--border); border-radius: 10px;
+            padding: 0.8rem 1rem; margin-bottom: 0.6rem;
+            display: flex; gap: 0.8rem; align-items: flex-start;
+            transition: box-shadow 0.2s; position: relative;
+        }
+        .option-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+        .option-icon-pick {
+            width: 38px; height: 38px; border-radius: 8px; background: #f0f4f8;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; cursor: pointer; border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .option-icon-pick:hover { background: #e2e8f0; }
+
+        .option-content { flex: 1; min-width: 0; }
+        .option-label-edit {
+            width: 100%; border: none; background: transparent;
+            font-size: 0.92rem; font-weight: 600; color: var(--text);
+            padding: 0.2rem 0; font-family: inherit;
+        }
+        .option-label-edit:focus { outline: none; border-bottom: 2px solid var(--primary-light); }
+
+        .option-dest {
+            display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; flex-wrap: wrap;
+        }
+        .dest-select {
+            padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border);
+            font-size: 0.8rem; font-family: inherit; background: white; color: var(--text);
+        }
+        .dest-tag {
+            font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+        }
+        .dest-tag.autonome { background: #f0fff4; color: #276749; }
+        .dest-tag.transversal { background: #fffaf0; color: #c05621; }
+        .dest-tag.next { background: #ebf8ff; color: #2b6cb0; }
+
+        .option-remove {
+            position: absolute; top: 0.4rem; right: 0.4rem;
+            background: none; border: none; cursor: pointer;
+            color: #cbd5e0; font-size: 1.1rem; padding: 0.2rem;
+        }
+        .option-remove:hover { color: #e53e3e; }
+
+        /* Result editor */
+        .result-editor {
+            margin-top: 0.5rem; padding: 0.6rem; border-radius: 8px;
+            border: 1px dashed var(--border); background: #fafcfe;
+        }
+        .result-editor label { font-size: 0.75rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.3px; }
+        .result-input {
+            width: 100%; border: 1px solid var(--border); border-radius: 6px;
+            padding: 0.4rem 0.6rem; font-size: 0.85rem; font-family: inherit;
+            margin-top: 0.2rem; margin-bottom: 0.5rem;
+        }
+        .result-input:focus { outline: none; border-color: var(--primary-light); }
+        .result-textarea {
+            width: 100%; border: 1px solid var(--border); border-radius: 6px;
+            padding: 0.4rem 0.6rem; font-size: 0.82rem; font-family: inherit;
+            margin-top: 0.2rem; resize: vertical; min-height: 60px;
+        }
+        .result-textarea:focus { outline: none; border-color: var(--primary-light); }
+
+        .add-option-btn {
+            width: 100%; padding: 0.6rem; border: 2px dashed #cbd5e0; border-radius: 10px;
+            background: transparent; color: var(--text-light); font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s; font-family: inherit; font-weight: 500;
+        }
+        .add-option-btn:hover { border-color: var(--primary-light); color: var(--primary-light); background: #f0f7ff; }
+
+        /* Connector lines */
+        .connector {
+            display: flex; justify-content: center; padding: 0.5rem 0;
+        }
+        .connector-line {
+            width: 2px; height: 30px; background: #cbd5e0; position: relative;
+        }
+        .connector-line::after {
+            content: '▼'; position: absolute; bottom: -8px; left: 50%;
+            transform: translateX(-50%); color: #cbd5e0; font-size: 0.7rem;
+        }
+
+        /* Preview modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 1000;
+            justify-content: center; align-items: center; padding: 1rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--card-bg); border-radius: 16px; width: 100%;
+            max-width: 600px; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h3 { font-size: 1.1rem; color: var(--primary); }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
+        .modal-body { padding: 1.5rem; }
+
+        .preview-question { font-size: 1.05rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem; }
+        .preview-option {
+            display: block; width: 100%; text-align: left;
+            padding: 0.8rem 1rem; border: 1px solid var(--border); border-radius: 10px;
+            background: white; cursor: pointer; margin-bottom: 0.5rem;
+            font-family: inherit; font-size: 0.9rem; transition: all 0.2s;
+        }
+        .preview-option:hover { border-color: var(--primary-light); background: #f0f7ff; }
+        .preview-result {
+            padding: 1rem; border-radius: 10px; margin-top: 0.5rem;
+        }
+        .preview-result.autonome { background: #f0fff4; border: 1px solid #c6f6d5; }
+        .preview-result.transversal { background: #fffaf0; border: 1px solid #feebc8; }
+        .preview-result h4 { margin-bottom: 0.5rem; }
+        .preview-back { margin-top: 1rem; }
+
+        /* Submit section */
+        .submit-section {
+            background: var(--card-bg); border-radius: 12px; border: 2px solid var(--accent);
+            padding: 1.5rem; margin-top: 1.5rem; text-align: center;
+        }
+        .submit-section h3 { color: var(--primary); margin-bottom: 0.5rem; }
+        .submit-section p { color: var(--text-light); font-size: 0.88rem; margin-bottom: 1rem; }
+        .submit-name {
+            padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 8px;
+            font-size: 0.9rem; font-family: inherit; width: 100%; max-width: 300px;
+            margin-bottom: 0.8rem; text-align: center;
+        }
+        .submit-name:focus { outline: none; border-color: var(--primary-light); }
+        .submit-comment {
+            padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 8px;
+            font-size: 0.85rem; font-family: inherit; width: 100%; max-width: 500px;
+            margin-bottom: 1rem; resize: vertical; min-height: 60px;
+        }
+
+        .success-msg {
+            display: none; background: #f0fff4; border: 1px solid #c6f6d5;
+            border-radius: 10px; padding: 1.2rem; text-align: center; margin-top: 1rem;
+        }
+        .success-msg.show { display: block; }
+
+        /* Info box */
+        .info-box {
+            background: #ebf8ff; border: 1px solid #bee3f8; border-radius: 10px;
+            padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.88rem; color: #2b6cb0;
+        }
+        .info-box strong { color: var(--primary); }
+
+        /* Emoji picker mini */
+        .emoji-picker {
+            display: none; position: absolute; background: white;
+            border: 1px solid var(--border); border-radius: 10px;
+            padding: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100; width: 220px; flex-wrap: wrap; gap: 0.3rem;
+        }
+        .emoji-picker.show { display: flex; }
+        .emoji-pick {
+            width: 32px; height: 32px; border: none; background: none;
+            font-size: 1.2rem; cursor: pointer; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .emoji-pick:hover { background: #f0f4f8; }
+
+        @media (max-width: 600px) {
+            .service-select { grid-template-columns: 1fr 1fr; }
+            .editor-header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Éditeur <span>Filtre Leads</span></h1>
+    <p>Configurez l'arbre de décision de votre service</p>
+</div>
+
+<div class="container">
+    <!-- Service selection -->
+    <div id="serviceSelectSection">
+        <div class="info-box">
+            <strong>Comment ça marche ?</strong> Sélectionnez votre service, modifiez les questions et critères de filtrage, testez votre arbre avec l'aperçu, puis envoyez vos modifications.
+        </div>
+        <div class="service-select" id="serviceButtons"></div>
+    </div>
+
+    <!-- Editor -->
+    <div class="editor-section" id="editorSection">
+        <div class="editor-header">
+            <h2 id="editorTitle">...</h2>
+            <div class="editor-actions">
+                <button class="btn btn-outline" onclick="backToServiceSelect()">← Changer de service</button>
+                <button class="btn btn-primary" onclick="openPreview()">👁 Aperçu</button>
+                <button class="btn btn-outline" onclick="addNode()">+ Ajouter une étape</button>
+            </div>
+        </div>
+
+        <div class="info-box">
+            Cliquez sur n'importe quel texte pour le modifier. Vous pouvez ajouter/supprimer des options et des étapes. Testez votre arbre avec <strong>Aperçu</strong> avant d'envoyer.
+        </div>
+
+        <div id="nodesContainer"></div>
+
+        <div class="submit-section">
+            <h3>✅ Satisfait de votre arbre ?</h3>
+            <p>Envoyez votre configuration. Ihsane recevra vos modifications et mettra à jour l'outil.</p>
+            <input type="text" class="submit-name" id="submitName" placeholder="Votre nom"><br>
+            <textarea class="submit-comment" id="submitComment" placeholder="Commentaire ou remarque (optionnel)"></textarea><br>
+            <button class="btn btn-accent" onclick="submitTree()" id="submitBtn">📤 Envoyer mes modifications</button>
+            <div class="success-msg" id="successMsg">
+                <span style="font-size:2rem;">✅</span>
+                <p style="font-weight:600;color:#276749;margin-top:0.5rem;">Modifications envoyées avec succès !</p>
+                <p style="font-size:0.85rem;color:var(--text-light);">Ihsane va examiner votre arbre et mettre à jour l'outil.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal-overlay" id="previewModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>👁 Aperçu du filtre</h3>
+            <button class="modal-close" onclick="closePreview()">×</button>
+        </div>
+        <div class="modal-body" id="previewBody"></div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// SERVICE DATA — Pre-loaded from current configuration
+// ============================================================
+
+const SERVICES = {
+    corporate: {
+        name: "DAP Corporate", icon: "🏢", desc: "RC exploitation, incendie industriel, entreprise",
+        fields: [
+            { id: "activite", label: "Activité de l'entreprise" },
+            { id: "ca", label: "Chiffre d'affaires estimé" },
+            { id: "effectif", label: "Nombre de travailleurs" },
+            { id: "garanties", label: "Garanties souhaitées" }
+        ],
+        tree: {
+            nodes: [
+                {
+                    id: "step1", question: "Avez-vous d'abord cherché une solution avec les outils classiques ?",
+                    options: [
+                        { label: "Oui, j'ai vérifié dans Brio et contacté les compagnies", icon: "✅", action: "next", target: "step2" },
+                        { label: "Non, pas encore", icon: "⏳", action: "autonome",
+                          resultTitle: "Essayez d'abord en autonomie",
+                          resultTips: "Chercher dans Brio\nConsulter conditions compagnie\nContacter l'inspecteur\nVérifier produit standard\nDemander avis collègue" }
+                    ]
+                },
+                {
+                    id: "step2", question: "Quelle est la complexité du dossier ?",
+                    options: [
+                        { label: "CA > 2,5M€ ou activité industrielle/spéciale", icon: "🏭", action: "transversal",
+                          resultTitle: "Transfert Corporate justifié",
+                          resultTips: "Ce type de dossier nécessite l'expertise du service Corporate." },
+                        { label: "PME classique, pas d'activité particulière", icon: "🏪", action: "autonome",
+                          resultTitle: "Vous pouvez traiter ce dossier",
+                          resultTips: "Packs PME/Commerçant des compagnies\nComparer via tarificateurs\nContacter l'inspecteur\nDemander conseil collègue" },
+                        { label: "Je ne suis pas sûr(e) de la complexité", icon: "🤔", action: "next", target: "step3" }
+                    ]
+                },
+                {
+                    id: "step3", question: "Le client a-t-il des spécificités particulières ?",
+                    options: [
+                        { label: "Oui : multisite, activité réglementée, sinistralité élevée, international…", icon: "⚠️", action: "transversal",
+                          resultTitle: "Transfert Corporate recommandé",
+                          resultTips: "Les spécificités identifiées justifient un accompagnement Corporate." },
+                        { label: "Non, pas de spécificité particulière", icon: "👌", action: "autonome",
+                          resultTitle: "Vous pouvez traiter ce dossier",
+                          resultTips: "Traiter comme dossier standard\nAppeler l'inspecteur en cas de doute technique" }
+                    ]
+                }
+            ]
+        }
+    },
+    vie: {
+        name: "DAP Patrimoine", icon: "💰", desc: "Épargne, investissement, pension, succession",
+        fields: [
+            { id: "type_produit", label: "Type de produit concerné" },
+            { id: "montant", label: "Montant ou prime estimé(e)" },
+            { id: "situation", label: "Situation familiale et patrimoniale" }
+        ],
+        tree: {
+            nodes: [
+                {
+                    id: "step1", question: "Avez-vous déjà consulté les informations produit de la compagnie ?",
+                    options: [
+                        { label: "Oui, et le dossier dépasse mon niveau de compétence", icon: "✅", action: "next", target: "step2" },
+                        { label: "Non, pas encore", icon: "⏳", action: "autonome",
+                          resultTitle: "Consultez d'abord la documentation",
+                          resultTips: "Fiches produit (AG, Vivium, Baloise, Ethias, Allianz)\nSimulateurs en ligne des compagnies\nGuides internes DAP produits Vie\nCollègue expérience Vie/Patrimoine" }
+                    ]
+                },
+                {
+                    id: "step2", question: "De quel type de dossier s'agit-il ?",
+                    options: [
+                        { label: "Succession / Planification patrimoniale complexe", icon: "📋", action: "transversal",
+                          resultTitle: "Transfert Patrimoine justifié",
+                          resultTips: "La planification successorale et patrimoniale complexe nécessite l'expertise du service dédié." },
+                        { label: "Épargne / Investissement branche 21 ou 23 classique", icon: "🏦", action: "autonome",
+                          resultTitle: "Vous pouvez traiter ce dossier",
+                          resultTips: "Simulateurs des compagnies\nAvantages fiscaux (épargne pension, PLCI, EIP)\nInspecteur Vie de la compagnie" },
+                        { label: "Pension complémentaire dirigeant (EIP / PLCI)", icon: "👔", action: "next", target: "step3" }
+                    ]
+                },
+                {
+                    id: "step3", question: "Connaissez-vous la règle des 80% et avez-vous accès aux éléments fiscaux ?",
+                    options: [
+                        { label: "Non, je ne maîtrise pas la règle des 80%", icon: "❌", action: "transversal",
+                          resultTitle: "Transfert Patrimoine recommandé",
+                          resultTips: "La règle des 80% et les aspects fiscaux demandent une expertise spécifique.\nProfitez-en pour demander une explication !" },
+                        { label: "Oui, je connais la règle et j'ai les éléments", icon: "✅", action: "autonome",
+                          resultTitle: "Vous avez les compétences pour ce dossier",
+                          resultTips: "Simulateur EIP/PLCI de la compagnie\nPlafonds légaux en vigueur\nAppel rapide compagnie en cas de doute" }
+                    ]
+                }
+            ]
+        }
+    },
+    nonmarchand: {
+        name: "DAP Non-Marchand", icon: "🤝", desc: "ASBL, écoles, administrations, hôpitaux",
+        fields: [
+            { id: "type_structure", label: "Type de structure" },
+            { id: "effectif", label: "Effectif (personnel + bénévoles)" },
+            { id: "garanties", label: "Garanties nécessaires" }
+        ],
+        tree: {
+            nodes: [
+                {
+                    id: "step1", question: "Avez-vous vérifié si un produit standard couvre le besoin ?",
+                    options: [
+                        { label: "Oui, aucun produit standard ne convient", icon: "✅", action: "next", target: "step2" },
+                        { label: "Non, je n'ai pas encore vérifié", icon: "⏳", action: "autonome",
+                          resultTitle: "Vérifiez d'abord les produits standards",
+                          resultTips: "Packs ASBL des compagnies partenaires\nConditions pour administrations publiques\nCollègue avec dossier similaire\nInspecteur pour acceptation du risque" }
+                    ]
+                },
+                {
+                    id: "step2", question: "De quel type de structure s'agit-il ?",
+                    options: [
+                        { label: "Grande ASBL, hôpital, école, administration (> 50 personnes)", icon: "🏛️", action: "transversal",
+                          resultTitle: "Transfert Non-Marchand justifié",
+                          resultTips: "Les grandes structures non-marchandes nécessitent souvent des solutions sur mesure." },
+                        { label: "Petite ASBL, comité de quartier, petit club sportif", icon: "⚽", action: "autonome",
+                          resultTitle: "Vous pouvez traiter ce dossier",
+                          resultTips: "Packs ASBL (Ethias, AG, Baloise)\nRC association + incendie local\nVérifier si la commune propose une couverture" }
+                    ]
+                }
+            ]
+        }
+    },
+    flotte: {
+        name: "DAP Flotte", icon: "🚗", desc: "Parc automobile, flotte entreprise",
+        fields: [
+            { id: "nb_vehicules", label: "Nombre de véhicules" },
+            { id: "types_vehicules", label: "Types de véhicules" },
+            { id: "sinistralite", label: "Sinistralité (3 dernières années)" }
+        ],
+        tree: {
+            nodes: [
+                {
+                    id: "step1", question: "Combien de véhicules compte le dossier ?",
+                    options: [
+                        { label: "Moins de 10 véhicules", icon: "🚙", action: "autonome",
+                          resultTitle: "Ce dossier est à gérer par votre bureau",
+                          resultTips: "Tarificateurs auto classiques\nRemise commerciale groupée\nInspecteur compagnie si besoin\nRegrouper les échéances" },
+                        { label: "10 véhicules ou plus", icon: "🚛", action: "transversal",
+                          resultTitle: "Transfert Flotte justifié",
+                          resultTips: "À partir de 10 véhicules, le département Flotte dispose de solutions et conditions dédiées." }
+                    ]
+                }
+            ]
+        }
+    }
+};
+
+const EMOJIS = ['✅','❌','⏳','🏭','🏪','🤔','⚠️','👌','📋','🏦','👔','🏛️','⚽','🚙','🚛','💰','🏢','🤝','🚗','❓','⚖️','📖','🎯','🔍','📊','💼','📝','🔧','📞','💡'];
+
+let currentService = null;
+let editableTree = null;
+
+// ============================================================
+// INIT
+// ============================================================
+
+function init() {
+    // Check URL param
+    const params = new URLSearchParams(window.location.search);
+    const svc = params.get('service');
+
+    renderServiceButtons();
+
+    if (svc && SERVICES[svc]) {
+        selectService(svc);
+    }
+}
+
+function renderServiceButtons() {
+    const container = document.getElementById('serviceButtons');
+    container.innerHTML = '';
+    for (const [key, svc] of Object.entries(SERVICES)) {
+        container.innerHTML += `
+            <div class="service-btn" onclick="selectService('${key}')" id="svcBtn_${key}">
+                <div class="icon">${svc.icon}</div>
+                <div class="name">${svc.name}</div>
+                <div class="desc">${svc.desc}</div>
+            </div>`;
+    }
+}
+
+function selectService(key) {
+    currentService = key;
+    editableTree = JSON.parse(JSON.stringify(SERVICES[key].tree));
+
+    document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.getElementById('svcBtn_' + key);
+    if (btn) btn.classList.add('active');
+
+    document.getElementById('editorTitle').textContent = SERVICES[key].icon + ' ' + SERVICES[key].name;
+    document.getElementById('serviceSelectSection').style.display = 'none';
+    document.getElementById('editorSection').classList.add('active');
+
+    renderNodes();
+}
+
+function backToServiceSelect() {
+    document.getElementById('serviceSelectSection').style.display = 'block';
+    document.getElementById('editorSection').classList.remove('active');
+    currentService = null;
+}
+
+// ============================================================
+// RENDER NODES
+// ============================================================
+
+function renderNodes() {
+    const container = document.getElementById('nodesContainer');
+    container.innerHTML = '';
+
+    editableTree.nodes.forEach((node, nodeIdx) => {
+        if (nodeIdx > 0) {
+            container.innerHTML += `<div class="connector"><div class="connector-line"></div></div>`;
+        }
+
+        let optionsHtml = '';
+        node.options.forEach((opt, optIdx) => {
+            const destTag = opt.action === 'autonome'
+                ? '<span class="dest-tag autonome">→ Autonome</span>'
+                : opt.action === 'transversal'
+                    ? '<span class="dest-tag transversal">→ Transversal</span>'
+                    : '<span class="dest-tag next">→ Étape suivante</span>';
+
+            const targetOptions = editableTree.nodes
+                .filter(n => n.id !== node.id)
+                .map(n => `<option value="${n.id}" ${opt.target === n.id ? 'selected' : ''}>${n.question.substring(0, 40)}…</option>`)
+                .join('');
+
+            let resultHtml = '';
+            if (opt.action === 'autonome' || opt.action === 'transversal') {
+                resultHtml = `
+                    <div class="result-editor">
+                        <label>Titre du résultat</label>
+                        <input class="result-input" value="${escHtml(opt.resultTitle || '')}"
+                               onchange="updateOpt(${nodeIdx}, ${optIdx}, 'resultTitle', this.value)">
+                        <label>Conseils / Tips (un par ligne)</label>
+                        <textarea class="result-textarea"
+                                  onchange="updateOpt(${nodeIdx}, ${optIdx}, 'resultTips', this.value)">${escHtml(opt.resultTips || '')}</textarea>
+                    </div>`;
+            }
+
+            let destControl = '';
+            if (opt.action === 'next') {
+                destControl = `<select class="dest-select" onchange="updateOpt(${nodeIdx}, ${optIdx}, 'target', this.value)">
+                    ${targetOptions}
+                </select>`;
+            }
+
+            optionsHtml += `
+                <div class="option-item">
+                    <div class="option-icon-pick" onclick="toggleEmojiPicker(this, ${nodeIdx}, ${optIdx})" title="Changer l'icône">
+                        ${opt.icon}
+                    </div>
+                    <div class="option-content">
+                        <input class="option-label-edit" value="${escHtml(opt.label)}"
+                               onchange="updateOpt(${nodeIdx}, ${optIdx}, 'label', this.value)" placeholder="Texte de l'option">
+                        <div class="option-dest">
+                            <select class="dest-select" onchange="changeAction(${nodeIdx}, ${optIdx}, this.value)">
+                                <option value="autonome" ${opt.action === 'autonome' ? 'selected' : ''}>→ Autonome (géré en bureau)</option>
+                                <option value="transversal" ${opt.action === 'transversal' ? 'selected' : ''}>→ Transversal (transfert service)</option>
+                                <option value="next" ${opt.action === 'next' ? 'selected' : ''}>→ Étape suivante</option>
+                            </select>
+                            ${destControl}
+                        </div>
+                        ${resultHtml}
+                    </div>
+                    <button class="option-remove" onclick="removeOption(${nodeIdx}, ${optIdx})" title="Supprimer">×</button>
+                </div>`;
+        });
+
+        container.innerHTML += `
+            <div class="node-card" id="node_${node.id}">
+                <div class="node-header">
+                    <span class="node-badge step">Étape ${nodeIdx + 1}</span>
+                    <div class="node-header-actions">
+                        ${editableTree.nodes.length > 1 ? `<button class="btn btn-danger btn-sm" onclick="removeNode(${nodeIdx})">🗑 Supprimer</button>` : ''}
+                    </div>
+                </div>
+                <div class="node-body">
+                    <textarea class="question-edit" rows="2"
+                              onchange="updateQuestion(${nodeIdx}, this.value)">${escHtml(node.question)}</textarea>
+                    <div class="options-list">
+                        ${optionsHtml}
+                        <button class="add-option-btn" onclick="addOption(${nodeIdx})">+ Ajouter une option de réponse</button>
+                    </div>
+                </div>
+            </div>`;
+    });
+}
+
+// ============================================================
+// EDIT ACTIONS
+// ============================================================
+
+function updateQuestion(nodeIdx, value) {
+    editableTree.nodes[nodeIdx].question = value;
+}
+
+function updateOpt(nodeIdx, optIdx, field, value) {
+    editableTree.nodes[nodeIdx].options[optIdx][field] = value;
+}
+
+function changeAction(nodeIdx, optIdx, action) {
+    const opt = editableTree.nodes[nodeIdx].options[optIdx];
+    opt.action = action;
+    if (action === 'next') {
+        const otherNodes = editableTree.nodes.filter(n => n.id !== editableTree.nodes[nodeIdx].id);
+        opt.target = otherNodes.length > 0 ? otherNodes[0].id : '';
+        delete opt.resultTitle;
+        delete opt.resultTips;
+    } else {
+        delete opt.target;
+        opt.resultTitle = opt.resultTitle || 'Titre du résultat';
+        opt.resultTips = opt.resultTips || '';
+    }
+    renderNodes();
+}
+
+function addOption(nodeIdx) {
+    editableTree.nodes[nodeIdx].options.push({
+        label: "Nouvelle option",
+        icon: "📝",
+        action: "autonome",
+        resultTitle: "Résultat",
+        resultTips: ""
+    });
+    renderNodes();
+}
+
+function removeOption(nodeIdx, optIdx) {
+    if (editableTree.nodes[nodeIdx].options.length <= 1) {
+        alert('Il faut au moins une option par étape.');
+        return;
+    }
+    editableTree.nodes[nodeIdx].options.splice(optIdx, 1);
+    renderNodes();
+}
+
+function addNode() {
+    const newId = 'step' + (editableTree.nodes.length + 1);
+    editableTree.nodes.push({
+        id: newId,
+        question: "Nouvelle question ?",
+        options: [
+            { label: "Option 1", icon: "✅", action: "transversal", resultTitle: "Transfert justifié", resultTips: "" },
+            { label: "Option 2", icon: "❌", action: "autonome", resultTitle: "Traitable en bureau", resultTips: "" }
+        ]
+    });
+    renderNodes();
+    // Scroll to new node
+    setTimeout(() => {
+        document.getElementById('node_' + newId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+}
+
+function removeNode(nodeIdx) {
+    const nodeId = editableTree.nodes[nodeIdx].id;
+    if (!confirm('Supprimer cette étape ?')) return;
+
+    // Remove references to this node
+    editableTree.nodes.forEach(n => {
+        n.options.forEach(opt => {
+            if (opt.target === nodeId) {
+                opt.action = 'autonome';
+                opt.resultTitle = 'À définir';
+                opt.resultTips = '';
+                delete opt.target;
+            }
+        });
+    });
+
+    editableTree.nodes.splice(nodeIdx, 1);
+    renderNodes();
+}
+
+// Emoji picker
+function toggleEmojiPicker(el, nodeIdx, optIdx) {
+    // Close any open picker
+    document.querySelectorAll('.emoji-picker').forEach(p => p.remove());
+
+    const picker = document.createElement('div');
+    picker.className = 'emoji-picker show';
+    EMOJIS.forEach(em => {
+        const btn = document.createElement('button');
+        btn.className = 'emoji-pick';
+        btn.textContent = em;
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            editableTree.nodes[nodeIdx].options[optIdx].icon = em;
+            picker.remove();
+            renderNodes();
+        };
+        picker.appendChild(btn);
+    });
+    el.style.position = 'relative';
+    el.appendChild(picker);
+
+    // Close on outside click
+    setTimeout(() => {
+        document.addEventListener('click', function closePicker(e) {
+            if (!picker.contains(e.target)) {
+                picker.remove();
+                document.removeEventListener('click', closePicker);
+            }
+        });
+    }, 10);
+}
+
+// ============================================================
+// PREVIEW
+// ============================================================
+
+let previewHistory = [];
+
+function openPreview() {
+    previewHistory = [];
+    document.getElementById('previewModal').classList.add('active');
+    renderPreviewStep(0);
+}
+
+function closePreview() {
+    document.getElementById('previewModal').classList.remove('active');
+}
+
+function renderPreviewStep(nodeIdx) {
+    const body = document.getElementById('previewBody');
+    const node = editableTree.nodes[nodeIdx];
+    if (!node) { body.innerHTML = '<p>Erreur : étape introuvable.</p>'; return; }
+
+    let html = `<div class="preview-question">${escHtml(node.question)}</div>`;
+
+    node.options.forEach((opt, idx) => {
+        html += `<button class="preview-option" onclick="previewSelect(${nodeIdx}, ${idx})">
+            ${opt.icon} ${escHtml(opt.label)}
+        </button>`;
+    });
+
+    if (previewHistory.length > 0) {
+        html += `<div class="preview-back"><button class="btn btn-outline btn-sm" onclick="previewBack()">← Retour</button></div>`;
+    }
+
+    body.innerHTML = html;
+}
+
+function previewSelect(nodeIdx, optIdx) {
+    const opt = editableTree.nodes[nodeIdx].options[optIdx];
+    previewHistory.push(nodeIdx);
+
+    if (opt.action === 'next') {
+        const targetIdx = editableTree.nodes.findIndex(n => n.id === opt.target);
+        if (targetIdx >= 0) {
+            renderPreviewStep(targetIdx);
+        } else {
+            document.getElementById('previewBody').innerHTML = '<p>Étape suivante non trouvée. Vérifiez les connexions.</p>';
+        }
+    } else {
+        const cls = opt.action === 'autonome' ? 'autonome' : 'transversal';
+        const emoji = opt.action === 'autonome' ? '🟢' : '🟠';
+        const typeLabel = opt.action === 'autonome' ? 'Traitement autonome' : 'Transfert au service';
+
+        const tips = (opt.resultTips || '').split('\n').filter(t => t.trim()).map(t => `<li>${escHtml(t.trim())}</li>`).join('');
+
+        document.getElementById('previewBody').innerHTML = `
+            <div class="preview-result ${cls}">
+                <h4>${emoji} ${typeLabel}</h4>
+                <p style="font-weight:600;margin-bottom:0.5rem;">${escHtml(opt.resultTitle || '')}</p>
+                ${tips ? `<ul style="margin-left:1.2rem;font-size:0.88rem;">${tips}</ul>` : ''}
+            </div>
+            <div class="preview-back" style="margin-top:1rem;">
+                <button class="btn btn-outline btn-sm" onclick="previewBack()">← Retour</button>
+                <button class="btn btn-primary btn-sm" onclick="previewHistory=[];renderPreviewStep(0);">🔄 Recommencer</button>
+            </div>`;
+    }
+}
+
+function previewBack() {
+    const prevIdx = previewHistory.pop();
+    renderPreviewStep(prevIdx);
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+
+async function submitTree() {
+    const name = document.getElementById('submitName').value.trim();
+    if (!name) { alert('Veuillez indiquer votre nom.'); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Envoi en cours…';
+
+    const payload = {
+        service: currentService,
+        serviceName: SERVICES[currentService].name,
+        submittedBy: name,
+        comment: document.getElementById('submitComment').value.trim(),
+        tree: editableTree,
+        fields: SERVICES[currentService].fields,
+        timestamp: new Date().toISOString()
+    };
+
+    try {
+        await fetch('https://n8n.srv1387885.hstgr.cloud/webhook/filtre-leads-editeur', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        document.getElementById('successMsg').classList.add('show');
+        btn.style.display = 'none';
+    } catch (e) {
+        alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+        btn.disabled = false;
+        btn.textContent = '📤 Envoyer mes modifications';
+    }
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+
+function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Init
+init();
+</script>
+</body>
+</html>
