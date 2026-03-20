@@ -1893,6 +1893,44 @@
             .tutorial-bubble { max-width: 280px; min-width: 220px; padding: 16px 18px 14px; }
         }
 
+        /* ===== ROOM TIME SLOTS ===== */
+        .room-time-section { margin-top: 8px; }
+        .room-time-row {
+            display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
+        }
+        .room-time-row label { font-size: 0.8rem; font-weight: 600; color: #4a5568; min-width: 50px; }
+        .room-time-row select {
+            flex: 1; padding: 8px 10px; border: 2px solid #e2e8f0; border-radius: 8px;
+            font-size: 0.85rem; background: #f7fafc; color: #2d3748;
+        }
+        .room-time-row select:focus { outline: none; border-color: #ed8936; }
+        .room-slots-grid {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; margin-top: 8px;
+        }
+        .room-slot {
+            padding: 4px 2px; text-align: center; font-size: 0.65rem; font-weight: 600;
+            border-radius: 4px; border: 1px solid #e2e8f0; background: #f0fff4; color: #276749;
+            cursor: default; line-height: 1.2;
+        }
+        .room-slot.booked {
+            background: #fed7d7; color: #9b2c2c; border-color: #feb2b2;
+        }
+        .room-slot.mine {
+            background: #bee3f8; color: #2a4365; border-color: #90cdf4;
+        }
+        .room-slot.selected-slot {
+            background: #feebc8; color: #7b341e; border-color: #ed8936;
+            box-shadow: 0 0 0 2px rgba(237,137,54,0.3);
+        }
+        .room-slot-name {
+            font-size: 0.55rem; font-weight: 400; display: block;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .room-bookings-title {
+            font-size: 0.75rem; font-weight: 700; color: #718096; margin: 10px 0 4px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
         /* ===== MINI WIDGET MODE ===== */
         .mini-widget {
             display: none;
@@ -2493,7 +2531,7 @@
                     </select>
                 </div>
             </div>
-            <div class="modal-field">
+            <div class="modal-field" id="modalPeriodField">
                 <label>P&eacute;riode</label>
                 <div class="modal-period">
                     <button class="period-btn active" data-p="full" onclick="setModalPeriod('full',this)">Journ&eacute;e</button>
@@ -2501,11 +2539,29 @@
                     <button class="period-btn" data-p="pm" onclick="setModalPeriod('pm',this)">Apr&egrave;s-midi (PM)</button>
                 </div>
             </div>
+            <!-- Section horaire pour salles SR/SAC -->
+            <div class="modal-field room-time-section" id="roomTimeSection" style="display:none">
+                <label>Cr&eacute;neau horaire</label>
+                <div class="room-time-row">
+                    <label>D&eacute;but</label>
+                    <select id="roomStartHour"></select>
+                </div>
+                <div class="room-time-row">
+                    <label>Dur&eacute;e</label>
+                    <select id="roomDuration">
+                        <option value="1">1 heure</option>
+                        <option value="2">2 heures</option>
+                        <option value="3">3 heures</option>
+                    </select>
+                </div>
+                <div class="room-bookings-title">Cr&eacute;neaux du jour</div>
+                <div class="room-slots-grid" id="roomSlotsGrid"></div>
+            </div>
         </div>
         <div class="modal-actions">
             <button class="btn-modal btn-cancel" onclick="closeModal()">Annuler</button>
-            <button class="btn-modal btn-free" onclick="freeDesk()">Lib&eacute;rer</button>
-            <button class="btn-modal btn-reserve" onclick="reserveDesk()">R&eacute;server</button>
+            <button class="btn-modal btn-free" onclick="isRoomDesk(selectedDeskId)?freeRoomSlots():freeDesk()">Lib&eacute;rer</button>
+            <button class="btn-modal btn-reserve" onclick="isRoomDesk(selectedDeskId)?reserveRoom():reserveDesk()">R&eacute;server</button>
         </div>
     </div>
 </div>
@@ -3414,11 +3470,26 @@ function renderDesks() {
     const slot = getCurrentSlotReservations();
 
     DESKS.forEach(desk => {
-        const reservation = slot[desk.id];
-        const collab = reservation ? getCollabById(reservation.person) : null;
-        const status = reservation ? reservation.status : 'libre';
-        const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.libre;
-        const isAtDesk = status === 'bureau';
+        // For rooms (SR/SAC), use hourly booking system
+        let reservation, collab, status, cfg, isAtDesk;
+        if (isRoomDesk(desk.id)) {
+            const roomStatus = getRoomCurrentStatus(desk.id);
+            if (roomStatus && !roomStatus.nextAt) {
+                reservation = roomStatus;
+                collab = getCollabById(roomStatus.person);
+                status = 'bureau';
+            } else {
+                reservation = null;
+                collab = null;
+                status = 'libre';
+            }
+        } else {
+            reservation = slot[desk.id];
+            collab = reservation ? getCollabById(reservation.person) : null;
+            status = reservation ? reservation.status : 'libre';
+        }
+        cfg = STATUS_CONFIG[status] || STATUS_CONFIG.libre;
+        isAtDesk = status === 'bureau';
         const isHighlighted = highlightedCollab && reservation && reservation.person === highlightedCollab;
         const isDimmed = highlightedCollab && (!reservation || reservation.person !== highlightedCollab);
 
@@ -3731,20 +3802,21 @@ function openModal(deskId) {
         return;
     }
     selectedDeskId = deskId;
+    const isRoom = isRoomDesk(deskId);
     const slot = getCurrentSlotReservations();
-    const reservation = slot[deskId];
+    const reservation = isRoom ? null : slot[deskId]; // Rooms use hourly system
 
-    document.getElementById('modalTitle').textContent = `Bureau ${deskId}`;
+    const roomNames = { SR: 'Salle Réunion', SAC: 'Accueil Clientèle' };
+    document.getElementById('modalTitle').textContent = roomNames[deskId] || `Bureau ${deskId}`;
 
     // Person select — filtré par étage et bureau fixe
     const personSelect = document.getElementById('modalPerson');
     const deskInfo = DESKS.find(d => d.id === deskId);
     const deskFloor = deskInfo ? deskInfo.floor : -1;
-    const isSR = (deskId === 'SR' || deskId === 'SAC');
     const isFixedDesk = COLLABORATEURS.some(c => c.fixedDesk === deskId);
     const eligibleCollabs = COLLABORATEURS.filter(c => {
         if (isFixedDesk) return c.fixedDesk === deskId;
-        if (isSR) return true;
+        if (isRoom) return true;
         return !c.fixedDesk && c.floors && c.floors.includes(deskFloor);
     });
     personSelect.innerHTML = '<option value="">— Choisir —</option>' +
@@ -3770,13 +3842,26 @@ function openModal(deskId) {
     }
 
     onStatusChange();
-    // Période par défaut = celle de la vue en cours
-    modalPeriod = currentPeriod;
-    document.querySelectorAll('.period-btn').forEach(b => b.classList.toggle('active', b.dataset.p === currentPeriod));
+
+    // Room hourly mode vs standard period mode
+    document.getElementById('modalPeriodField').style.display = isRoom ? 'none' : '';
+    document.getElementById('roomTimeSection').style.display = isRoom ? '' : 'none';
+    // Hide status selector for rooms (always "bureau")
+    document.getElementById('modalStatus').closest('.modal-field').style.display = isRoom ? 'none' : '';
+    document.getElementById('autreDetail').classList.remove('show');
+
+    if (isRoom) {
+        document.getElementById('modalStatus').value = 'bureau';
+        populateRoomStartHours(deskId);
+        renderRoomSlotsGrid(deskId);
+    } else {
+        // Période par défaut = celle de la vue en cours
+        modalPeriod = currentPeriod;
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.toggle('active', b.dataset.p === currentPeriod));
+    }
 
     const overlay = document.getElementById('modalOverlay');
     overlay.classList.add('show');
-    // Focus trap : focus sur le premier élément
     setTimeout(() => document.getElementById('modalPerson').focus(), 100);
 }
 
@@ -3863,6 +3948,194 @@ function showToast(message) {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 300);
     }, 2500);
+}
+
+// ============================
+// ROOM HOURLY BOOKINGS (SR / SAC)
+// ============================
+const ROOM_IDS = ['SR', 'SAC'];
+const ROOM_HOURS = [];
+for (let h = 7; h <= 18; h++) ROOM_HOURS.push(h); // 7h à 18h (dernier créneau = 18h-19h)
+
+function isRoomDesk(deskId) {
+    return ROOM_IDS.includes(deskId);
+}
+
+function getRoomDateKey(dayIndex) {
+    const d = new Date(currentWeekStart);
+    d.setDate(d.getDate() + dayIndex);
+    return d.toISOString().slice(0, 10);
+}
+
+// Room bookings stored in reservations as: "2026-03-20-SR-09" => { person, detail }
+function getRoomSlotKey(dateStr, roomId, hour) {
+    return dateStr + '-' + roomId + '-' + String(hour).padStart(2, '0');
+}
+
+function getRoomBookingsForDay(dayIndex, roomId) {
+    const dateStr = getRoomDateKey(dayIndex);
+    const bookings = {};
+    ROOM_HOURS.forEach(h => {
+        const key = getRoomSlotKey(dateStr, roomId, h);
+        if (reservations[key]) {
+            bookings[h] = reservations[key];
+        }
+    });
+    return bookings;
+}
+
+function isRoomHourAvailable(dayIndex, roomId, hour) {
+    const dateStr = getRoomDateKey(dayIndex);
+    const key = getRoomSlotKey(dateStr, roomId, hour);
+    return !reservations[key];
+}
+
+function populateRoomStartHours(roomId) {
+    const sel = document.getElementById('roomStartHour');
+    sel.innerHTML = '';
+    ROOM_HOURS.forEach(h => {
+        const label = String(h).padStart(2, '0') + ':00';
+        const opt = document.createElement('option');
+        opt.value = h;
+        opt.textContent = label;
+        sel.appendChild(opt);
+    });
+    // Default to current hour or next available
+    const now = new Date();
+    const currentH = now.getHours();
+    const bestH = ROOM_HOURS.find(h => h >= currentH) || ROOM_HOURS[0];
+    sel.value = bestH;
+    sel.onchange = () => renderRoomSlotsGrid(roomId);
+    document.getElementById('roomDuration').onchange = () => renderRoomSlotsGrid(roomId);
+}
+
+function renderRoomSlotsGrid(roomId) {
+    const grid = document.getElementById('roomSlotsGrid');
+    const bookings = getRoomBookingsForDay(currentDayIndex, roomId);
+    const startH = parseInt(document.getElementById('roomStartHour').value);
+    const duration = parseInt(document.getElementById('roomDuration').value);
+
+    let html = '';
+    ROOM_HOURS.forEach(h => {
+        const label = String(h).padStart(2, '0') + 'h';
+        const booking = bookings[h];
+        let cls = 'room-slot';
+        let nameHtml = '';
+        if (booking) {
+            const c = getCollabById(booking.person);
+            nameHtml = '<span class="room-slot-name">' + escapeHtml(c ? c.name.split(' ')[0] : '—') + '</span>';
+            if (currentUser && booking.person === currentUser.id) {
+                cls += ' mine';
+            } else {
+                cls += ' booked';
+            }
+        }
+        // Highlight selected range
+        if (h >= startH && h < startH + duration && !booking) {
+            cls += ' selected-slot';
+        }
+        html += '<div class="' + cls + '">' + label + nameHtml + '</div>';
+    });
+    grid.innerHTML = html;
+}
+
+function reserveRoom() {
+    if (!currentUser) return;
+    const roomId = selectedDeskId;
+    const startH = parseInt(document.getElementById('roomStartHour').value);
+    const duration = parseInt(document.getElementById('roomDuration').value);
+    let person = document.getElementById('modalPerson').value;
+    if (currentUser && !currentUser.isAdmin) person = currentUser.id;
+    if (!person) { alert('Veuillez choisir un collaborateur.'); return; }
+
+    const dateStr = getRoomDateKey(currentDayIndex);
+
+    // Check availability
+    for (let h = startH; h < startH + duration && h <= 19; h++) {
+        const key = getRoomSlotKey(dateStr, roomId, h);
+        if (reservations[key] && reservations[key].person !== person) {
+            const c = getCollabById(reservations[key].person);
+            alert('Créneau ' + String(h).padStart(2, '0') + 'h déjà réservé par ' + (c ? c.name : '—'));
+            return;
+        }
+    }
+
+    // Book all hours
+    const bookedKeys = [];
+    for (let h = startH; h < startH + duration && h <= 19; h++) {
+        const key = getRoomSlotKey(dateStr, roomId, h);
+        reservations[key] = { person: person, status: 'bureau', detail: String(startH).padStart(2, '0') + 'h-' + String(startH + duration).padStart(2, '0') + 'h' };
+        bookedKeys.push(key);
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reservations));
+    if (APPS_SCRIPT_URL) {
+        bookedKeys.forEach(k => saveToSheets(k, reservations[k]));
+    }
+    closeModal();
+    renderAll();
+    const collabName = getCollabById(person)?.name || person;
+    showToast(collabName + ' — ' + roomId + ' réservé ' + String(startH).padStart(2, '0') + 'h-' + String(startH + duration).padStart(2, '0') + 'h');
+}
+
+function freeRoomSlots() {
+    if (!selectedDeskId || !currentUser) return;
+    const roomId = selectedDeskId;
+    const dateStr = getRoomDateKey(currentDayIndex);
+    let freed = 0;
+
+    const freedKeys = [];
+    ROOM_HOURS.forEach(h => {
+        const key = getRoomSlotKey(dateStr, roomId, h);
+        if (reservations[key]) {
+            if (currentUser.isAdmin || reservations[key].person === currentUser.id) {
+                delete reservations[key];
+                freedKeys.push(key);
+                freed++;
+            }
+        }
+    });
+
+    if (freed === 0) {
+        showToast('Aucun créneau à libérer');
+        return;
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reservations));
+    if (APPS_SCRIPT_URL) {
+        freedKeys.forEach(k => saveToSheets(k, null));
+    }
+    closeModal();
+    renderAll();
+    showToast(roomId + ' — ' + freed + ' créneau(x) libéré(s)');
+}
+
+// Get current room status for display on plan
+function getRoomCurrentStatus(roomId) {
+    const bookings = getRoomBookingsForDay(currentDayIndex, roomId);
+    const now = new Date();
+    const currentH = now.getHours();
+
+    // Find current booking
+    if (bookings[currentH]) {
+        return bookings[currentH];
+    }
+
+    // Find next booking
+    for (const h of ROOM_HOURS) {
+        if (h > currentH && bookings[h]) {
+            return { ...bookings[h], nextAt: h };
+        }
+    }
+
+    // Check if any booking today
+    const hours = Object.keys(bookings);
+    if (hours.length > 0) {
+        const firstH = Math.min(...hours.map(Number));
+        return { ...bookings[firstH], nextAt: firstH };
+    }
+
+    return null;
 }
 
 // ============================
