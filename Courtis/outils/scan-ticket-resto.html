@@ -373,6 +373,21 @@
                     </div>
                 </div>
 
+                <!-- Paiement Visa -->
+                <div class="form-group">
+                    <label>Payé par Visa ? <span class="required">*</span></label>
+                    <div class="societe-grid">
+                        <div class="societe-option">
+                            <input type="radio" name="visa" id="visa-oui" value="Oui" required>
+                            <label for="visa-oui">Oui</label>
+                        </div>
+                        <div class="societe-option">
+                            <input type="radio" name="visa" id="visa-non" value="Non">
+                            <label for="visa-non">Non</label>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Note optionnelle -->
                 <div class="form-group">
                     <label>Note <span style="font-weight:400;color:#94a3b8;font-size:12px;">(optionnel)</span></label>
@@ -448,10 +463,11 @@
 
             const file = photoInput.files[0];
             const societe = document.querySelector('input[name="societe"]:checked');
+            const visa = document.querySelector('input[name="visa"]:checked');
             const note = document.getElementById('noteInput').value.trim();
             const expediteur = expediteurInput.value.trim();
 
-            if (!file || !societe || !expediteur) {
+            if (!file || !societe || !visa || !expediteur) {
                 showStatus('Merci de remplir tous les champs obligatoires.', 'error');
                 return;
             }
@@ -473,6 +489,7 @@
                     photo_filename: file.name,
                     photo_mimetype: file.type,
                     societe: societe.value,
+                    visa: visa.value,
                     note: note,
                     expediteur: expediteur,
                     date_envoi: new Date().toISOString()
