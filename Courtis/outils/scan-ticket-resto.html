@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DAP — Scan Ticket Resto</title>
+    <link rel="apple-touch-icon" href="logo-dap.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Tickets DAP">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+            max-width: 480px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 24px 28px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c8a94e, #e8d48b, #c8a94e);
+        }
+
+        .header .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .header .logo span { color: #c8a94e; }
+
+        .header .subtitle {
+            color: rgba(255,255,255,0.65);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .body { padding: 28px 28px 32px; }
+
+        .form-group { margin-bottom: 20px; }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        label .required { color: #e74c3c; margin-left: 2px; }
+
+        /* Photo upload zone */
+        .photo-upload {
+            border: 2px dashed #d0d5dd;
+            border-radius: 12px;
+            padding: 28px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: #fafbfc;
+            position: relative;
+        }
+
+        .photo-upload:hover {
+            border-color: #c8a94e;
+            background: #fffdf5;
+        }
+
+        .photo-upload.has-file {
+            border-color: #10b981;
+            border-style: solid;
+            background: #f0fdf4;
+            padding: 12px;
+        }
+
+        .photo-upload input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .photo-upload .icon { font-size: 36px; margin-bottom: 8px; }
+        .photo-upload .text { color: #64748b; font-size: 13px; font-weight: 500; }
+        .photo-upload .hint { color: #94a3b8; font-size: 11px; margin-top: 4px; }
+
+        .photo-upload .preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .photo-upload .file-info {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .photo-upload .change-btn {
+            display: inline-block;
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 11px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Société selector */
+        .societe-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .societe-option {
+            position: relative;
+        }
+
+        .societe-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .societe-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            margin-bottom: 0;
+        }
+
+        .societe-option input:checked + label {
+            border-color: #c8a94e;
+            background: #fffdf5;
+            color: #1a1a2e;
+            box-shadow: 0 0 0 1px #c8a94e;
+        }
+
+        .societe-option label:active {
+            transform: scale(0.97);
+        }
+
+        /* Note field */
+        .note-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #1a1a2e;
+            resize: none;
+            transition: border-color 0.2s;
+        }
+
+        .note-input:focus {
+            outline: none;
+            border-color: #c8a94e;
+        }
+
+        .note-input::placeholder { color: #94a3b8; }
+
+        /* Submit button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-top: 4px;
+        }
+
+        .submit-btn:hover { opacity: 0.92; }
+
+        .submit-btn:active { transform: scale(0.98); }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Status messages */
+        .status {
+            text-align: center;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .status.sending {
+            display: block;
+            background: #f0f4ff;
+            color: #3b82f6;
+        }
+
+        .status.success {
+            display: block;
+            background: #f0fdf4;
+            color: #10b981;
+        }
+
+        .status.error {
+            display: block;
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        /* Extraction result card */
+        .extraction-card {
+            margin-top: 16px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 16px;
+            display: none;
+        }
+
+        .extraction-card.visible { display: block; }
+
+        .extraction-card .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #10b981;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .extraction-card .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #dcfce7;
+        }
+
+        .extraction-card .row:last-child { border-bottom: none; }
+        .extraction-card .row .label { color: #64748b; }
+        .extraction-card .row .value { font-weight: 600; color: #1a1a2e; }
+        .extraction-card .row .value.amount { color: #059669; font-size: 15px; }
+
+        /* Historique */
+        .history {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .history-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .history-item .amount { font-weight: 700; color: #1a1a2e; }
+        .history-item .meta { color: #64748b; font-size: 12px; }
+        .history-item .badge {
+            background: rgba(200,169,78,0.12);
+            color: #8b7424;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">D<span>A</span>P</div>
+            <div class="subtitle">Scan Ticket Restaurant</div>
+        </div>
+
+        <div class="body">
+            <form id="ticketForm">
+                <!-- Photo -->
+                <div class="form-group">
+                    <label>Photo du ticket <span class="required">*</span></label>
+                    <div class="photo-upload" id="photoZone">
+                        <input type="file" id="photoInput" accept="image/*" capture="environment" required>
+                        <div id="photoPlaceholder">
+                            <div class="icon">📸</div>
+                            <div class="text">Prendre une photo ou choisir un fichier</div>
+                            <div class="hint">Appareil photo ou galerie</div>
+                        </div>
+                        <div id="photoPreview" style="display:none;">
+                            <img class="preview-img" id="previewImg" alt="Aperçu ticket">
+                            <div class="file-info" id="fileInfo"></div>
+                            <div class="change-btn">Changer la photo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Société -->
+                <div class="form-group">
+                    <label>Société <span class="required">*</span></label>
+                    <div class="societe-grid">
+                        <div class="societe-option">
+                            <input type="radio" name="societe" id="sa-deg" value="SA Deg" required>
+                            <label for="sa-deg">SA Deg</label>
+                        </div>
+                        <div class="societe-option">
+                            <input type="radio" name="societe" id="4sure" value="4sure">
+                            <label for="4sure">4sure</label>
+                        </div>
+                        <div class="societe-option">
+                            <input type="radio" name="societe" id="dap-transversal" value="DAP Transversal">
+                            <label for="dap-transversal">DAP Transversal</label>
+                        </div>
+                        <div class="societe-option">
+                            <input type="radio" name="societe" id="dap-bxl" value="DAP Bxl">
+                            <label for="dap-bxl">DAP Bxl</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Note optionnelle -->
+                <div class="form-group">
+                    <label>Note <span style="font-weight:400;color:#94a3b8;font-size:12px;">(optionnel)</span></label>
+                    <textarea class="note-input" id="noteInput" rows="2" placeholder="Ex: resto collaboratif mars, avec équipe Leuze..."></textarea>
+                </div>
+
+                <!-- Soumis par -->
+                <div class="form-group">
+                    <label>Envoyé par <span class="required">*</span></label>
+                    <input type="text" class="note-input" id="expediteur" placeholder="Votre prénom" required
+                           style="resize:none;">
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">Envoyer le ticket</button>
+
+                <div class="status" id="statusMsg"></div>
+
+                <!-- Extraction result -->
+                <div class="extraction-card" id="extractionCard">
+                    <div class="card-title">Extraction automatique</div>
+                    <div id="extractionRows"></div>
+                </div>
+            </form>
+
+            <!-- Historique local -->
+            <div class="history" id="historySection" style="display:none;">
+                <div class="history-title">Derniers envois</div>
+                <div id="historyList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === CONFIG ===
+        const WEBHOOK_URL = 'https://n8n.srv1387885.hstgr.cloud/webhook/scan-ticket-resto';
+
+        // === ELEMENTS ===
+        const form = document.getElementById('ticketForm');
+        const photoInput = document.getElementById('photoInput');
+        const photoZone = document.getElementById('photoZone');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        const photoPreview = document.getElementById('photoPreview');
+        const previewImg = document.getElementById('previewImg');
+        const fileInfo = document.getElementById('fileInfo');
+        const statusMsg = document.getElementById('statusMsg');
+        const submitBtn = document.getElementById('submitBtn');
+        const expediteurInput = document.getElementById('expediteur');
+
+        // Restore expediteur from localStorage
+        const savedName = localStorage.getItem('ticket_expediteur');
+        if (savedName) expediteurInput.value = savedName;
+
+        // === PHOTO PREVIEW ===
+        photoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            photoZone.classList.add('has-file');
+            photoPlaceholder.style.display = 'none';
+            photoPreview.style.display = 'block';
+
+            const reader = new FileReader();
+            reader.onload = (e) => { previewImg.src = e.target.result; };
+            reader.readAsDataURL(file);
+
+            const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+            fileInfo.textContent = file.name + ' (' + sizeMB + ' MB)';
+        });
+
+        // === FORM SUBMIT ===
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const file = photoInput.files[0];
+            const societe = document.querySelector('input[name="societe"]:checked');
+            const note = document.getElementById('noteInput').value.trim();
+            const expediteur = expediteurInput.value.trim();
+
+            if (!file || !societe || !expediteur) {
+                showStatus('Merci de remplir tous les champs obligatoires.', 'error');
+                return;
+            }
+
+            // Save name
+            localStorage.setItem('ticket_expediteur', expediteur);
+
+            // Disable form
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Envoi en cours...';
+            showStatus('Envoi du ticket en cours...', 'sending');
+
+            try {
+                // Convert image to base64
+                const base64 = await fileToBase64(file);
+
+                const payload = {
+                    photo: base64,
+                    photo_filename: file.name,
+                    photo_mimetype: file.type,
+                    societe: societe.value,
+                    note: note,
+                    expediteur: expediteur,
+                    date_envoi: new Date().toISOString()
+                };
+
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error('Erreur serveur: ' + response.status);
+
+                const result = await response.json();
+
+                if (result.success && result.extraction) {
+                    showExtraction(result.extraction, societe.value);
+                    showStatus('Ticket envoyé et analysé avec succes !', 'success');
+                    addToHistory(societe.value, expediteur, result.extraction.montant_total);
+                } else {
+                    showStatus('Ticket envoyé mais extraction partielle.', 'success');
+                    addToHistory(societe.value, expediteur, null);
+                }
+                resetForm();
+
+            } catch (err) {
+                console.error(err);
+                showStatus('Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Envoyer le ticket';
+            }
+        });
+
+        // === HELPERS ===
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function showStatus(msg, type) {
+            statusMsg.textContent = msg;
+            statusMsg.className = 'status ' + type;
+        }
+
+        function resetForm() {
+            photoInput.value = '';
+            photoZone.classList.remove('has-file');
+            photoPlaceholder.style.display = 'block';
+            photoPreview.style.display = 'none';
+            document.querySelector('input[name="societe"]:checked').checked = false;
+            document.getElementById('noteInput').value = '';
+            // Keep expediteur
+        }
+
+        // === EXTRACTION DISPLAY ===
+        function showExtraction(data, societe) {
+            const card = document.getElementById('extractionCard');
+            const rows = document.getElementById('extractionRows');
+
+            const fields = [
+                { label: 'Restaurant', value: data.restaurant },
+                { label: 'Date', value: data.date },
+                { label: 'Montant total', value: data.montant_total ? data.montant_total.toFixed(2) + ' \u20ac' : null, isAmount: true },
+                { label: 'HTVA', value: data.montant_htva ? data.montant_htva.toFixed(2) + ' \u20ac' : null },
+                { label: 'TVA', value: data.tva ? data.tva.toFixed(2) + ' \u20ac' : null },
+                { label: 'Couverts', value: data.nombre_couverts },
+                { label: 'Soci\u00e9t\u00e9', value: societe },
+                { label: 'D\u00e9tails', value: data.details }
+            ];
+
+            rows.innerHTML = fields
+                .filter(f => f.value != null)
+                .map(f => '<div class="row"><span class="label">' + f.label + '</span><span class="value' + (f.isAmount ? ' amount' : '') + '">' + f.value + '</span></div>')
+                .join('');
+
+            card.classList.add('visible');
+        }
+
+        // === LOCAL HISTORY ===
+        function addToHistory(societe, expediteur, montant) {
+            const history = JSON.parse(localStorage.getItem('ticket_history') || '[]');
+            history.unshift({
+                societe: societe,
+                expediteur: expediteur,
+                montant: montant,
+                date: new Date().toLocaleDateString('fr-BE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+            });
+            if (history.length > 10) history.pop();
+            localStorage.setItem('ticket_history', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('ticket_history') || '[]');
+            const section = document.getElementById('historySection');
+            const list = document.getElementById('historyList');
+
+            if (history.length === 0) { section.style.display = 'none'; return; }
+
+            section.style.display = 'block';
+            list.innerHTML = history.map(h =>
+                '<div class="history-item">' +
+                    '<div><span class="meta">' + h.date + '</span> — ' + h.expediteur +
+                    (h.montant ? ' — <strong>' + h.montant.toFixed(2) + ' \u20ac</strong>' : '') +
+                    '</div>' +
+                    '<span class="badge">' + h.societe + '</span>' +
+                '</div>'
+            ).join('');
+        }
+
+        // Init history
+        renderHistory();
+    </script>
+</body>
+</html>
