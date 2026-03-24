@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Logiciels Comptables — DAP Courtiers</title>
+    <style>
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2a4a7f;
+            --accent: #c53030;
+            --success: #276749;
+            --success-bg: #f0fff4;
+            --warning: #975a16;
+            --warning-bg: #fffff0;
+            --bg: #f7fafc;
+            --card: #ffffff;
+            --text: #1a202c;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --gold: #b7791f;
+            --silver: #718096;
+            --bronze: #9c4221;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #2c5282 100%);
+            color: white;
+            padding: 3.5rem 2rem 3rem;
+            text-align: center;
+        }
+
+        .header-label {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            opacity: 0.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 1.05rem;
+            opacity: 0.8;
+            font-weight: 300;
+        }
+
+        .header .meta {
+            margin-top: 1.75rem;
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            opacity: 0.65;
+        }
+
+        /* TOC */
+        .toc {
+            background: var(--card);
+            max-width: 1100px;
+            margin: -1.5rem auto 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 1.75rem 2rem;
+        }
+
+        .toc h2 { font-size: 1rem; color: var(--primary); margin-bottom: 0.75rem; }
+
+        .toc ol {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 0.4rem;
+            padding-left: 1.5rem;
+        }
+
+        .toc li { font-size: 0.92rem; }
+        .toc a { color: var(--primary-light); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+
+        /* Content */
+        .content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        section {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+            padding: 2rem 2.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        section h2 {
+            font-size: 1.4rem;
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        section h3 {
+            font-size: 1.1rem;
+            color: var(--primary-light);
+            margin: 1.75rem 0 0.75rem;
+        }
+
+        h4 { margin: 1rem 0 0.5rem; }
+        p { margin-bottom: 0.75rem; }
+        ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+        li { margin-bottom: 0.3rem; }
+        strong { color: var(--text); }
+
+        /* Callout boxes */
+        .callout {
+            padding: 1.25rem 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        .callout-info {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+        }
+
+        .callout-warning {
+            background: var(--warning-bg);
+            border-left: 4px solid #d69e2e;
+            color: var(--warning);
+        }
+
+        .callout-success {
+            background: var(--success-bg);
+            border-left: 4px solid #38a169;
+        }
+
+        .callout-danger {
+            background: #fff5f5;
+            border-left: 4px solid var(--accent);
+        }
+
+        .callout strong { display: block; margin-bottom: 0.25rem; }
+
+        /* Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .scores-grid { grid-template-columns: 1fr !important; }
+            .header h1 { font-size: 1.6rem; }
+        }
+
+        .state-card {
+            padding: 1.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .state-card.good { border-left: 4px solid #38a169; }
+        .state-card.bad { border-left: 4px solid var(--accent); }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.87rem;
+        }
+
+        thead th {
+            background: var(--primary);
+            color: white;
+            padding: 0.7rem 0.6rem;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 0.55rem 0.6rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:nth-child(even) { background: #f8fafc; }
+        tbody tr:hover { background: #edf2f7; }
+        tbody tr.highlight { background: #fffff0; }
+
+        .y { color: var(--success); font-weight: 700; }
+        .n { color: var(--accent); font-weight: 700; }
+        .p { color: var(--warning); font-weight: 700; }
+
+        /* Score cards */
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .score-card {
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .score-card.r1 { border-color: var(--gold); background: linear-gradient(135deg, #fffff0, #fefcbf33); }
+        .score-card.r2 { border-color: var(--silver); background: linear-gradient(135deg, #f7fafc, #edf2f733); }
+        .score-card.r3 { border-color: var(--bronze); background: linear-gradient(135deg, #fffaf0, #feebc833); }
+
+        .score-card .rank {
+            position: absolute;
+            top: -14px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .r1 .rank { background: var(--gold); }
+        .r2 .rank { background: var(--silver); }
+        .r3 .rank { background: var(--bronze); }
+        .rx .rank { background: var(--text-light); }
+
+        .score-card .name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .score-card .tag {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+            font-size: 0.82rem;
+        }
+
+        .bar-row label { width: 130px; flex-shrink: 0; color: var(--text-light); }
+
+        .bar-bg {
+            flex: 1;
+            height: 7px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bar-fg {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .bar-fg.h { background: #38a169; }
+        .bar-fg.m { background: #d69e2e; }
+        .bar-fg.l { background: #e53e3e; }
+
+        .bar-row .v { width: 30px; text-align: right; font-weight: 700; font-size: 0.83rem; }
+
+        .total {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total .lbl { font-weight: 600; }
+        .total .sc { font-size: 1.7rem; font-weight: 800; color: var(--primary); }
+
+        /* Recommendation */
+        .reco-box {
+            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
+            border: 2px solid #38a169;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .reco-box h3 { color: var(--success); font-size: 1.2rem; margin-bottom: 0.75rem; }
+        .reco-box .winner { font-size: 2rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem; }
+
+        /* Roadmap */
+        .timeline { position: relative; padding-left: 2.25rem; }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .t-step {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 1.25rem;
+        }
+
+        .t-step::before {
+            content: '';
+            position: absolute;
+            left: -2.25rem;
+            top: 0.35rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        .t-step .phase { font-weight: 700; color: var(--primary); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .t-step .title { font-weight: 600; font-size: 1rem; margin: 0.2rem 0; }
+        .t-step .desc { font-size: 0.9rem; color: var(--text-light); }
+
+        /* Experts */
+        .experts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .exp {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .exp .ico {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .exp .nm { font-weight: 700; font-size: 0.9rem; }
+        .exp .rl { font-size: 0.75rem; color: var(--text-light); }
+
+        .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 600px) { .pros-cons { grid-template-columns: 1fr; } }
+
+        @media print {
+            .header { padding: 1.5rem; }
+            section { break-inside: avoid; box-shadow: none; border: 1px solid var(--border); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+            font-size: 0.82rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<div class="header">
+    <div class="header-label">Rapport d'audit</div>
+    <h1>Logiciels de Comptabilite</h1>
+    <div class="subtitle">DAP Courtiers en Assurances — Evaluation pour migration depuis WinBooks</div>
+    <div class="meta">
+        <span>Date : 24 mars 2026</span>
+        <span>Destinataire : Service Comptabilite DAP</span>
+        <span>Version : 2.0</span>
+        <span>Confidentiel</span>
+    </div>
+</div>
+
+<!-- ========== TOC ========== -->
+<nav class="toc">
+    <h2>Sommaire</h2>
+    <ol>
+        <li><a href="#panel">Panel d'experts consultes</a></li>
+        <li><a href="#contexte">Contexte et besoins</a></li>
+        <li><a href="#winbooks">Bilan WinBooks actuel</a></li>
+        <li><a href="#criteres">Grille d'evaluation</a></li>
+        <li><a href="#shortlist">Les 10 logiciels evalues</a></li>
+        <li><a href="#comparatif">Comparatif fonctionnel et tarifaire</a></li>
+        <li><a href="#scoring">Scoring et classement</a></li>
+        <li><a href="#top3">Analyse detaillee du Top 3</a></li>
+        <li><a href="#reco">Recommandation finale</a></li>
+        <li><a href="#roadmap">Plan de transition</a></li>
+    </ol>
+</nav>
+
+<div class="content">
+
+<!-- ========== 1. PANEL ========== -->
+<section id="panel">
+    <h2>1. Panel d'experts consultes</h2>
+    <p>Cet audit s'appuie sur les methodologies, benchmarks et classements des references mondiales et belges du secteur :</p>
+    <div class="experts-grid">
+        <div class="exp"><div class="ico">G</div><div class="nm">Gartner</div><div class="rl">Magic Quadrant Cloud Finance</div></div>
+        <div class="exp"><div class="ico">F</div><div class="nm">Forrester</div><div class="rl">Wave Financial Management</div></div>
+        <div class="exp"><div class="ico">IDC</div><div class="nm">IDC</div><div class="rl">MarketScape ERP/Finance</div></div>
+        <div class="exp"><div class="ico">D</div><div class="nm">Deloitte</div><div class="rl">Digital Finance Advisory</div></div>
+        <div class="exp"><div class="ico">PW</div><div class="nm">PwC</div><div class="rl">Finance Effectiveness</div></div>
+        <div class="exp"><div class="ico">CP</div><div class="nm">ComptaPerspectives</div><div class="rl">Benchmark belge comptabilite</div></div>
+        <div class="exp"><div class="ico">G2</div><div class="nm">G2 / Capterra</div><div class="rl">Avis utilisateurs verifies</div></div>
+        <div class="exp"><div class="ico">LS</div><div class="nm">LeadService</div><div class="rl">Top boekhoudsoftware BE</div></div>
+        <div class="exp"><div class="ico">IB</div><div class="nm">IBGraf</div><div class="rl">Expert revendeur Belgique</div></div>
+        <div class="exp"><div class="ico">A4</div><div class="nm">App4Acc</div><div class="rl">Certification solutions BE</div></div>
+    </div>
+</section>
+
+<!-- ========== 2. CONTEXTE ========== -->
+<section id="contexte">
+    <h2>2. Contexte et besoins</h2>
+
+    <div class="callout callout-info">
+        <strong>Synthese :</strong>
+        Le service comptable de DAP Courtiers souhaite evaluer les alternatives a WinBooks Classic, le logiciel actuellement utilise. L'obligation de facturation electronique Peppol au 1er janvier 2026, le besoin de moderniser les outils et la volonte de gagner en efficacite motivent cette demarche.
+    </div>
+
+    <h3>Profil de DAP Courtiers</h3>
+    <ul>
+        <li><strong>Secteur :</strong> Courtage en assurances (Belgique)</li>
+        <li><strong>Structure :</strong> PME, plusieurs bureaux (Uccle, Leuze)</li>
+        <li><strong>Logiciel actuel :</strong> WinBooks Classic (installation locale)</li>
+        <li><strong>Utilisateurs compta :</strong> Comptable interne + collaboration fiduciaire externe</li>
+    </ul>
+
+    <h3>Besoins prioritaires du comptable</h3>
+    <ol>
+        <li><strong>Conformite legale belge :</strong> TVA, declarations BNB, Peppol 2026, CODA/SODA</li>
+        <li><strong>Facilite d'utilisation :</strong> Interface claire, prise en main rapide, gain de temps quotidien</li>
+        <li><strong>Acces cloud :</strong> Travailler depuis n'importe quel bureau sans serveur local</li>
+        <li><strong>Collaboration fiduciaire :</strong> Partage fluide avec le comptable externe</li>
+        <li><strong>Reconnaissance de documents :</strong> Scan de factures, encodage automatique (OCR/IA)</li>
+        <li><strong>Rapport qualite/prix :</strong> Budget maitrise, pas de surprises</li>
+        <li><strong>Perennite :</strong> Editeur solide, mises a jour regulieres, avenir garanti</li>
+    </ol>
+</section>
+
+<!-- ========== 3. WINBOOKS ========== -->
+<section id="winbooks">
+    <h2>3. Bilan WinBooks actuel</h2>
+
+    <p>WinBooks (desormais <strong>Exact WinBooks</strong>) est le logiciel comptable historique en Belgique, avec plus de 22 000 licences depuis 2000. Il reste une reference pour les fiduciaires belges.</p>
+
+    <div class="grid-2">
+        <div class="state-card good">
+            <h4 style="color:var(--success)">Ce qui fonctionne bien</h4>
+            <ul>
+                <li>Conformite rigoureuse a la legislation belge</li>
+                <li>Stabilite et fiabilite eprouvees depuis 20+ ans</li>
+                <li>Gestion TVA belge complete et precise</li>
+                <li>Support CODA/SODA pour rapprochement bancaire</li>
+                <li>Module Excel integre pour analyses</li>
+                <li>Peppol integre depuis 2025</li>
+                <li>Equipe deja formee sur l'outil</li>
+                <li>Bilingue FR/NL</li>
+            </ul>
+        </div>
+        <div class="state-card bad">
+            <h4 style="color:var(--accent)">Limites identifiees</h4>
+            <ul>
+                <li><strong>Installation locale :</strong> Lie a un PC/serveur, pas de cloud</li>
+                <li><strong>Pas d'acces a distance :</strong> Impossible de travailler hors bureau facilement</li>
+                <li><strong>Pas de reconnaissance de documents :</strong> Encodage 100% manuel</li>
+                <li><strong>Interface datee :</strong> UX annees 2000, peu ergonomique</li>
+                <li><strong>Collaboration limitee :</strong> Echange de fichiers via import/export, pas de travail simultane</li>
+                <li><strong>Maintenance serveur :</strong> Backups, mises a jour a gerer en interne</li>
+                <li><strong>Avenir incertain :</strong> Exact pousse ses clients vers Exact Online — risque de fin de developpement</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="callout callout-warning" style="margin-top:1.25rem;">
+        <strong>Point d'attention strategique :</strong>
+        Exact (proprietaire de WinBooks) investit massivement dans Exact Online et WinBooks on Web. WinBooks Classic est en mode maintenance. A moyen terme, le risque est de se retrouver sur un logiciel en fin de vie sans alternative preparee.
+    </div>
+</section>
+
+<!-- ========== 4. CRITERES ========== -->
+<section id="criteres">
+    <h2>4. Grille d'evaluation</h2>
+    <p>Chaque logiciel est note sur 7 criteres ponderes, calibres sur les besoins concrets du service comptable de DAP :</p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr><th>Critere</th><th>Poids</th><th>Ce qu'on evalue</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Conformite belge</strong></td><td>25%</td><td>TVA belge, BNB, Peppol 2026, CODA/SODA, bilingue FR/NL</td></tr>
+                <tr><td><strong>Facilite d'utilisation</strong></td><td>20%</td><td>Interface, ergonomie, courbe d'apprentissage, gain de temps</td></tr>
+                <tr><td><strong>Cloud et collaboration</strong></td><td>15%</td><td>Acces multi-sites, travail simultane, portail fiduciaire</td></tr>
+                <tr><td><strong>Encodage intelligent (OCR/IA)</strong></td><td>15%</td><td>Scan de factures, reconnaissance automatique, lettrage assiste</td></tr>
+                <tr><td><strong>Rapport qualite/prix</strong></td><td>10%</td><td>Cout mensuel, frais d'implementation, transparence tarifaire</td></tr>
+                <tr><td><strong>Support et proximite</strong></td><td>10%</td><td>Support FR/NL, reactivite, reseau de partenaires en Belgique</td></tr>
+                <tr><td><strong>Perennite de l'editeur</strong></td><td>5%</td><td>Solidite financiere, investissements, base d'utilisateurs</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ========== 5. SHORTLIST ========== -->
+<section id="shortlist">
+    <h2>5. Les 10 logiciels evalues</h2>
+    <p>Selection basee sur la presence effective en Belgique, la reputation aupres des comptables et fiduciaires belges, et la compatibilite avec le secteur du courtage :</p>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr><th>#</th><th>Logiciel</th><th>Editeur</th><th>Origine</th><th>Type</th><th>Utilisateurs BE</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td><strong>Exact Online</strong></td><td>Exact</td><td>Pays-Bas</td><td>Cloud</td><td>Leader Benelux</td></tr>
+                <tr><td>2</td><td><strong>Horus</strong></td><td>Horus Software</td><td>Belgique</td><td>Cloud</td><td>8 000+ professionnels</td></tr>
+                <tr><td>3</td><td><strong>Octopus</strong></td><td>Octopus</td><td>Belgique</td><td>Cloud</td><td>2 600 comptables / 83 000 dossiers</td></tr>
+                <tr><td>4</td><td><strong>Yuki</strong></td><td>Visma</td><td>Pays-Bas</td><td>Cloud</td><td>1 500 comptables / 180 000 entrepreneurs</td></tr>
+                <tr><td>5</td><td><strong>Odoo Comptabilite</strong></td><td>Odoo SA</td><td>Belgique</td><td>Cloud</td><td>Forte croissance BE</td></tr>
+                <tr><td>6</td><td><strong>Sage BOB</strong></td><td>Sage</td><td>Belgique (dev)</td><td>Hybride</td><td>Reference historique PME</td></tr>
+                <tr><td>7</td><td><strong>WinAuditor</strong></td><td>WinAuditor</td><td>Belgique</td><td>Cloud</td><td>En croissance</td></tr>
+                <tr><td>8</td><td><strong>Pennylane</strong></td><td>Pennylane</td><td>France</td><td>Cloud</td><td>Faible en BE</td></tr>
+                <tr><td>9</td><td><strong>Xero</strong></td><td>Xero</td><td>Nouvelle-Zelande</td><td>Cloud</td><td>Quasi absent en BE</td></tr>
+                <tr><td>10</td><td><strong>WinBooks Classic</strong></td><td>Exact</td><td>Belgique</td><td>Local</td><td>22 000 licences (historique)</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ========== 6. COMPARATIF ========== -->
+<section id="comparatif">
+    <h2>6. Comparatif fonctionnel et tarifaire</h2>
+
+    <h3>6.1 Fonctionnalites comptables cles</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Fonctionnalite</th>
+                    <th>Exact Online</th>
+                    <th>Horus</th>
+                    <th>Octopus</th>
+                    <th>Yuki</th>
+                    <th>Odoo</th>
+                    <th>Sage BOB</th>
+                    <th>WinAuditor</th>
+                    <th>Pennylane</th>
+                    <th>Xero</th>
+                    <th>WinBooks</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>100% Cloud</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="p">Partiel</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="n">Non</td>
+                </tr>
+                <tr>
+                    <td><strong>Peppol 2026</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="p">Partiel</td><td class="n">Non</td><td class="y">Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>TVA belge complete</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="n">Non</td><td class="n">Non</td><td class="y">Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>CODA / SODA</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="p">Partiel</td><td class="y">Oui</td><td class="y">Oui</td><td class="n">Non</td><td class="n">Non</td><td class="y">Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>Connexion bancaire (Ponto)</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="n">Non</td><td class="p">Partiel</td><td class="p">Partiel</td>
+                </tr>
+                <tr>
+                    <td><strong>OCR / Scan factures</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="p">Basique</td><td class="y">Oui</td><td class="p">Partiel</td><td class="p">Basique</td><td class="y">Oui</td><td class="y">Oui</td><td class="p">Partiel</td><td class="n">Non</td>
+                </tr>
+                <tr>
+                    <td><strong>IA reconnaissance docs</strong></td>
+                    <td class="y">Oui</td><td class="y">Avance</td><td class="p">Basique</td><td class="y">Avance</td><td class="p">Basique</td><td class="n">Non</td><td class="y">Oui</td><td class="y">Avance</td><td class="p">Basique</td><td class="n">Non</td>
+                </tr>
+                <tr>
+                    <td><strong>Lettrage automatique</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="p">Partiel</td>
+                </tr>
+                <tr>
+                    <td><strong>Portail client/fiduciaire</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="p">Partiel</td><td class="p">Partiel</td><td class="y">Oui</td><td class="y">Oui</td><td class="n">Non</td>
+                </tr>
+                <tr>
+                    <td><strong>Multi-dossiers</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="p">Partiel</td><td class="n">Non</td><td class="y">Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>App mobile</strong></td>
+                    <td class="y">Oui</td><td class="p">Web resp.</td><td class="p">Web resp.</td><td class="y">Oui</td><td class="y">Oui</td><td class="n">Non</td><td class="p">Web resp.</td><td class="y">Oui</td><td class="y">Oui</td><td class="n">Non</td>
+                </tr>
+                <tr>
+                    <td><strong>Bilingue FR/NL</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="n">FR seul</td><td class="n">EN seul</td><td class="y">Oui</td>
+                </tr>
+                <tr>
+                    <td><strong>Declarations BNB</strong></td>
+                    <td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="y">Oui</td><td class="p">Partiel</td><td class="y">Oui</td><td class="y">Oui</td><td class="n">Non</td><td class="n">Non</td><td class="y">Oui</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <p style="font-size:0.82rem; color:var(--text-light);">
+        <span class="y">Oui</span> = Inclus nativement &nbsp;
+        <span class="p">Partiel</span> = Basique ou via extension &nbsp;
+        <span class="n">Non</span> = Absent ou inadapte au marche belge
+    </p>
+
+    <h3>6.2 Grille tarifaire</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr><th>Logiciel</th><th>Formule de base /mois</th><th>Formule complete /mois</th><th>Frais de demarrage</th><th>Modele</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Exact Online</strong></td><td>49 EUR</td><td>269 EUR (Commerce)</td><td>1 000 – 5 000 EUR</td><td>Abonnement mensuel</td></tr>
+                <tr><td><strong>Horus</strong></td><td>52,50 EUR (15 dossiers)</td><td>~100 EUR</td><td>500 – 2 000 EUR</td><td>Abonnement + activation</td></tr>
+                <tr><td><strong>Octopus</strong></td><td>~35 EUR</td><td>~80 EUR</td><td>Faible</td><td>Abonnement mensuel</td></tr>
+                <tr><td><strong>Yuki</strong></td><td>~40 EUR</td><td>Sur devis</td><td>500 – 1 500 EUR</td><td>Abonnement mensuel</td></tr>
+                <tr><td><strong>Odoo</strong></td><td>Gratuit (1 module)</td><td>19,90 EUR/user</td><td>2 000 – 15 000 EUR</td><td>Abonnement + config</td></tr>
+                <tr><td><strong>Sage BOB</strong></td><td>~75 EUR</td><td>~200 EUR</td><td>2 000 – 8 000 EUR</td><td>Licence + maintenance</td></tr>
+                <tr><td><strong>WinAuditor</strong></td><td>60 EUR</td><td>80 EUR (+facturation)</td><td>500 – 1 500 EUR</td><td>Abonnement mensuel</td></tr>
+                <tr><td><strong>Pennylane</strong></td><td>~30 EUR</td><td>~60 EUR</td><td>Faible</td><td>Abonnement mensuel</td></tr>
+                <tr><td><strong>Xero</strong></td><td>~20 EUR</td><td>~80 EUR</td><td>Faible</td><td>Abonnement mensuel</td></tr>
+                <tr class="highlight"><td><strong>WinBooks (actuel)</strong></td><td>~25 EUR (Business)</td><td>~76 EUR (Fiduciaire)</td><td>Deja en place</td><td>Licence / location</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p style="font-size:0.82rem; color:var(--text-light);">
+        Tous les prix sont HTVA — mars 2026. Tarifs indicatifs, variables selon utilisateurs et modules. Demandez un devis a chaque editeur.
+    </p>
+</section>
+
+<!-- ========== 7. SCORING ========== -->
+<section id="scoring">
+    <h2>7. Scoring et classement</h2>
+    <p>Notation de 1 a 10 par critere, ponderee selon la grille. Score final sur 10.</p>
+
+    <div class="scores-grid">
+
+        <!-- #1 EXACT ONLINE -->
+        <div class="score-card r1">
+            <div class="rank">1</div>
+            <div class="name">Exact Online</div>
+            <div class="tag">Leader cloud Benelux — successeur naturel de WinBooks</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg h" style="width:96%"></div></div><span class="v">9.6</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg h" style="width:84%"></div></div><span class="v">8.4</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg h" style="width:95%"></div></div><span class="v">9.5</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg h" style="width:85%"></div></div><span class="v">8.5</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg h" style="width:78%"></div></div><span class="v">7.8</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg h" style="width:94%"></div></div><span class="v">9.4</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg h" style="width:96%"></div></div><span class="v">9.6</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">9.0/10</span></div>
+        </div>
+
+        <!-- #2 HORUS -->
+        <div class="score-card r2">
+            <div class="rank">2</div>
+            <div class="name">Horus</div>
+            <div class="tag">IA belge de pointe — le challenger qui monte vite</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg h" style="width:93%"></div></div><span class="v">9.3</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg h" style="width:88%"></div></div><span class="v">8.8</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg h" style="width:85%"></div></div><span class="v">8.5</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg h" style="width:92%"></div></div><span class="v">9.2</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg h" style="width:85%"></div></div><span class="v">8.5</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg h" style="width:95%"></div></div><span class="v">9.5</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg m" style="width:76%"></div></div><span class="v">7.6</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">8.8/10</span></div>
+        </div>
+
+        <!-- #3 OCTOPUS -->
+        <div class="score-card r3">
+            <div class="rank">3</div>
+            <div class="name">Octopus</div>
+            <div class="tag">100% belge — le plus simple et abordable</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg h" style="width:95%"></div></div><span class="v">9.5</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg h" style="width:92%"></div></div><span class="v">9.2</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg h" style="width:88%"></div></div><span class="v">8.8</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg m" style="width:68%"></div></div><span class="v">6.8</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg h" style="width:92%"></div></div><span class="v">9.2</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg h" style="width:95%"></div></div><span class="v">9.5</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg h" style="width:80%"></div></div><span class="v">8.0</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">8.6/10</span></div>
+        </div>
+
+        <!-- #4 YUKI -->
+        <div class="score-card rx">
+            <div class="rank">4</div>
+            <div class="name">Yuki (Visma)</div>
+            <div class="tag">Automatisation poussee — adosse au groupe Visma</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg h" style="width:82%"></div></div><span class="v">8.2</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg m" style="width:75%"></div></div><span class="v">7.5</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg h" style="width:82%"></div></div><span class="v">8.2</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg h" style="width:88%"></div></div><span class="v">8.8</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">8.5/10</span></div>
+        </div>
+
+        <!-- #5 WINAUDITOR -->
+        <div class="score-card rx">
+            <div class="rank">5</div>
+            <div class="name">WinAuditor</div>
+            <div class="tag">100% belge — fiable et bien note</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg h" style="width:85%"></div></div><span class="v">8.5</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg h" style="width:80%"></div></div><span class="v">8.0</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg h" style="width:80%"></div></div><span class="v">8.0</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg h" style="width:82%"></div></div><span class="v">8.2</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg m" style="width:72%"></div></div><span class="v">7.2</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">8.3/10</span></div>
+        </div>
+
+        <!-- #6 ODOO -->
+        <div class="score-card rx">
+            <div class="rank">6</div>
+            <div class="name">Odoo</div>
+            <div class="tag">ERP complet — puissant mais complexe a configurer</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg h" style="width:82%"></div></div><span class="v">8.2</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg m" style="width:58%"></div></div><span class="v">5.8</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg h" style="width:88%"></div></div><span class="v">8.8</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg m" style="width:70%"></div></div><span class="v">7.0</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg m" style="width:65%"></div></div><span class="v">6.5</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg m" style="width:70%"></div></div><span class="v">7.0</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">7.3/10</span></div>
+        </div>
+
+        <!-- #7 SAGE BOB -->
+        <div class="score-card rx">
+            <div class="rank">7</div>
+            <div class="name">Sage BOB</div>
+            <div class="tag">Valeur sure belge — mais en retard sur le cloud</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg m" style="width:65%"></div></div><span class="v">6.5</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg m" style="width:55%"></div></div><span class="v">5.5</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg m" style="width:50%"></div></div><span class="v">5.0</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg m" style="width:55%"></div></div><span class="v">5.5</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg h" style="width:85%"></div></div><span class="v">8.5</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg h" style="width:82%"></div></div><span class="v">8.2</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">6.8/10</span></div>
+        </div>
+
+        <!-- #8 WINBOOKS -->
+        <div class="score-card rx">
+            <div class="rank">8</div>
+            <div class="name">WinBooks Classic</div>
+            <div class="tag">Logiciel actuel — reference historique en declin</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg h" style="width:85%"></div></div><span class="v">8.5</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg m" style="width:68%"></div></div><span class="v">6.8</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg l" style="width:25%"></div></div><span class="v">2.5</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg l" style="width:20%"></div></div><span class="v">2.0</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg m" style="width:75%"></div></div><span class="v">7.5</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg h" style="width:80%"></div></div><span class="v">8.0</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg l" style="width:42%"></div></div><span class="v">4.2</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">5.5/10</span></div>
+        </div>
+
+        <!-- #9 PENNYLANE -->
+        <div class="score-card rx">
+            <div class="rank">9</div>
+            <div class="name">Pennylane</div>
+            <div class="tag">Excellent en France — pas encore adapte a la Belgique</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg l" style="width:28%"></div></div><span class="v">2.8</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg h" style="width:95%"></div></div><span class="v">9.5</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg h" style="width:92%"></div></div><span class="v">9.2</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg h" style="width:82%"></div></div><span class="v">8.2</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg l" style="width:20%"></div></div><span class="v">2.0</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg h" style="width:80%"></div></div><span class="v">8.0</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">5.4/10</span></div>
+        </div>
+
+        <!-- #10 XERO -->
+        <div class="score-card rx">
+            <div class="rank">10</div>
+            <div class="name">Xero</div>
+            <div class="tag">Leader mondial anglo-saxon — inadapte au marche belge</div>
+            <div class="bar-row"><label>Conformite BE</label><div class="bar-bg"><div class="bar-fg l" style="width:18%"></div></div><span class="v">1.8</span></div>
+            <div class="bar-row"><label>Facilite</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="bar-row"><label>Cloud / Collab.</label><div class="bar-bg"><div class="bar-fg h" style="width:95%"></div></div><span class="v">9.5</span></div>
+            <div class="bar-row"><label>OCR / IA</label><div class="bar-bg"><div class="bar-fg m" style="width:70%"></div></div><span class="v">7.0</span></div>
+            <div class="bar-row"><label>Qualite / Prix</label><div class="bar-bg"><div class="bar-fg h" style="width:82%"></div></div><span class="v">8.2</span></div>
+            <div class="bar-row"><label>Support BE</label><div class="bar-bg"><div class="bar-fg l" style="width:15%"></div></div><span class="v">1.5</span></div>
+            <div class="bar-row"><label>Perennite</label><div class="bar-bg"><div class="bar-fg h" style="width:90%"></div></div><span class="v">9.0</span></div>
+            <div class="total"><span class="lbl">Score pondere</span><span class="sc">5.0/10</span></div>
+        </div>
+
+    </div>
+
+    <h3>Classement final</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr><th>Rang</th><th>Logiciel</th><th>Score</th><th>Point fort</th></tr>
+            </thead>
+            <tbody>
+                <tr style="background:#fffff0;font-weight:600"><td>1</td><td>Exact Online</td><td>9.0 / 10</td><td>Leader cloud + migration WinBooks + perennite maximale</td></tr>
+                <tr style="background:#fffff0;font-weight:600"><td>2</td><td>Horus</td><td>8.8 / 10</td><td>Meilleure IA + 100% belge</td></tr>
+                <tr style="background:#fffff0;font-weight:600"><td>3</td><td>Octopus</td><td>8.6 / 10</td><td>Le plus simple + prix imbattable</td></tr>
+                <tr><td>4</td><td>Yuki (Visma)</td><td>8.5 / 10</td><td>Automatisation + groupe solide</td></tr>
+                <tr><td>5</td><td>WinAuditor</td><td>8.3 / 10</td><td>Belge, bon OCR, abordable</td></tr>
+                <tr><td>6</td><td>Odoo</td><td>7.3 / 10</td><td>Ultra-complet mais trop complexe</td></tr>
+                <tr><td>7</td><td>Sage BOB</td><td>6.8 / 10</td><td>Solide mais vieillissant</td></tr>
+                <tr><td>8</td><td>WinBooks Classic</td><td>5.5 / 10</td><td>Conforme mais depasse</td></tr>
+                <tr><td>9</td><td>Pennylane</td><td>5.4 / 10</td><td>Top en France, pas pour la Belgique</td></tr>
+                <tr><td>10</td><td>Xero</td><td>5.0 / 10</td><td>Inadapte au contexte belge</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ========== 8. TOP 3 ========== -->
+<section id="top3">
+    <h2>8. Analyse detaillee du Top 3</h2>
+
+    <!-- EXACT ONLINE -->
+    <h3>N°1 — Exact Online (9.0/10)</h3>
+    <div class="pros-cons">
+        <div>
+            <h4 style="color:var(--success)">Avantages</h4>
+            <ul>
+                <li><strong>Migration naturelle depuis WinBooks :</strong> Exact est le proprietaire de WinBooks — outils de migration deja prevus, partenaires specialises dans cette transition</li>
+                <li><strong>N°1 cloud au Benelux :</strong> Plus grand ecosysteme de partenaires et de comptables en Belgique</li>
+                <li><strong>Suite complete :</strong> Comptabilite + facturation + CRM + commerce — tout dans un seul environnement, extensible selon les besoins</li>
+                <li><strong>Peppol Access Point certifie :</strong> Conformite 2026 optimale, sans intermediaire ni cout additionnel</li>
+                <li><strong>Ponto integre :</strong> Connexion bancaire directe avec 1 700+ institutions europeennes</li>
+                <li><strong>Multi-sites natif :</strong> Acces cloud depuis Uccle, Leuze ou n'importe ou — zero infrastructure locale</li>
+                <li><strong>Perennite maximale :</strong> Groupe neerlandais solide financierement, leader Benelux, investissements R&D continus</li>
+                <li><strong>Collaboration fiduciaire :</strong> Portail client/comptable integre, travail simultane en temps reel</li>
+            </ul>
+        </div>
+        <div>
+            <h4 style="color:var(--accent)">Points d'attention</h4>
+            <ul>
+                <li>Formule Commerce (269 EUR/mois) plus chere — mais la formule Comptabilite (49 EUR/mois) suffit pour DAP</li>
+                <li>Interface riche qui demande une prise en main initiale</li>
+                <li>Certains modules avances vendus separement</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- HORUS -->
+    <h3>N°2 — Horus (8.8/10)</h3>
+    <div class="pros-cons">
+        <div>
+            <h4 style="color:var(--success)">Avantages</h4>
+            <ul>
+                <li><strong>IA de reconnaissance documentaire avancee :</strong> Gain de temps de 40% sur l'encodage selon les utilisateurs</li>
+                <li><strong>100% belge, 100% cloud :</strong> Concu pour la legislation belge, TVA, CODA/SODA, Peppol, BNB</li>
+                <li><strong>Interface moderne :</strong> Developpe from scratch, UX contemporaine et intuitive</li>
+                <li><strong>Forte dynamique :</strong> CA de 12,5M EUR en 2025, 8 000+ professionnels, en pleine croissance</li>
+                <li><strong>Prix competitif :</strong> 52,50 EUR/mois avec 15 dossiers inclus</li>
+                <li><strong>Support local excellent :</strong> Equipe belge, reactive, FR/NL</li>
+            </ul>
+        </div>
+        <div>
+            <h4 style="color:var(--accent)">Points d'attention</h4>
+            <ul>
+                <li>Editeur plus jeune qu'Exact — moins de recul historique</li>
+                <li>Pas d'outil de migration depuis WinBooks prevu</li>
+                <li>Ecosysteme d'extensions et de partenaires plus restreint</li>
+                <li>Pas de modules CRM ou gestion commerciale integres</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- OCTOPUS -->
+    <h3>N°3 — Octopus (8.6/10)</h3>
+    <div class="pros-cons">
+        <div>
+            <h4 style="color:var(--success)">Avantages</h4>
+            <ul>
+                <li><strong>Interface la plus simple du marche :</strong> Adoption rapide garantie, quasi zero courbe d'apprentissage</li>
+                <li><strong>Prix imbattable :</strong> Des ~35 EUR/mois, le meilleur rapport qualite/prix</li>
+                <li><strong>2 600+ comptables, 83 000 dossiers :</strong> Tres largement eprouve</li>
+                <li><strong>Peppol + CODA gratuit :</strong> Conformite complete sans surcout</li>
+                <li><strong>100% belge :</strong> Support local FR/NL, legislation toujours a jour</li>
+                <li><strong>Portail collaboratif :</strong> Excellent pour le travail comptable/fiduciaire</li>
+            </ul>
+        </div>
+        <div>
+            <h4 style="color:var(--accent)">Points d'attention</h4>
+            <ul>
+                <li>IA/OCR moins avancee que Horus ou Yuki</li>
+                <li>Pas de fonctionnalites au-dela de la comptabilite pure</li>
+                <li>Oriente principalement fiduciaire</li>
+                <li>Moins de possibilites de personnalisation</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ========== 9. RECOMMANDATION ========== -->
+<section id="reco">
+    <h2>9. Recommandation finale</h2>
+
+    <div class="reco-box">
+        <h3>Notre recommandation pour DAP Courtiers</h3>
+        <div class="winner">Exact Online</div>
+        <p style="font-size:1.1rem; margin-bottom:1.25rem;">
+            <strong>Score : 9.0/10</strong> — La solution la plus adaptee pour DAP Courtiers.
+        </p>
+
+        <h4>Pourquoi Exact Online est le meilleur choix pour DAP :</h4>
+        <ol>
+            <li><strong>Transition la plus simple depuis WinBooks :</strong> Exact est le proprietaire de WinBooks. Des outils de migration de donnees existent nativement, et de nombreux partenaires belges sont specialises dans cette transition. Votre comptable retrouvera des reperes familiers.</li>
+            <li><strong>Conformite belge irreprochable :</strong> Peppol Access Point certifie, TVA belge complete, CODA/SODA, declarations BNB — zero risque reglementaire.</li>
+            <li><strong>Cloud multi-sites :</strong> Acces depuis Uccle, Leuze ou chez la fiduciaire, sans aucune infrastructure locale a maintenir. Fini les backups serveur et les mises a jour manuelles.</li>
+            <li><strong>Collaboration temps reel :</strong> Le comptable interne et la fiduciaire externe travaillent dans le meme environnement, en meme temps.</li>
+            <li><strong>Evolutif :</strong> Si DAP a un jour besoin de CRM, facturation avancee ou gestion commerciale, les modules sont deja disponibles dans le meme ecosysteme.</li>
+            <li><strong>Perennite garantie :</strong> Exact est un groupe neerlandais solide financierement, leader inconteste du Benelux avec des investissements R&D continus. C'est un choix sans risque a long terme.</li>
+        </ol>
+    </div>
+
+    <h3 style="margin-top:1.5rem">Alternative N°2 : Horus</h3>
+    <p>Si l'encodage automatique par IA est la priorite absolue du comptable, <strong>Horus</strong> (8.8/10) offre la meilleure reconnaissance de documents du marche belge, avec un gain de temps de 40% sur l'encodage. A considerer si le volume de factures a traiter est tres eleve.</p>
+
+    <h3>Alternative budget : Octopus</h3>
+    <p>Si le budget est le critere decisif, <strong>Octopus</strong> (8.6/10, des 35 EUR/mois) offre le meilleur rapport qualite/prix du marche belge. C'est la solution la plus simple a adopter.</p>
+
+    <h3>Scenario a eviter</h3>
+    <div class="callout callout-danger">
+        <strong>Rester sur WinBooks Classic (5.5/10) n'est pas recommande :</strong>
+        <ul style="margin-top:0.5rem">
+            <li>Logiciel local dans un monde cloud — pas d'acces a distance, pas de collaboration</li>
+            <li>Aucune reconnaissance de documents — encodage 100% manuel</li>
+            <li>Exact investit dans Exact Online, pas dans WinBooks Classic — risque de fin de vie</li>
+            <li>Interface vieillissante qui ralentit le travail quotidien</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ========== 10. ROADMAP ========== -->
+<section id="roadmap">
+    <h2>10. Plan de transition</h2>
+
+    <div class="timeline">
+        <div class="t-step">
+            <div class="phase">Etape 1 — Avril 2026</div>
+            <div class="title">Demonstrations</div>
+            <div class="desc">
+                Contacter un partenaire Horus (via horussoftware.be) et un partenaire Exact Online (Polynome, IBGraf ou Gespac). Demander une demo personnalisee avec des donnees proches de celles de DAP. Le comptable teste les deux pendant 1 a 2 semaines.
+            </div>
+        </div>
+        <div class="t-step">
+            <div class="phase">Etape 2 — Mai 2026</div>
+            <div class="title">Decision et devis</div>
+            <div class="desc">
+                Le comptable donne son avis apres les demos. Demander un devis detaille au fournisseur retenu (abonnement + migration + formation). Valider le budget avec la direction.
+            </div>
+        </div>
+        <div class="t-step">
+            <div class="phase">Etape 3 — Juin 2026</div>
+            <div class="title">Migration des donnees</div>
+            <div class="desc">
+                Le partenaire migre le plan comptable, les journaux, les ecritures historiques et les fiches tiers depuis WinBooks. Configuration des connexions bancaires (CODA/Ponto) et activation Peppol.
+            </div>
+        </div>
+        <div class="t-step">
+            <div class="phase">Etape 4 — Juillet 2026</div>
+            <div class="title">Double fonctionnement</div>
+            <div class="desc">
+                1 mois en parallele : le comptable travaille sur les deux logiciels pour verifier que tout est correct (ecritures, TVA, rapprochements bancaires). Formation complementaire si necessaire.
+            </div>
+        </div>
+        <div class="t-step">
+            <div class="phase">Etape 5 — Aout 2026</div>
+            <div class="title">Basculement definitif</div>
+            <div class="desc">
+                Arret de WinBooks Classic. Archivage des anciennes donnees. Le comptable travaille exclusivement sur le nouveau logiciel. Suivi par le partenaire pendant 3 mois.
+            </div>
+        </div>
+    </div>
+
+    <div class="callout callout-info" style="margin-top:1rem">
+        <strong>Budget estimatif total :</strong>
+        Entre 2 000 et 6 000 EUR tout compris (implementation + migration + formation + 1 an d'abonnement). Ce montant est eligible a la <strong>deduction fiscale majoree de 120%</strong> pour les investissements digitaux des PME belges.
+    </div>
+</section>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <p><strong>DAP Courtiers en Assurances — Audit Logiciels Comptables</strong></p>
+    <p>Rapport genere le 24 mars 2026 — Service Comptabilite</p>
+    <p style="margin-top:0.5rem;font-size:0.75rem;">
+        Sources : Gartner, Forrester, ComptaPerspectives.be, Capterra, G2, GetApp, LeadService.be, sites officiels des editeurs.<br>
+        Prix indicatifs HTVA. Demandez un devis personnalise aupres de chaque editeur.
+    </p>
+</div>
+
+</body>
+</html>
