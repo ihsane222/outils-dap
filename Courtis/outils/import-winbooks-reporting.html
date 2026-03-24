@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Winbooks → Reporting | DAP</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            max-width: 560px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a3a5c, #2a5a8c);
+            color: white;
+            padding: 28px 32px;
+            text-align: center;
+        }
+        .header h1 { font-size: 1.3rem; font-weight: 600; margin-bottom: 6px; }
+        .header p { font-size: 0.85rem; opacity: 0.8; }
+        .form-body { padding: 32px; }
+        .field { margin-bottom: 24px; }
+        .field label { display: block; font-weight: 600; font-size: 0.9rem; color: #333; margin-bottom: 8px; }
+        .field .hint { font-size: 0.78rem; color: #888; margin-bottom: 8px; }
+        .file-drop {
+            border: 2px dashed #ccc; border-radius: 10px; padding: 24px;
+            text-align: center; cursor: pointer; transition: all 0.2s; background: #fafbfc;
+        }
+        .file-drop:hover, .file-drop.dragover { border-color: #2a5a8c; background: #f0f5fa; }
+        .file-drop.has-file { border-color: #27ae60; background: #f0faf5; }
+        .file-drop input[type="file"] { display: none; }
+        .file-drop .icon { font-size: 2rem; margin-bottom: 8px; }
+        .file-drop .text { font-size: 0.85rem; color: #666; }
+        .file-drop .filename { font-size: 0.85rem; color: #27ae60; font-weight: 600; margin-top: 4px; }
+        select {
+            width: 100%; padding: 12px 16px; border: 2px solid #ddd; border-radius: 10px;
+            font-size: 1rem; appearance: none; cursor: pointer;
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' fill='none' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;
+        }
+        select:focus { outline: none; border-color: #2a5a8c; }
+        .btn {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #1a3a5c, #2a5a8c);
+            color: white; border: none; border-radius: 10px; font-size: 1rem;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,58,92,0.3); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        .status {
+            margin-top: 16px; padding: 14px 16px; border-radius: 10px;
+            font-size: 0.85rem; display: none; line-height: 1.5;
+        }
+        .status.loading { display: block; background: #fff8e6; color: #856404; border: 1px solid #ffeeba; }
+        .status.success { display: block; background: #f0faf5; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error { display: block; background: #fdf0f0; color: #721c24; border: 1px solid #f5c6cb; }
+        .status .detail { margin-top: 8px; font-size: 0.8rem; opacity: 0.85; }
+        .results-table {
+            margin-top: 12px; width: 100%; border-collapse: collapse; font-size: 0.78rem;
+        }
+        .results-table th {
+            background: #e9ecef; padding: 6px 8px; text-align: left;
+            border-bottom: 2px solid #dee2e6; font-weight: 600;
+        }
+        .results-table td {
+            padding: 4px 8px; border-bottom: 1px solid #eee;
+        }
+        .results-table .val { text-align: right; font-family: monospace; }
+        .results-table .warn { color: #856404; font-weight: 600; }
+        .results-wrap { max-height: 300px; overflow-y: auto; margin-top: 8px; }
+        .footer { text-align: center; padding: 16px 32px 24px; font-size: 0.75rem; color: #aaa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Import Winbooks &rarr; Reporting</h1>
+            <p>Injection automatique des chiffres Winbooks dans le fichier Reporting</p>
+        </div>
+
+        <form id="uploadForm" class="form-body">
+            <div class="field">
+                <label>Fichier Winbooks (export trimestriel)</label>
+                <div class="hint">L'export Excel avec les comptes 6xx et 7xx</div>
+                <div class="file-drop" id="drop-winbooks" onclick="this.querySelector('input').click()">
+                    <input type="file" name="winbooks" accept=".xlsx,.xls" required>
+                    <div class="icon">&#128202;</div>
+                    <div class="text">Cliquer ou glisser le fichier Winbooks ici</div>
+                    <div class="filename" id="name-winbooks"></div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Fichier Reporting</label>
+                <div class="hint">Le fichier Reporting avec les onglets 2024, 2025, Compte de R&eacute;sultat...</div>
+                <div class="file-drop" id="drop-reporting" onclick="this.querySelector('input').click()">
+                    <input type="file" name="reporting" accept=".xlsx,.xls" required>
+                    <div class="icon">&#128203;</div>
+                    <div class="text">Cliquer ou glisser le fichier Reporting ici</div>
+                    <div class="filename" id="name-reporting"></div>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Trimestre &agrave; remplir</label>
+                <select name="trimestre" required>
+                    <option value="">-- Choisir le trimestre --</option>
+                    <option value="T1">T1 (Janvier - Mars)</option>
+                    <option value="T2">T2 (Avril - Juin)</option>
+                    <option value="T3">T3 (Juillet - Septembre)</option>
+                    <option value="T4">T4 (Octobre - D&eacute;cembre)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">Traiter et t&eacute;l&eacute;charger</button>
+
+            <div class="status" id="status"></div>
+            <div class="results-wrap" id="resultsWrap" style="display:none"></div>
+        </form>
+
+        <div class="footer">DAP &mdash; Outil interne comptabilit&eacute;</div>
+    </div>
+
+    <script>
+    // File drop zones
+    document.querySelectorAll('.file-drop').forEach(zone => {
+        const input = zone.querySelector('input');
+        const nameId = zone.id.replace('drop-', 'name-');
+        input.addEventListener('change', () => {
+            if (input.files.length) {
+                zone.classList.add('has-file');
+                document.getElementById(nameId).textContent = input.files[0].name;
+                zone.querySelector('.text').textContent = 'Fichier selectionne :';
+            }
+        });
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+        zone.addEventListener('drop', e => {
+            e.preventDefault(); zone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) { input.files = e.dataTransfer.files; input.dispatchEvent(new Event('change')); }
+        });
+    });
+
+    function readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    function showStatus(type, msg, detail) {
+        const el = document.getElementById('status');
+        el.className = 'status ' + type;
+        el.innerHTML = msg + (detail ? '<div class="detail">' + detail + '</div>' : '');
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const btn = document.getElementById('submitBtn');
+        const resultsWrap = document.getElementById('resultsWrap');
+
+        const winFile = form.querySelector('[name="winbooks"]').files[0];
+        const repFile = form.querySelector('[name="reporting"]').files[0];
+        const trimestre = form.querySelector('[name="trimestre"]').value;
+
+        if (!winFile || !repFile) { showStatus('error', 'Veuillez selectionner les deux fichiers.'); return; }
+        if (!trimestre) { showStatus('error', 'Veuillez choisir le trimestre.'); return; }
+
+        btn.disabled = true;
+        btn.textContent = 'Traitement en cours...';
+        showStatus('loading', 'Lecture des fichiers et injection des montants...');
+        resultsWrap.style.display = 'none';
+
+        try {
+            // Mapping trimestre -> colonne (0-indexed)
+            const triColMap = { T1: 11, T2: 14, T3: 17, T4: 20 }; // L, O, R, U
+            const colIdx = triColMap[trimestre];
+
+            // === LECTURE WINBOOKS ===
+            const winBuf = await readFileAsArrayBuffer(winFile);
+            const wbWin = XLSX.read(winBuf, { type: 'array' });
+            const wsWin = wbWin.Sheets[wbWin.SheetNames[0]];
+            const winRange = XLSX.utils.decode_range(wsWin['!ref']);
+
+            const winData = {};
+            for (let r = 5; r <= winRange.e.r; r++) {
+                const acctCell = wsWin[XLSX.utils.encode_cell({ r, c: 0 })];
+                const soldeCell = wsWin[XLSX.utils.encode_cell({ r, c: 6 })];
+                if (acctCell && acctCell.v != null && soldeCell && soldeCell.v != null) {
+                    const acct = String(acctCell.v).trim();
+                    if (/^[67]\d+/.test(acct)) {
+                        winData[acct] = Number(soldeCell.v);
+                    }
+                }
+            }
+
+            // === LECTURE & MODIFICATION REPORTING ===
+            const repBuf = await readFileAsArrayBuffer(repFile);
+            const wbRep = XLSX.read(repBuf, { type: 'array', cellFormula: true, cellStyles: true, bookVBA: true });
+
+            // Trouver le dernier onglet annee
+            const yearSheets = wbRep.SheetNames.filter(s => /^\d{4}$/.test(s.trim()));
+            yearSheets.sort();
+            const sheetName = yearSheets[yearSheets.length - 1];
+            if (!sheetName) throw new Error('Aucun onglet annee (2024, 2025...) trouve dans le Reporting.');
+
+            const wsRep = wbRep.Sheets[sheetName];
+            const repRange = XLSX.utils.decode_range(wsRep['!ref']);
+
+            // Matching
+            const matched = [];
+            const remaining = Object.assign({}, winData);
+
+            for (let r = 0; r <= repRange.e.r; r++) {
+                const acctCell = wsRep[XLSX.utils.encode_cell({ r, c: 1 })]; // col B
+                if (acctCell && acctCell.v != null) {
+                    const acct = String(acctCell.v).trim();
+                    if (remaining.hasOwnProperty(acct)) {
+                        const cellRef = XLSX.utils.encode_cell({ r, c: colIdx });
+                        wsRep[cellRef] = { t: 'n', v: remaining[acct] };
+                        const labelCell = wsRep[XLSX.utils.encode_cell({ r, c: 4 })]; // col E
+                        matched.push({ compte: acct, valeur: remaining[acct], label: labelCell ? String(labelCell.v).trim() : '' });
+                        delete remaining[acct];
+                    }
+                }
+            }
+
+            // Etendre la plage si necessaire
+            if (colIdx > repRange.e.c) {
+                repRange.e.c = colIdx;
+                wsRep['!ref'] = XLSX.utils.encode_range(repRange);
+            }
+
+            // === GENERATION FICHIER ===
+            const outBuf = XLSX.write(wbRep, { type: 'array', bookType: 'xlsx' });
+            const blob = new Blob([outBuf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = repFile.name.replace(/\.xlsx?$/i, '') + '_' + trimestre + '.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+            // === RESULTATS ===
+            const unmatchedList = Object.entries(remaining);
+            let statusMsg = '<strong>' + matched.length + ' comptes inject&eacute;s</strong> dans l\'onglet &laquo; ' + sheetName + ' &raquo; (colonne ' + trimestre + ')';
+            if (unmatchedList.length > 0) {
+                statusMsg += '<br>' + unmatchedList.length + ' compte(s) Winbooks non trouv&eacute;(s) dans le Reporting';
+            }
+
+            showStatus('success', statusMsg, 'Le t&eacute;l&eacute;chargement a d&eacute;marr&eacute;. Ouvrez le fichier dans Excel pour v&eacute;rifier.');
+
+            // Tableau de resultats
+            let html = '<table class="results-table"><thead><tr><th>Compte</th><th>Libell&eacute;</th><th>Valeur ' + trimestre + '</th></tr></thead><tbody>';
+            matched.forEach(m => {
+                html += '<tr><td>' + m.compte + '</td><td>' + m.label + '</td><td class="val">' + m.valeur.toLocaleString('fr-BE', { minimumFractionDigits: 2 }) + '</td></tr>';
+            });
+            unmatchedList.forEach(([acct, val]) => {
+                html += '<tr class="warn"><td>' + acct + '</td><td>(non trouv&eacute;)</td><td class="val">' + val.toLocaleString('fr-BE', { minimumFractionDigits: 2 }) + '</td></tr>';
+            });
+            html += '</tbody></table>';
+            resultsWrap.innerHTML = html;
+            resultsWrap.style.display = 'block';
+
+        } catch (err) {
+            showStatus('error', 'Erreur : ' + err.message);
+            console.error(err);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Traiter et telecharger';
+        }
+    });
+    </script>
+</body>
+</html>
