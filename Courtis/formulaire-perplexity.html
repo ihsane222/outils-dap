@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perplexity Pro — Journal d'expériences | DAP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #1a365d;
+            --primary-light: #2b6cb0;
+            --accent: #ed8936;
+            --bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text: #2d3748;
+            --text-light: #718096;
+            --border: #e2e8f0;
+            --perplexity: #20808d;
+            --perplexity-light: #2ba8b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--perplexity) 100%);
+            color: white;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .header h1 span { color: var(--accent); }
+
+        .header p {
+            font-size: 1rem;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0.5rem auto 0;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .intro {
+            background: #f0fffe;
+            border: 1.5px solid #d1ecef;
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .intro strong { color: var(--perplexity); }
+
+        .form-panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-title:not(:first-child) {
+            margin-top: 2rem;
+        }
+
+        .form-group { margin-bottom: 1.2rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--text);
+        }
+
+        .form-group .hint {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-bottom: 0.4rem;
+            font-weight: 400;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--perplexity);
+            box-shadow: 0 0 0 3px rgba(32,128,141,0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 500px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        /* Time saved selector */
+        .time-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .time-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0.8rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 400;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .time-options input { display: none; }
+
+        .time-options label:hover {
+            border-color: var(--perplexity);
+            background: #f0fffe;
+        }
+
+        .time-options input:checked + span {
+            color: var(--perplexity);
+            font-weight: 600;
+        }
+
+        .time-options label:has(input:checked) {
+            border-color: var(--perplexity);
+            background: #f0fffe;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.85rem;
+            background: var(--perplexity);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 1.5rem;
+        }
+
+        .btn-submit:hover { background: var(--perplexity-light); }
+        .btn-submit:active { transform: scale(0.98); }
+
+        .success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-overlay.visible { display: flex; }
+
+        .success-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            max-width: 420px;
+            margin: 1rem;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .success-card .icon { font-size: 3rem; margin-bottom: 0.5rem; }
+
+        .success-card h3 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .success-card p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .success-card .sub {
+            font-size: 0.82rem;
+            color: var(--perplexity);
+            margin-top: 0.5rem;
+        }
+
+        .success-card button {
+            margin-top: 1.2rem;
+            padding: 0.5rem 1.5rem;
+            background: var(--perplexity);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1><span>Perplexity Pro</span> — Journal d'exp&eacute;riences</h1>
+    <p>Partagez vos utilisations de Perplexity pour nous aider &agrave; mesurer l'impact et vous accompagner</p>
+</div>
+
+<div class="container">
+
+    <div class="intro">
+        <strong>Comment &ccedil;a marche ?</strong> Chaque fois que vous utilisez Perplexity Pro dans votre travail, prenez 1 minute pour d&eacute;crire votre exp&eacute;rience ici. Pas besoin d'&ecirc;tre formel &mdash; dites-nous simplement ce que vous avez fait et combien de temps &ccedil;a vous a fait gagner.
+    </div>
+
+    <form class="form-panel" id="feedbackForm">
+
+        <div class="section-title">Qui &ecirc;tes-vous ?</div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="name">Nom</label>
+                <input type="text" id="name" placeholder="Ex : Sophie M." required>
+            </div>
+            <div class="form-group">
+                <label for="department">D&eacute;partement</label>
+                <select id="department" required>
+                    <option value="">Choisir&hellip;</option>
+                    <option value="Sinistres">Sinistres</option>
+                    <option value="Production">Production</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Vie / EB">Vie / EB</option>
+                    <option value="Comptabilit&eacute;">Comptabilit&eacute;</option>
+                    <option value="Direction">Direction</option>
+                    <option value="IT">IT</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="section-title">Votre exp&eacute;rience</div>
+
+        <div class="form-group">
+            <label for="context">Dans quel cadre avez-vous utilis&eacute; Perplexity ?</label>
+            <div class="hint">Type de t&acirc;che, dossier concern&eacute;, situation&hellip;</div>
+            <select id="context" required>
+                <option value="">Choisir&hellip;</option>
+                <option value="Recherche prospect / client">Recherche prospect / client</option>
+                <option value="Recherche entreprise">Recherche entreprise</option>
+                <option value="Normes techniques / codes b&acirc;timent">Normes techniques / codes b&acirc;timent</option>
+                <option value="Analyse sinistre">Analyse sinistre</option>
+                <option value="Veille juridique / fiscale">Veille juridique / fiscale</option>
+                <option value="R&eacute;daction / communication">R&eacute;daction / communication</option>
+                <option value="Autre">Autre</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="experience">D&eacute;crivez ce que vous avez fait</label>
+            <div class="hint">Quelle question avez-vous pos&eacute;e ? Qu'avez-vous obtenu ? &Eacute;tait-ce utile ?</div>
+            <textarea id="experience" placeholder="Ex : J'ai demand&eacute; &agrave; Perplexity de trouver les derni&egrave;res jurisprudences sur le d&eacute;faut de conseil. Il m'a sorti 5 arr&ecirc;ts r&eacute;cents avec les liens Legifrance. Normalement je mets 45 min &agrave; faire cette recherche." required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Temps estim&eacute; gagn&eacute; gr&acirc;ce &agrave; Perplexity</label>
+            <div class="hint">Par rapport &agrave; votre m&eacute;thode habituelle (Google, appels, recherche manuelle&hellip;)</div>
+            <div class="time-options">
+                <label><input type="radio" name="time_saved" value="< 15 min" required><span>&lt; 15 min</span></label>
+                <label><input type="radio" name="time_saved" value="15-30 min"><span>15-30 min</span></label>
+                <label><input type="radio" name="time_saved" value="30 min - 1h"><span>30 min - 1h</span></label>
+                <label><input type="radio" name="time_saved" value="1-2h"><span>1-2h</span></label>
+                <label><input type="radio" name="time_saved" value="> 2h"><span>&gt; 2h</span></label>
+                <label><input type="radio" name="time_saved" value="Pas de gain"><span>Pas de gain</span></label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="remarks">Remarques (optionnel)</label>
+            <textarea id="remarks" placeholder="Difficult&eacute;s rencontr&eacute;es, id&eacute;es d'am&eacute;lioration, besoin d'aide pour construire un agent&hellip;" style="min-height: 70px;"></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Envoyer mon exp&eacute;rience</button>
+    </form>
+</div>
+
+<div class="success-overlay" id="successOverlay">
+    <div class="success-card">
+        <div class="icon">&#10003;</div>
+        <h3>Merci pour votre retour !</h3>
+        <p>Votre exp&eacute;rience a &eacute;t&eacute; enregistr&eacute;e.</p>
+        <div class="sub">N'h&eacute;sitez pas &agrave; revenir &agrave; chaque nouvelle utilisation.</div>
+        <button onclick="closeSuccess()">Nouvelle exp&eacute;rience</button>
+    </div>
+</div>
+
+<script>
+    const WEBHOOK_URL = 'https://n8n.srv1387885.hstgr.cloud/webhook/feedback-perplexity';
+
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const data = {
+            name: document.getElementById('name').value.trim(),
+            department: document.getElementById('department').value,
+            context: document.getElementById('context').value,
+            experience: document.getElementById('experience').value.trim(),
+            time_saved: (document.querySelector('input[name="time_saved"]:checked') || {}).value || '',
+            remarks: document.getElementById('remarks').value.trim(),
+            date: new Date().toISOString()
+        };
+
+        fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).catch(function(){});
+
+        document.getElementById('successOverlay').classList.add('visible');
+    });
+
+    function closeSuccess() {
+        document.getElementById('successOverlay').classList.remove('visible');
+        // Reset tout sauf le nom
+        const name = document.getElementById('name').value;
+        document.getElementById('feedbackForm').reset();
+        document.getElementById('name').value = name;
+    }
+</script>
+
+</body>
+</html>
