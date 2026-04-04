@@ -7,12 +7,12 @@
   "properties": {
     "from_agent": {
       "type": "string",
-      "enum": ["eros", "plutus", "raphael", "hermes", "janus", "midas", "aphrodite", "iris", "themis", "hestia", "zeus", "brio-sync", "system"],
+      "enum": ["eros", "plutus", "apollon", "hermes", "janus", "midas", "aphrodite", "iris", "themis", "hestia", "zeus", "brio-sync", "system"],
       "description": "Agent émetteur"
     },
     "to_agent": {
       "type": "string",
-      "enum": ["eros", "plutus", "raphael", "hermes", "janus", "midas", "aphrodite", "iris", "themis", "hestia", "zeus", "audit-log", "human-loop"],
+      "enum": ["eros", "plutus", "apollon", "hermes", "janus", "midas", "aphrodite", "iris", "themis", "hestia", "zeus", "audit-log", "human-loop"],
       "description": "Agent destinataire"
     },
     "action": {

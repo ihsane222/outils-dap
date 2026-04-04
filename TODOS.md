@@ -19,7 +19,7 @@
        │
        ├──► 8. Plutus prompt ──► 9. Plutus workflow ──► 10. Plutus tests
        │
-       ├──► 11. Raphaël prompt ──► 12. Raphaël workflow ──► 13. Raphaël tests
+       ├──► 11. Apollon prompt ──► 12. Apollon workflow ──► 13. Apollon tests
        │
        └──► 14. Eros prompt ──► 15. Eros workflow (RPA) ──► 16. Eros tests
                                        │
@@ -31,7 +31,7 @@
 ```
 Lane A (infra):      1 → 2 → 3 → 4 → 5          DONE ✓
 Lane B (Plutus):     8 → 9 → 10                  ~45min CC
-Lane C (Raphaël):    11 → 12 → 13                ~45min CC
+Lane C (Apollon):    11 → 12 → 13                ~45min CC — À REFAIRE
 Lane D (Eros):       14 → 15 → 16                ~1h30 CC    (bloqué par 17)
 Lane E (Brio Sync):  6 → 7                        ~30min CC
 Lane F (Lenovo):     17                            physique
@@ -49,7 +49,7 @@ Lancement : B + C + E en parallèle. D quand Lenovo prêt (17).
 | Workflow `Olympe - Human Approval` | `GbUBotmqWTThGFjF` |
 | Workflow `Olympe - Template Agent` | `AbrT4D75H3ahhWOP` |
 | Workflow `Plutus - Finance Reporting` | `saXpTdbwHYNdnUsB` |
-| Workflow `Raphael - Assistant Production` | `i589zgoFoM5CPyKZ` |
+| Workflow `Raphael - Assistant Production` | `i589zgoFoM5CPyKZ` | ⚠️ OBSOLÈTE — remplacé par Apollon |
 | Workflow `Olympe - Brio Sync` | `0QUMvJXKW8p47Xay` |
 
 ---
@@ -86,24 +86,24 @@ Lancement : B + C + E en parallèle. D quand Lenovo prêt (17).
 
 ---
 
-## Lane C — Raphaël (Assistant Production) — DONE ✓
+## Lane C — Apollon (Chatbot DAP) — À REFAIRE
 
-### [x] 11. Raphaël prompt système
-**Scope:** Écrire le prompt système de Raphaël. Assistant quotidien du manager production Leuze. Gère emails Outlook, calendrier, notes. Concis (opéré d'une main). Bilingue FR/NL. Inspiration : `AgentTeams-Raphael/prompt-systeme.md`.
-**Fichiers:** `agents/raphael/prompt-systeme.md`
-**Done when:** Couvre : lecture emails, réponse/transfert, calendrier, prise de notes réunion.
-**Effort:** S — ~15min CC
+### [x] 11. Apollon prompt système
+**Scope:** Prompt système chatbot double face : public (site web, clients DAP) + interne (Teams, employés). Bilingue FR/NL. Redirections vers agents spécialisés. Base de connaissances.
+**Fichiers:** `agents/apollon/prompt-systeme.md`
+**Done when:** Prompt couvre mode public + mode interne + redirections + règles sécurité données.
+**Effort:** S — ~15min CC — ✓ FAIT
 
-### [x] 12. Raphaël workflow n8n → `i589zgoFoM5CPyKZ`
-**Scope:** Créer le workflow `Raphael - Assistant Production`. Cloner template `AbrT4D75H3ahhWOP`. Trigger : Teams message. Tools : Microsoft Graph (Outlook read/send, Calendar read/create). LLM : Claude Haiku 4.5 tool use. Mémoire : window buffer 15 messages. Audit log `wiiN3qg8U47Gaycs`.
-**Fichiers:** `agents/raphael/workflow-raphael.json`, `agents/raphael/config.json`
-**Done when:** "lis mes emails" → résumé Outlook. "crée un RDV demain 14h" → événement créé. Audit log écrit.
+### [ ] 12. Apollon workflow n8n
+**Scope:** Créer le workflow `Apollon - Chatbot DAP`. Deux triggers : webhook POST `/webhook/apollon-public` (site web) + webhook POST `/webhook/apollon-interne` (Teams). AI Agent Claude Haiku 4.5. Tool : lecture `olympe_brio_cache` (recherche client pour mode interne). Audit log `wiiN3qg8U47Gaycs`. Pas de Microsoft Graph (pas d'email/calendrier, c'est un chatbot Q&A).
+**Fichiers:** `agents/apollon/workflow-apollon.json`
+**Done when:** Question public "quels sont vos horaires ?" → réponse. Question interne "numéro sinistres AG ?" → réponse. Audit log écrit.
 **Effort:** M — ~20min CC
 
-### [x] 13. Raphaël tests
-**Scope:** Test webhook : simuler message Teams, vérifier réponse + actions Outlook + audit log.
-**Fichiers:** `agents/raphael/tests/test-raphael.sh`, `agents/raphael/tests/mock-teams-message.json`
-**Done when:** `bash agents/raphael/tests/test-raphael.sh` retourne 0.
+### [ ] 13. Apollon tests
+**Scope:** Tests webhook : question publique, question interne, question hors scope (→ redirection), question en NL.
+**Fichiers:** `agents/apollon/tests/test-apollon.sh`, `agents/apollon/tests/mock-question-public.json`, `agents/apollon/tests/mock-question-interne.json`
+**Done when:** 4 cas de test passent.
 **Effort:** S — ~10min CC
 
 ---
