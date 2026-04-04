@@ -1,0 +1,244 @@
+{
+  "company": "AG Insurance",
+  "portal_url": "https://olnonlifeonlinep.asweb.portima.aginsurance.be/PIOLNONLIFEONLINE/FWOLNonLifeOnlineCarTarifView_FFFN.aspx",
+  "type_assurance": "auto",
+  "technologie": "ASP.NET WebForms",
+  "notes": "Formulaire ASP.NET avec postbacks. Le vehicule se selectionne via la popup FEBIAC (iframe popupIframe). Les radios necessitent .click() pour declencher les postbacks. Le preneur est ajoute via le systeme d'intervenants.",
+
+  "flow": [
+    "1. Remplir les champs de la page principale (garanties, usage, km, BM, etc.)",
+    "2. Cliquer sur 'Rechercher donnees du vehicule' pour ouvrir la popup FEBIAC",
+    "3. Dans la popup : selectionner Marque, attendre postback, selectionner Type, remplir Carburant + Date MEC + kW",
+    "4. Cliquer 'Rechercher' dans la popup, selectionner le vehicule dans la liste",
+    "5. Cliquer 'OK' pour valider le vehicule — les donnees se remplissent sur la page principale",
+    "6. Renseigner les infos du preneur via le systeme d'intervenants",
+    "7. Cliquer 'Suivant' pour acceder a la page Primes"
+  ],
+
+  "page_principale": {
+    "couverture_formule": {
+      "selector": "#MainPlaceHolder_DropDownListWarranties",
+      "type": "select",
+      "description": "Formule de couverture principale",
+      "valueMap": {
+        "RC uniquement": "4",
+        "RC + Mini omnium": "3",
+        "RC + Omnium complete (val. catalogue)": "2",
+        "RC + Omnium complete (val. facture)": "6"
+      },
+      "notes": "2=Top Omnium Val. catalogue, 6=Top Omnium Val. facture, 3=Top Occasium, 4=Sauf multirisques"
+    },
+    "vehicule_categorie": {
+      "selector": "#MainPlaceHolder_DropDownListCategory",
+      "type": "select",
+      "description": "Categorie du vehicule",
+      "valueMap": {
+        "Voiture": "1",
+        "Motorhome": "8"
+      },
+      "default": "1"
+    },
+    "vehicule_usage": {
+      "selector_0": "#MainPlaceHolder_RadioButtonListUsage_0",
+      "selector_1": "#MainPlaceHolder_RadioButtonListUsage_1",
+      "selector_2": "#MainPlaceHolder_RadioButtonListUsage_2",
+      "type": "radio",
+      "description": "Usage du vehicule",
+      "valueMap": {
+        "Prive uniquement": "_0",
+        "Prive + trajets domicile-travail": "_0",
+        "Professionnel occasionnel": "_1",
+        "Professionnel intensif": "_1",
+        "Oldtimer": "_2"
+      },
+      "notes": "_0=Limite, _1=Illimite, _2=Oldtimer. IMPORTANT: utiliser .click() pour declencher le postback ASP.NET"
+    },
+    "vehicule_kw": {
+      "selector": "#MainPlaceHolder_TextBoxPower",
+      "type": "input",
+      "description": "Puissance du vehicule en kW"
+    },
+    "vehicule_km": {
+      "selector": "#MainPlaceHolder_DropDownListKilometresRange",
+      "type": "select",
+      "description": "Kilometrage annuel estime",
+      "valueMap": {
+        "0-7500 km": "1",
+        "7501-15000 km": "2",
+        "15001-25000 km": "3",
+        "Illimite (>25000 km)": "4"
+      }
+    },
+    "systemes_securite": {
+      "selector_oui": "#MainPlaceHolder_SecuritySystemsRadioButtonList_0",
+      "selector_non": "#MainPlaceHolder_SecuritySystemsRadioButtonList_1",
+      "type": "radio",
+      "description": "Presence de systemes de securite/assistance",
+      "default": "non",
+      "notes": "Utiliser .click()"
+    },
+    "remorque": {
+      "selector_oui": "#MainPlaceHolder_RadioButtonListTrailer_0",
+      "selector_non": "#MainPlaceHolder_RadioButtonListTrailer_1",
+      "type": "radio",
+      "description": "Le vehicule tracte une remorque",
+      "default": "non",
+      "notes": "Utiliser .click()"
+    },
+    "vehicule_valeur_catalogue_htva": {
+      "selector": "#MainPlaceHolder_TextBoxCatalogValueExcl",
+      "type": "input",
+      "description": "Valeur catalogue du vehicule hors TVA"
+    },
+    "vehicule_valeur_catalogue_tvac": {
+      "selector": "#MainPlaceHolder_TextBoxCatalogValueIncl",
+      "type": "input",
+      "description": "Valeur catalogue du vehicule TVA comprise"
+    },
+    "vehicule_valeur_globale_htva": {
+      "selector": "#MainPlaceHolder_TextBoxGlobalValueExcl",
+      "type": "input",
+      "description": "Valeur globale (catalogue + options) hors TVA"
+    },
+    "vehicule_valeur_globale_tvac": {
+      "selector": "#MainPlaceHolder_TextBoxGlobalValueIncl",
+      "type": "input",
+      "description": "Valeur globale (catalogue + options) TVA comprise"
+    },
+    "tva_recuperable": {
+      "selector": "#MainPlaceHolder_DropDownListRecoverableTax",
+      "type": "select",
+      "description": "Pourcentage de TVA recuperable",
+      "valueMap": {
+        "0%": "1",
+        "1-49%": "2",
+        "50-100%": "3"
+      },
+      "default": "1"
+    },
+    "statut_preneur": {
+      "selector": "#MainPlaceHolder_DropDownListHolderStatus",
+      "type": "select",
+      "description": "Statut juridique du preneur d'assurance",
+      "valueMap": {
+        "Personne physique": "1",
+        "Societe": "0"
+      }
+    },
+    "conducteur_est_preneur": {
+      "selector_oui": "#MainPlaceHolder_RadioButtonListIsMainDriver_0",
+      "selector_non": "#MainPlaceHolder_RadioButtonListIsMainDriver_1",
+      "type": "radio",
+      "description": "Le conducteur principal est-il le preneur d'assurance",
+      "notes": "Utiliser .click()"
+    },
+    "bonus_malus": {
+      "selector": "#MainPlaceHolder_TextBoxBonusMalus",
+      "type": "input",
+      "description": "Degre bonus-malus (0 = base, negatif = bonus, positif = malus)",
+      "default": "0"
+    },
+    "conducteur_moins_23": {
+      "selector_oui": "#MainPlaceHolder_RadioButtonListAgeConductor_0",
+      "selector_non": "#MainPlaceHolder_RadioButtonListAgeConductor_1",
+      "type": "radio",
+      "description": "Le conducteur a moins de 23 ans (calcule depuis date_naissance)",
+      "notes": "Utiliser .click()"
+    },
+    "sinistres_present": {
+      "selector_oui": "#MainPlaceHolder_RadioButtonListPresentSinistre_0",
+      "selector_non": "#MainPlaceHolder_RadioButtonListPresentSinistre_1",
+      "type": "radio",
+      "description": "Le conducteur a-t-il eu des sinistres (determine depuis sinistres_nb > 0)",
+      "notes": "Utiliser .click()"
+    },
+    "bm_contrat_ag": {
+      "selector_oui": "#MainPlaceHolder_RadioButtonListAGBonusMalus_0",
+      "selector_non": "#MainPlaceHolder_RadioButtonListAGBonusMalus_1",
+      "type": "radio",
+      "description": "Le BM est-il base sur un contrat AG existant",
+      "default": "non",
+      "notes": "Utiliser .click()"
+    },
+    "btn_rechercher_vehicule": {
+      "selector": "#MainPlaceHolder_ButtonFebiac",
+      "type": "submit",
+      "description": "Ouvre la popup FEBIAC pour rechercher le vehicule"
+    },
+    "btn_suivant": {
+      "selector": "#ToolBarControl_ButtonNext",
+      "type": "submit",
+      "description": "Passe a la page Primes"
+    },
+    "intervenant_role": {
+      "selector": "#MainPlaceHolder_CART_IntervenientList_1_DropDownListIntervenientRoles",
+      "type": "select",
+      "description": "Role de l'intervenant",
+      "valueMap": {
+        "Preneur": "0001",
+        "Conducteur principal": "0025"
+      }
+    },
+    "btn_ajouter_intervenant": {
+      "selector": "#MainPlaceHolder_CART_IntervenientList_1_ButtonAdd",
+      "type": "submit",
+      "description": "Ajouter l'intervenant au contrat"
+    }
+  },
+
+  "popup_febiac": {
+    "_iframe": "iframe[name='popupIframe']",
+    "_notes": "Tous les selecteurs ci-dessous sont DANS l'iframe popupIframe. Apres selection de la Marque, un postback remplit le dropdown Type. Attendre le postback avant de continuer.",
+
+    "marque": {
+      "selector": "#Headers_DropDownListMake",
+      "type": "select",
+      "description": "Marque du vehicule (valeurs en MAJUSCULES, ex: VOLKSWAGEN)",
+      "notes": "Declenche un postback qui remplit le dropdown Type"
+    },
+    "type_modele": {
+      "selector": "#Headers_DropDownListType",
+      "type": "select",
+      "description": "Type/modele du vehicule (se remplit apres selection de la marque)"
+    },
+    "carburant": {
+      "selector": "#Headers_DropDownListFuel",
+      "type": "select",
+      "description": "Type de carburant",
+      "valueMap": {
+        "Essence": "1",
+        "Diesel": "2",
+        "GPL": "3",
+        "Electrique": "4",
+        "Hybride": "7",
+        "Hybride rechargeable": "7"
+      }
+    },
+    "date_mec_jour": {
+      "selector": "#Headers_DateControlFirstDay_datecontrol_DayBox",
+      "type": "input",
+      "description": "Jour de premiere mise en circulation (01-31)"
+    },
+    "date_mec_mois": {
+      "selector": "#Headers_DateControlFirstDay_datecontrol_MonthBox",
+      "type": "input",
+      "description": "Mois de premiere mise en circulation (01-12)"
+    },
+    "date_mec_annee": {
+      "selector": "#Headers_DateControlFirstDay_datecontrol_YearBox",
+      "type": "input",
+      "description": "Annee de premiere mise en circulation (YYYY)"
+    },
+    "btn_rechercher": {
+      "selector": "#Headers_ButtonSearch",
+      "type": "submit",
+      "description": "Lancer la recherche du vehicule dans la base FEBIAC"
+    },
+    "btn_ok": {
+      "selector": "#Footers_ButtonOk",
+      "type": "submit",
+      "description": "Valider la selection du vehicule (desactive tant qu'aucun vehicule selectionne)",
+      "notes": "Attendre que le bouton soit enabled avant de cliquer"
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "company": "Ethias",
+  "portal_url": "TODO: URL du portail tarification Ethias via Portima Connect",
+  "type_assurance": "auto",
+  "technologie": "TODO: identifier la technologie",
+  "notes": "TODO: mapper les selecteurs apres acces au portail Ethias via Portima Connect sur le Lenovo",
+  "status": "stub",
+
+  "flow": [
+    "TODO: documenter le flux de tarification Ethias une fois le portail accessible"
+  ],
+
+  "page_principale": {
+    "couverture_formule": {
+      "selector": "TODO",
+      "type": "select",
+      "description": "Formule de couverture principale (RC, mini omnium, omnium complete)",
+      "valueMap": {}
+    },
+    "vehicule_marque": {
+      "selector": "TODO",
+      "type": "select",
+      "description": "Marque du vehicule"
+    },
+    "vehicule_modele": {
+      "selector": "TODO",
+      "type": "select",
+      "description": "Modele du vehicule"
+    },
+    "vehicule_kw": {
+      "selector": "TODO",
+      "type": "input",
+      "description": "Puissance du vehicule en kW"
+    },
+    "vehicule_carburant": {
+      "selector": "TODO",
+      "type": "select",
+      "description": "Type de carburant",
+      "valueMap": {}
+    },
+    "vehicule_date_mec": {
+      "selector": "TODO",
+      "type": "input",
+      "description": "Date de premiere mise en circulation"
+    },
+    "vehicule_usage": {
+      "selector": "TODO",
+      "type": "select",
+      "description": "Usage du vehicule (prive, professionnel...)"
+    },
+    "vehicule_km_annuel": {
+      "selector": "TODO",
+      "type": "select",
+      "description": "Kilometrage annuel estime"
+    },
+    "vehicule_valeur": {
+      "selector": "TODO",
+      "type": "input",
+      "description": "Valeur catalogue du vehicule"
+    },
+    "preneur_type": {
+      "selector": "TODO",
+      "type": "select",
+      "description": "Personne physique ou morale"
+    },
+    "preneur_date_naissance": {
+      "selector": "TODO",
+      "type": "input",
+      "description": "Date de naissance du preneur"
+    },
+    "bonus_malus": {
+      "selector": "TODO",
+      "type": "input",
+      "description": "Degre bonus-malus"
+    },
+    "sinistres": {
+      "selector": "TODO",
+      "type": "radio",
+      "description": "Sinistres dans les 5 dernieres annees"
+    },
+    "btn_calculer": {
+      "selector": "TODO",
+      "type": "submit",
+      "description": "Lancer le calcul de tarification"
+    }
+  }
+}

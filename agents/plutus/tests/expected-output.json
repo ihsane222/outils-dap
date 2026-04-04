@@ -1,0 +1,62 @@
+{
+  "$schema": "Structure attendue — les valeurs exactes dependent du LLM",
+  "success": true,
+  "agent": "plutus",
+  "data": {
+    "agent": "plutus",
+    "timestamp": "ISO-8601",
+    "periode": "2026-03",
+    "kpi": {
+      "ca": {
+        "valeur": "number (attendu ~383551.70)",
+        "unite": "EUR",
+        "evolution_pct": "number"
+      },
+      "charges": {
+        "valeur": "number (attendu ~276590.00)",
+        "unite": "EUR",
+        "evolution_pct": "number"
+      },
+      "marge_brute": {
+        "valeur": "number",
+        "unite": "EUR",
+        "taux_pct": "number"
+      },
+      "resultat_exploitation": {
+        "valeur": "number",
+        "unite": "EUR"
+      },
+      "tresorerie": {
+        "valeur": "number (attendu ~322000.00)",
+        "unite": "EUR"
+      },
+      "creances_clients": {
+        "valeur": "number",
+        "unite": "EUR"
+      },
+      "dettes_fournisseurs": {
+        "valeur": "number",
+        "unite": "EUR"
+      },
+      "ratio_charges_ca_pct": "number"
+    },
+    "commissions_par_compagnie": [
+      {
+        "compagnie": "string",
+        "montant": "number",
+        "part_pct": "number"
+      }
+    ],
+    "alertes": [],
+    "commentaire": "string"
+  },
+  "_champs_obligatoires": [
+    "success",
+    "agent",
+    "data.kpi.ca",
+    "data.kpi.charges",
+    "data.kpi.marge_brute",
+    "data.kpi.tresorerie",
+    "data.commissions_par_compagnie"
+  ]
+}

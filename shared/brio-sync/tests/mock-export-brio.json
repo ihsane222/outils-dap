@@ -1,0 +1,46 @@
+{
+  "clients": [
+    {
+      "client_id": "BRI-00142",
+      "nom": "Dupont",
+      "prenom": "Marie",
+      "email": "marie.dupont@example.be",
+      "telephone": "+32 2 345 67 89",
+      "type_contrat": "Auto",
+      "compagnie": "AG Insurance",
+      "date_echeance": "2026-09-01",
+      "prime_annuelle": 1245.50,
+      "numero_police": "AG-2024-88741",
+      "adresse": "Rue de la Loi 42, 1000 Bruxelles",
+      "langue": "FR"
+    },
+    {
+      "client_id": "BRI-00287",
+      "nom": "Van den Berg",
+      "prenom": "Jan",
+      "email": "jan.vandenberg@example.be",
+      "telephone": "+32 9 876 54 32",
+      "type_contrat": "Habitation",
+      "compagnie": "Ethias",
+      "date_echeance": "2026-12-15",
+      "prime_annuelle": 890.00,
+      "numero_police": "ETH-2023-55102",
+      "adresse": "Kerkstraat 18, 9000 Gent",
+      "langue": "NL"
+    },
+    {
+      "client_id": "BRI-00431",
+      "nom": "Lemaire",
+      "prenom": "Sophie",
+      "email": "sophie.lemaire@example.be",
+      "telephone": "+32 71 23 45 67",
+      "type_contrat": "Vie",
+      "compagnie": "Baloise",
+      "date_echeance": "2027-03-01",
+      "prime_annuelle": 3200.00,
+      "numero_police": "BAL-2025-12390",
+      "adresse": "Avenue Louise 150, 1050 Ixelles",
+      "langue": "FR"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Olympe Agent Message",
+  "description": "Standard message format for inter-agent communication in Olympe platform",
+  "type": "object",
+  "required": ["from_agent", "to_agent", "action", "payload", "priority", "requires_approval", "timestamp"],
+  "properties": {
+    "from_agent": {
+      "type": "string",
+      "enum": ["eros", "plutus", "raphael", "hermes", "janus", "midas", "aphrodite", "iris", "themis", "hestia", "zeus", "brio-sync", "system"],
+      "description": "Agent émetteur"
+    },
+    "to_agent": {
+      "type": "string",
+      "enum": ["eros", "plutus", "raphael", "hermes", "janus", "midas", "aphrodite", "iris", "themis", "hestia", "zeus", "audit-log", "human-loop"],
+      "description": "Agent destinataire"
+    },
+    "action": {
+      "type": "string",
+      "description": "Action demandée (send_email_draft, create_fiche, generate_report, check_compliance, etc.)"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Identifiant client Brio (format BRI-XXXXX)",
+      "pattern": "^BRI-[0-9]+$"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Données spécifiques à l'action"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["normal", "high", "urgent"],
+      "description": "Niveau de priorité"
+    },
+    "requires_approval": {
+      "type": "boolean",
+      "description": "true si validation humaine nécessaire avant exécution"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601"
+    }
+  },
+  "additionalProperties": false
+}

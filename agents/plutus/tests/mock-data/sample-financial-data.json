@@ -1,0 +1,127 @@
+{
+  "question": "Donne-moi le dashboard financier de mars 2026",
+  "data": {
+    "periode": "2026-03",
+    "ecritures": [
+      {
+        "compte": "700000",
+        "libelle": "Commissions AG Insurance",
+        "debit": 0,
+        "credit": 145230.50,
+        "tiers": "AG Insurance",
+        "journal": "VEN",
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "700000",
+        "libelle": "Commissions AXA Belgium",
+        "debit": 0,
+        "credit": 98760.00,
+        "tiers": "AXA Belgium",
+        "journal": "VEN",
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "700000",
+        "libelle": "Commissions Ethias",
+        "debit": 0,
+        "credit": 67450.25,
+        "tiers": "Ethias",
+        "journal": "VEN",
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "700000",
+        "libelle": "Commissions Baloise",
+        "debit": 0,
+        "credit": 43210.80,
+        "tiers": "Baloise",
+        "journal": "VEN",
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "700000",
+        "libelle": "Commissions Vivium",
+        "debit": 0,
+        "credit": 28900.15,
+        "tiers": "Vivium",
+        "journal": "VEN",
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "600000",
+        "libelle": "Achats fournitures bureau",
+        "debit": 12340.00,
+        "credit": 0,
+        "tiers": "Lyreco",
+        "journal": "ACH",
+        "date": "2026-03-15"
+      },
+      {
+        "compte": "612000",
+        "libelle": "Loyers bureaux",
+        "debit": 18500.00,
+        "credit": 0,
+        "tiers": "Immobiliere Uccle",
+        "journal": "ACH",
+        "date": "2026-03-01"
+      },
+      {
+        "compte": "620000",
+        "libelle": "Salaires et traitements",
+        "debit": 185000.00,
+        "credit": 0,
+        "tiers": "Personnel",
+        "journal": "OD",
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "621000",
+        "libelle": "Cotisations sociales",
+        "debit": 52000.00,
+        "credit": 0,
+        "tiers": "ONSS",
+        "journal": "OD",
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "640000",
+        "libelle": "Charges diverses",
+        "debit": 8750.00,
+        "credit": 0,
+        "tiers": "Divers",
+        "journal": "OD",
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "550000",
+        "libelle": "Banque ING",
+        "solde": 234567.89,
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "550001",
+        "libelle": "Banque BNP",
+        "solde": 87432.11,
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "400000",
+        "libelle": "Creances clients",
+        "solde": 156780.45,
+        "date": "2026-03-31"
+      },
+      {
+        "compte": "440000",
+        "libelle": "Dettes fournisseurs",
+        "solde": 43210.67,
+        "date": "2026-03-31"
+      }
+    ],
+    "periode_precedente": {
+      "periode": "2026-02",
+      "ca": 358920.00,
+      "charges": 264100.00
+    }
+  }
+}
